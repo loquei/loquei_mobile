@@ -1,9 +1,9 @@
 import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { useFonts, Poppins_400Regular } from "@expo-google-fonts/poppins";
-import { MaterialIcons } from "@expo/vector-icons";
 import { theme } from "@/styles/theme";
 import { ThemeProvider } from "styled-components";
+import { Login } from "./Login";
 
 export default function Home() {
   let [fontsLoaded] = useFonts({
@@ -15,10 +15,7 @@ export default function Home() {
   return (
     <ThemeProvider theme={theme}>
       <View style={styles.container}>
-        <Text style={styles.text}>
-          Open up App.tsx to start working on your app!
-        </Text>
-        <MaterialIcons name="cell-wifi" size={75} color={"red"} />
+        <Login />
         <StatusBar style="auto" />
       </View>
     </ThemeProvider>

@@ -3,7 +3,7 @@ import { StyleSheet, View } from "react-native";
 import { useFonts, Poppins_400Regular } from "@expo-google-fonts/poppins";
 import { theme } from "@/styles/theme";
 import { ThemeProvider } from "styled-components";
-import { Login } from "./Login";
+import { Login } from "./SingUp";
 
 export default function Home() {
   let [fontsLoaded] = useFonts({

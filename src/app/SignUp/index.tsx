@@ -13,11 +13,10 @@ import {
   SignInButton,
   SignInButtonText,
   ErrorMessage,
-} from './styles'
+} from '../SignIn/styles'
 
 
 export default function SignIn() {
-
 
   const router = useRouter();
 

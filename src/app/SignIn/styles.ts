@@ -7,6 +7,7 @@ export const Container = styled(View)`
     flex: 1;
     background-color: ${theme.colors.gray50};
     justify-content: center;
+    padding: 0 20px;
 `
 
 export const Subtitle = styled(Text)`

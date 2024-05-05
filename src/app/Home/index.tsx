@@ -1,4 +1,3 @@
-
 import { useRef } from 'react'
 import { View, Text, FlatList, SectionList, ScrollView } from 'react-native'
 
@@ -10,18 +9,15 @@ import { Heading } from '@/styles/GlobalStyles';
 
 import { ALL_CATEGORIES, ALL_PRODUCTS, ALL_SECTIONS, PRODUCTS } from '@/data'
 import { CategoryButton } from '@/components/CategoryButton';
-import Product from '@/components/Product';
 import ProductList from '@/components/ProductList'
+import Navbar from '@/components/Navbar'
 
 export default function Home() {
   const router = useRouter();
-  console.log(ALL_CATEGORIES)
-  console.log(ALL_SECTIONS)
-
-  const sectionListRef = useRef<SectionList>(null);
 
   return (
     <Container>
+      <Navbar />
       <Header>
 
         <HeaderFlex>
@@ -47,7 +43,7 @@ export default function Home() {
         renderItem={({ item }) => <CategoryButton title={item as string} />}
         horizontal
         showsHorizontalScrollIndicator={false}
-        contentContainerStyle={{ gap: 12 }}
+        contentContainerStyle={{ gap: 12, paddingHorizontal: 20 }}
         style={{ marginTop: 30, marginBottom: 15, maxHeight: 40 }}
       />
 

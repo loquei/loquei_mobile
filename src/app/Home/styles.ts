@@ -6,12 +6,15 @@ import { theme } from '@/theme'
 export const Container = styled(View)`
   flex: 1;
   height: 100%;
+  padding: 10px 0 60px 0;
+  background-color: ${theme.colors.gray50};
 `
 
 export const Header = styled(View)`
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
+  padding: 0 20px 0 20px;
 `
 
 export const HeaderFlex = styled(View)`

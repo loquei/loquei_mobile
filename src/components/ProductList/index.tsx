@@ -31,7 +31,7 @@ const ProductList = ({ title, data }: ProductListProps) => {
           <ProductCard data={item} />
         )}
         ItemSeparatorComponent={() => <View style={{ width: 20 }} />}
-        contentContainerStyle={{ marginTop: 23, marginBottom: 20 }}
+        contentContainerStyle={{ marginTop: 23, marginBottom: 20, paddingHorizontal: 20 }}
         showsHorizontalScrollIndicator={false}
       />
     </ProductListContainer>

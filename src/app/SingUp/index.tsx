@@ -9,7 +9,7 @@ import {
   StyleSheet,
 } from "react-native";
 
-export const Login = () => {
+export const SingUp = () => {
   const {
     control,
     formState: { errors },
@@ -62,10 +62,10 @@ export const Login = () => {
         criar uma conta
       </Text>
       <TouchableOpacity
-        style={styles.singInButton}
+        style={styles.singUpButton}
         onPress={handleSubmit(handleSingUp)}
       >
-        <Text style={styles.singInButtonText}>Entrar</Text>
+        <Text style={styles.singUpButtonText}>Entrar</Text>
       </TouchableOpacity>
     </View>
   );
@@ -99,12 +99,12 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     textDecorationLine: "underline",
   },
-  singInButton: {
+  singUpButton: {
     backgroundColor: `${theme.colors.primary300}`,
     padding: 8,
     borderRadius: 8,
   },
-  singInButtonText: {
+  singUpButtonText: {
     fontWeight: "bold",
     fontSize: 15,
     textAlign: "center",
@@ -113,7 +113,7 @@ const styles = StyleSheet.create({
   erroMessage: {
     color: `${theme.colors.danger100}`,
     fontWeight: "500",
-    marginTop: 8,
+    marginTop: 16,
     marginBottom: 8,
   },
 });

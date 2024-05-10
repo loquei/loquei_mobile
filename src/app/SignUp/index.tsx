@@ -1,9 +1,7 @@
 import { useRouter } from "expo-router";
-import { Heading } from '@/styles/GlobalStyles'
+import { Heading } from "@/styles/GlobalStyles";
 
-import {
-  Text,
-} from "react-native";
+import { Text } from "react-native";
 
 import {
   Container,
@@ -13,15 +11,13 @@ import {
   SignInButton,
   SignInButtonText,
   ErrorMessage,
-} from '../SignIn/styles'
-
+} from "../SignIn/styles";
 
 export default function SignIn() {
-
   const router = useRouter();
 
   const handleSingUp = () => {
-    router.replace('/Home/');
+    router.replace("/Home/");
   };
 
   return (
@@ -31,20 +27,14 @@ export default function SignIn() {
         Insira seu email e deixe o resto com a gente.
       </Subtitle>
 
-      <EmailInput
-        placeholder="Email"
-      />
+      <EmailInput placeholder="Email" />
 
-      <NewAccount
-        onPress={() => router.push('/SignIn/')}
-      >
+      <NewAccount onPress={() => router.push("/SignIn/")}>
         Já tem uma conta? Faça login
       </NewAccount>
-      <SignInButton
-        onPress={handleSingUp}
-      >
+      <SignInButton onPress={handleSingUp}>
         <SignInButtonText>Criar conta</SignInButtonText>
       </SignInButton>
     </Container>
   );
-};
+}

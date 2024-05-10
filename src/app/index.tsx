@@ -1,17 +1,10 @@
-import React from 'react';
-import { StatusBar, StyleSheet, View } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { ThemeProvider } from 'styled-components';
+import React from "react";
+import { View, StyleSheet } from "react-native";
+import { StatusBar } from "react-native";
 
-import { Loading } from '@/components/Loading';
-import { theme } from '@/theme';
-
-import Home from '@/app/Home';
-import Onboarding from '@/app/Onboarding';
-import SignIn from '@/app/SignIn';
-import SignUp from '@/app/SignUp';
-
+import { ThemeProvider } from "styled-components/native";
+import { Loading } from "@/components/Loading";
+import { theme } from "@/theme";
 import {
   useFonts,
   Poppins_100Thin,
@@ -22,8 +15,9 @@ import {
   Poppins_600SemiBold,
   Poppins_700Bold,
   Poppins_800ExtraBold,
-  Poppins_900Black
-} from '@expo-google-fonts/poppins';
+  Poppins_900Black,
+} from "@expo-google-fonts/poppins";
+import { Routes } from "@/routes";
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -35,31 +29,20 @@ export default function App() {
     Poppins_600SemiBold,
     Poppins_700Bold,
     Poppins_800ExtraBold,
-    Poppins_900Black
+    Poppins_900Black,
   });
-
-  if (!fontsLoaded) {
-    return <Loading />;
-  }
-
-  const Stack = createNativeStackNavigator();
 
   return (
     <View style={styles.container}>
       <ThemeProvider theme={theme}>
-        <Stack.Navigator
-          screenOptions={{
-            statusBarStyle: 'light',
-            statusBarColor: theme.colors.gray800,
-            contentStyle: { backgroundColor: theme.colors.gray50 },
-            headerShown: false,
-          }}
-          initialRouteName='Onboarding'>
-          <Stack.Screen name="Onboarding" component={Onboarding} />
-          <Stack.Screen name="Home" component={Home} />
-          <Stack.Screen name="SignIn" component={SignIn} />
-          <Stack.Screen name="SignUp" component={SignUp} />
-        </Stack.Navigator>
+        <>
+          <StatusBar
+            barStyle="light-content"
+            backgroundColor="transparent"
+            translucent
+          />
+          {fontsLoaded ? <Routes /> : <Loading />}
+        </>
       </ThemeProvider>
     </View>
   );

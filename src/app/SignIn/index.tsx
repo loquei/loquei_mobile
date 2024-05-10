@@ -1,10 +1,8 @@
 import { useForm, Controller } from "react-hook-form";
 import { useRouter } from "expo-router";
-import { Heading } from '@/styles/GlobalStyles'
+import { Heading } from "@/styles/GlobalStyles";
 
-import {
-  Text,
-} from "react-native";
+import { Text } from "react-native";
 
 import {
   Container,
@@ -14,8 +12,7 @@ import {
   SignInButton,
   SignInButtonText,
   ErrorMessage,
-} from './styles'
-
+} from "./styles";
 
 export default function SignIn() {
   const {
@@ -31,7 +28,7 @@ export default function SignIn() {
   const router = useRouter();
 
   const handleSingUp = () => {
-    router.replace('/Home/');
+    router.replace("/Home/");
   };
 
   return (
@@ -62,19 +59,17 @@ export default function SignIn() {
         )}
       />
       {errors.email && (
-        <ErrorMessage style={Heading.caption}>{errors.email.message}</ErrorMessage>
+        <ErrorMessage style={Heading.caption}>
+          {errors.email.message}
+        </ErrorMessage>
       )}
 
-      <NewAccount
-        onPress={() => router.push('/SignUp/')}
-      >
+      <NewAccount onPress={() => router.push("/SignUp/")}>
         Criar uma conta
       </NewAccount>
-      <SignInButton
-        onPress={handleSubmit(handleSingUp)}
-      >
+      <SignInButton onPress={handleSubmit(handleSingUp)}>
         <SignInButtonText>Entrar</SignInButtonText>
       </SignInButton>
     </Container>
   );
-};
+}

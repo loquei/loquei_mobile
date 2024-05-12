@@ -1,10 +1,10 @@
 import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
-import Home from "@/app/Home";
-import Onboarding from "@/app/Onboarding";
-import SignIn from "@/app/SignIn";
-import SignUp from "@/app/SignUp";
+import Home from "@/screens/Home";
+import Onboarding from "@/screens/Onboarding";
+import SignIn from "@/screens/SignIn";
+import SignUp from "@/screens/SignUp";
 import { theme } from "@/theme";
 
 const { Navigator, Screen } = createNativeStackNavigator();

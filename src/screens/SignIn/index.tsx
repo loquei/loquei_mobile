@@ -1,5 +1,5 @@
 import { useForm, Controller } from "react-hook-form";
-import { useRouter } from "expo-router";
+import { useNavigation } from "@react-navigation/native";
 import { Heading } from "@/styles/GlobalStyles";
 
 import { Text } from "react-native";
@@ -25,10 +25,9 @@ export default function SignIn() {
     },
   });
 
-  const router = useRouter();
-
+  const router = useNavigation();
   const handleSingUp = () => {
-    router.replace("/Home/");
+    router.navigate("Home");
   };
 
   return (
@@ -64,7 +63,7 @@ export default function SignIn() {
         </ErrorMessage>
       )}
 
-      <NewAccount onPress={() => router.push("/SignUp/")}>
+      <NewAccount onPress={() => router.navigate("SignUp")}>
         Criar uma conta
       </NewAccount>
       <SignInButton onPress={handleSubmit(handleSingUp)}>

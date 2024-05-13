@@ -1,5 +1,5 @@
 import React from "react";
-import { View, StyleSheet } from "react-native";
+import { Container } from "./styles";
 import { StatusBar } from "react-native";
 
 import { ThemeProvider } from "styled-components/native";
@@ -33,7 +33,7 @@ export default function App() {
   });
 
   return (
-    <View style={styles.container}>
+    <Container>
       <ThemeProvider theme={theme}>
         <>
           <StatusBar
@@ -44,14 +44,6 @@ export default function App() {
           {fontsLoaded ? <Routes /> : <Loading />}
         </>
       </ThemeProvider>
-    </View>
+    </Container>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: theme.colors.gray50,
-    marginTop: 10,
-  },
-});

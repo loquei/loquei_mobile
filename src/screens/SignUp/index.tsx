@@ -1,4 +1,4 @@
-import { useRouter } from "expo-router";
+import { useNavigation } from "@react-navigation/native";
 import { Heading } from "@/styles/GlobalStyles";
 
 import { Text } from "react-native";
@@ -14,10 +14,10 @@ import {
 } from "../SignIn/styles";
 
 export default function SignIn() {
-  const router = useRouter();
+  const router = useNavigation();
 
   const handleSingUp = () => {
-    router.replace("/Home/");
+    router.navigate("Home");
   };
 
   return (
@@ -29,7 +29,7 @@ export default function SignIn() {
 
       <EmailInput placeholder="Email" />
 
-      <NewAccount onPress={() => router.push("/SignIn/")}>
+      <NewAccount onPress={() => router.navigate("SignIn")}>
         Já tem uma conta? Faça login
       </NewAccount>
       <SignInButton onPress={handleSingUp}>

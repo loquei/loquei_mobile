@@ -27,7 +27,7 @@ export default function SignIn() {
 
   const router = useNavigation();
   const handleSingUp = () => {
-    router.navigate("Home");
+    router.navigate("ConfirmCode");
   };
 
   return (

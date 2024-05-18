@@ -5,6 +5,7 @@ export declare global {
       Home: undefined;
       SignIn: undefined;
       SignUp: undefined;
+      ConfirmCode: undefined;
     }
   }
 }

@@ -1,12 +1,10 @@
-import { Text, View } from "react-native";
+import { Text } from "react-native";
 import { NavbarButton, NavbarContainer } from "./styles";
-import { Feather } from '@expo/vector-icons'
+import { Feather } from "@expo/vector-icons";
 
 export default function Navbar() {
-
   return (
     <NavbarContainer>
-
       <NavbarButton>
         <Feather name="home" size={24} color="black" />
         <Text>Home</Text>

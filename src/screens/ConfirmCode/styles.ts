@@ -44,9 +44,15 @@ export const ConfirmarButton = styled.TouchableOpacity`
   `;
 
 export const TextConfirmar = styled.Text`
-     text-align: center;
+    text-align: center;
     align-items: center;
     font-family: ${theme.fonts.title};
     color: ${theme.colors.white100};
     font-size: ${theme.fontSizes.textLG}px;
+`;
+
+export const ErroMensagem = styled.Text`
+    color: ${theme.colors.danger100};
+    margin-top: 8px;
+    margin-bottom: 8px;
 `;

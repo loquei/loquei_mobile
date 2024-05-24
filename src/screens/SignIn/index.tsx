@@ -13,6 +13,7 @@ import {
   SignInButtonText,
   ErrorMessage,
 } from "./styles";
+import { postEmail } from "@/api/postEmail";
 
 export default function SignIn() {
   const {
@@ -26,8 +27,13 @@ export default function SignIn() {
   });
 
   const router = useNavigation();
-  const handleSingUp = () => {
-    router.navigate("ConfirmCode");
+  const handleSingUp = async (data: Email) => {
+    try {
+      await postEmail(data);
+      router.navigate("ConfirmCode");
+    } catch (e) {
+      console.error("Ocorreu algum erro", e);
+    }
   };
 
   return (
@@ -45,8 +51,6 @@ export default function SignIn() {
             value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
             message: "Digite um email válido",
           },
-          validate: (value) =>
-            value === "teste@email.com" || "O email não existe",
         }}
         render={({ field: { onChange, value, onBlur } }) => (
           <EmailInput

@@ -67,7 +67,7 @@ export default function SignIn() {
         </ErrorMessage>
       )}
 
-      <NewAccount onPress={() => router.navigate("SignUp")}>
+      <NewAccount onPress={() => router.navigate("CreateAccount")}>
         Criar uma conta
       </NewAccount>
       <SignInButton onPress={handleSubmit(handleSingUp)}>

@@ -15,7 +15,7 @@ import { useForm, Controller } from "react-hook-form";
 import { CreateAccountSchema } from "../../schemas/CreateAccountSchema";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { TextInput } from "react-native";
+import { create_user } from "@/api/create_user";
 
 export default function CreateAccount() {
   type CreateAccountSchema = z.infer<typeof CreateAccountSchema>;
@@ -30,6 +30,22 @@ export default function CreateAccount() {
     },
     resolver: zodResolver(CreateAccountSchema),
   });
+
+  const handleCreateAccount = async (data: CreateAccountSchema) => {
+    try {
+      const { name, nickName, email, phone, document, BirthDate } = data;
+      await create_user({
+        name,
+        nickname: nickName,
+        email,
+        phone,
+        document: document,
+        birth: BirthDate,
+      });
+    } catch (error: any) {
+      console.log(error.message);
+    }
+  };
 
   return (
     <Container>
@@ -96,7 +112,7 @@ export default function CreateAccount() {
         <InputLabel>CPF:</InputLabel>
         <Controller
           control={control}
-          name="CPF"
+          name="document"
           rules={{
             required: "É necessario digitar o seu e-email",
           }}
@@ -125,7 +141,7 @@ export default function CreateAccount() {
             />
           )}
         />
-        <CreateAccountButton>
+        <CreateAccountButton onPress={handleSubmit(handleCreateAccount)}>
           <CreateAccountButtonText>Criar Conta</CreateAccountButtonText>
         </CreateAccountButton>
       </Form>

@@ -12,7 +12,7 @@ export const CreateAccountSchema = z.object({
   phone: z.string({
     required_error: "O número de telefone é necessario"
   }),
-  CPF: z.string({
+  document: z.string({
     required_error: "O CPF é necessario"
   }).trim().min(1),
   BirthDate: z.string({

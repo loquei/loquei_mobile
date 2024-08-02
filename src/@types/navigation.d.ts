@@ -6,7 +6,8 @@ export declare global {
       SignIn: undefined;
       SignUp: undefined;
       ConfirmCode: undefined;
-      CreateAccount: undefined
+      CreateAccount: undefined;
+      SearchItem: undefined;
     }
   }
 }

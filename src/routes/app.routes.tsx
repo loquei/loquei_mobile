@@ -8,6 +8,7 @@ import SignUp from "@/screens/SignUp";
 import { theme } from "@/theme";
 import ConfirmCode from "@/screens/ConfirmCode";
 import CreateAccount from "@/screens/CreateAccount";
+import SearchItem from "@/screens/SearchItem";
 
 const { Navigator, Screen } = createNativeStackNavigator();
 
@@ -26,6 +27,7 @@ export function AppRoutes() {
       <Screen name="SignUp" component={SignUp} />
       <Screen name="ConfirmCode" component={ConfirmCode} />
       <Screen name="CreateAccount" component={CreateAccount} />
+      <Screen name="SearchItem" component={SearchItem} />
     </Navigator>
   );
 }

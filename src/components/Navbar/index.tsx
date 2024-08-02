@@ -1,8 +1,10 @@
 import { Text } from "react-native";
 import { NavbarButton, NavbarContainer } from "./styles";
 import { Feather } from "@expo/vector-icons";
-
+import { useNavigation } from "@react-navigation/native";
 export default function Navbar() {
+  const router = useNavigation();
+
   return (
     <NavbarContainer>
       <NavbarButton>
@@ -10,7 +12,7 @@ export default function Navbar() {
         <Text>Home</Text>
       </NavbarButton>
 
-      <NavbarButton>
+      <NavbarButton onPress={() => router.navigate("SearchItem")}>
         <Feather name="search" size={24} color="black" />
         <Text>Pesquisar</Text>
       </NavbarButton>

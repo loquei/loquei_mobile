@@ -54,5 +54,6 @@ export const TextConfirmar = styled.Text`
 export const ErroMensagem = styled.Text`
     color: ${theme.colors.danger100};
     margin-top: 8px;
-    margin-bottom: 8px;
+    margin-bottom: 16px;
+    align-self:center;
 `;

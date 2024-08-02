@@ -1,5 +1,6 @@
 import {
   Container,
+  ContainerHeader,
   CPFInput,
   CreateAccountButton,
   CreateAccountButtonText,
@@ -16,9 +17,14 @@ import { CreateAccountSchema } from "../../schemas/CreateAccountSchema";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { create_user } from "@/api/create_user";
+import Entypo from "@expo/vector-icons/Entypo";
+import { useNavigation } from "@react-navigation/native";
+import { TouchableOpacity } from "react-native";
 
 export default function CreateAccount() {
   type CreateAccountSchema = z.infer<typeof CreateAccountSchema>;
+
+  const router = useNavigation();
 
   const {
     control,
@@ -49,7 +55,13 @@ export default function CreateAccount() {
 
   return (
     <Container>
-      <Title>Crie a sua conta</Title>
+      <ContainerHeader>
+        {/* faz o retorno para  a pagina anterior */}
+        <TouchableOpacity onPress={() => router.navigate("SignIn")}>
+          <Entypo name="chevron-thin-left" size={24} color="black" />
+        </TouchableOpacity>
+        <Title>Crie a sua conta</Title>
+      </ContainerHeader>
       <Form>
         <InputLabel>Nome de usuario:</InputLabel>
         <Controller

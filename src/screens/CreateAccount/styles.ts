@@ -2,26 +2,23 @@ import { theme } from "@/theme";
 import styled from "styled-components/native";
 
 
-const BaseInputs = styled.TextInput.attrs({
-  placeholderTextColor: theme.colors.gray200,
-  style: {
-    fontFamily: theme.fonts.body,
-  },
-})`
-  border-radius: 8px;
-  height: 60px;
-  padding: 0 16px;
-  border-color: ${theme.colors.gray800};
-  border-width: 0.5px;
-  font-family: ${theme.fonts.body};
-  width:70%;
-`;
+
 
 export const Container = styled.ScrollView`
  flex: 1;
   height: 100%;
   background-color: ${theme.colors.gray50};
 `;
+
+export const ContainerHeader = styled.View`
+  display:flex;
+  flex-direction:row;
+  align-items:center;
+  justify-content:center;
+  gap:60px;
+  margin-right:70px
+`
+
 
 export const Title = styled.Text`
   font-size:24px;

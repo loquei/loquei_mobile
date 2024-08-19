@@ -1,0 +1,108 @@
+import { NativeStackNavigationProp, createNativeStackNavigator } from '@react-navigation/native-stack';
+import { AddProductStep1 } from '@screens/AddProductStep1';
+import { AddProductStep2 } from '@screens/AddProductStep2';
+import { AllOrders } from '@screens/AllOrders';
+import { Dashboard } from '@screens/Dashboard';
+import { EditProduct } from '@screens/EditProduct';
+import { Leasing } from '@screens/Leasing';
+import { OrderDetails } from '@screens/OrderDetails';
+import { ProductDetails } from '@screens/ProductDetails';
+import { ProductReviews } from '@screens/ProductReviews';
+import { SearchCategory } from '@screens/SearchCategory';
+import { SearchResults } from '@screens/SearchResults';
+import { UserProducts } from '@screens/UserProducts';
+import { AppSecondaryRoutes } from './app.secondary.routes';
+
+export type AppSecondaryRoutes = {
+  productDetails: undefined;
+  productReviews: undefined;
+  searchCategory: undefined;
+  searchResults: undefined;
+  leasing: undefined;
+  dashboard: undefined;
+  userProducts: undefined;
+  editProduct: undefined;
+  addProductStep1: undefined;
+  addProductStep2: undefined;
+  allOrders: undefined;
+  orderDetails: undefined;
+  app: undefined;
+}
+
+export type AppNavigatorRoutesProps = NativeStackNavigationProp<AppSecondaryRoutes>;
+
+const { Navigator, Screen } = createNativeStackNavigator<AppSecondaryRoutes>();
+
+export function AppRoutes() {
+  return (
+    <Navigator screenOptions={{
+      headerShown: false,
+    }}
+      initialRouteName='app'
+    >
+      <Screen
+        name="productDetails"
+        component={ProductDetails}
+      />
+
+      <Screen
+        name="productReviews"
+        component={ProductReviews}
+      />
+
+      <Screen
+        name="searchCategory"
+        component={SearchCategory}
+      />
+
+      <Screen
+        name="searchResults"
+        component={SearchResults}
+      />
+
+      <Screen
+        name="leasing"
+        component={Leasing}
+      />
+
+      <Screen
+        name="dashboard"
+        component={Dashboard}
+      />
+
+      <Screen
+        name="userProducts"
+        component={UserProducts}
+      />
+
+      <Screen
+        name="editProduct"
+        component={EditProduct}
+      />
+
+      <Screen
+        name="addProductStep1"
+        component={AddProductStep1}
+      />
+
+      <Screen
+        name="addProductStep2"
+        component={AddProductStep2}
+      />
+
+      <Screen
+        name="allOrders"
+        component={AllOrders}
+      />
+
+      <Screen
+        name="orderDetails"
+        component={OrderDetails}
+      />
+      <Screen
+        name="app"
+        component={AppSecondaryRoutes}
+      />
+    </Navigator>
+  )
+}

@@ -133,8 +133,8 @@ export const gluestackUIConfig = createConfig({
       teal300: '#5eead4',
       teal400: '#2dd4bf',
       teal500: '#14b8a6',
-      teal600: '#0d9488',
-      teal700: '#0f766e',
+      teal600: '#00AB9B',
+      teal700: '#008F8A',
       teal800: '#115e59',
       teal900: '#134e4a',
       emerald50: '#ecfdf5',
@@ -148,7 +148,7 @@ export const gluestackUIConfig = createConfig({
       emerald800: '#065f46',
       emerald900: '#064e3b',
       green50: '#f0fdf4',
-      green100: '#dcfce7',
+      green100: '#d1f4dc',
       green200: '#bbf7d0',
       green300: '#86efac',
       green400: '#4ade80',
@@ -342,7 +342,7 @@ export const gluestackUIConfig = createConfig({
       textLight300: '#D4D4D4',
       textLight400: '#A3A3A3',
       textLight500: '#8C8C8C',
-      textLight600: '#737373',
+      textLight600: '#7E8A8C',
       textLight700: '#525252',
       textLight800: '#404040',
       textLight900: '#262626',
@@ -357,7 +357,7 @@ export const gluestackUIConfig = createConfig({
       textDark600: '#737373',
       textDark700: '#525252',
       textDark800: '#404040',
-      textDark900: '#262626',
+      textDark900: '#193238',
       textDark950: '#171717',
       borderDark0: '#FCFCFC',
       borderDark50: '#F5F5F5',
@@ -420,6 +420,23 @@ export const gluestackUIConfig = createConfig({
       backgroundDarkMuted: '#252526',
       white: '#FFFFFF',
       black: '#000000',
+
+      // Cores Loquei
+
+      // primaryGreen: teal600
+      // primaryGreenDark: teal700
+      // secondaryGreen: green100
+
+      // danger: red500
+      // warning: warning500,
+
+
+      // darkText: textDark800
+      // lightText: textLight600,
+
+      // gray: secondary100,
+
+      // background: backgroundLight50,
     },
     space: {
       'px': '1px',
@@ -539,7 +556,7 @@ export const gluestackUIConfig = createConfig({
     fonts: {
       heading: 'Poppins_700Bold',
       body: 'Poppins_400Regular',
-      mono: undefined,
+      mono: 'Poppins_500Medium',
     },
     fontSizes: {
       '2xs': 10,

@@ -8,6 +8,7 @@ import {
   Poppins_700Bold,
 } from '@expo-google-fonts/poppins'
 import { StatusBar } from 'react-native'
+import { Routes } from '@routes/index'
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -21,14 +22,10 @@ export default function App() {
       <StatusBar barStyle='dark-content' backgroundColor="white" />
       {
         fontsLoaded ? (
-
-          <VStack flex={1} bg='$blue800' alignItems='center'>
-            <Text color='$white' fontFamily="$heading" size="xl">Hello Loquei</Text>
-          </VStack>
-
+          <Routes />
         )
           :
-          <Center flex={1} bg='$blue800'>
+          <Center flex={1} bg='$backgroundLight50'>
             <Text color='$white' fontFamily="$body" size="md">Loading...</Text>
           </Center>
       }

@@ -3,12 +3,14 @@ import { CodeVerification } from '@screens/CodeVerification';
 import { Onboarding } from '@screens/Onboarding';
 import { SignIn } from '@screens/SignIn';
 import { SignUp } from '@screens/SignUp';
+import { AppRoutes } from './app.routes';
 
 type AuthRoutes = {
   onBoarding: undefined;
   codeVerification: undefined;
   signIn: undefined;
   signUp: undefined;
+  primaryRoutes: undefined;
 }
 
 export type AuthNavigatorRoutesProps = NativeStackNavigationProp<AuthRoutes>;
@@ -39,6 +41,10 @@ export function AuthRoutes() {
       <Screen
         name="codeVerification"
         component={CodeVerification}
+      />
+      <Screen
+        name="primaryRoutes"
+        component={AppRoutes}
       />
     </Navigator>
   )

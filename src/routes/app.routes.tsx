@@ -26,7 +26,7 @@ export type AppSecondaryRoutes = {
   addProductStep2: undefined;
   allOrders: undefined;
   orderDetails: undefined;
-  app: undefined;
+  secondaryRoutes: undefined;
 }
 
 export type AppNavigatorRoutesProps = NativeStackNavigationProp<AppSecondaryRoutes>;
@@ -38,7 +38,7 @@ export function AppRoutes() {
     <Navigator screenOptions={{
       headerShown: false,
     }}
-      initialRouteName='app'
+      initialRouteName='secondaryRoutes'
     >
       <Screen
         name="productDetails"
@@ -100,7 +100,7 @@ export function AppRoutes() {
         component={OrderDetails}
       />
       <Screen
-        name="app"
+        name="secondaryRoutes"
         component={AppSecondaryRoutes}
       />
     </Navigator>

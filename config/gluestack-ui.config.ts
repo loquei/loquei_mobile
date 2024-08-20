@@ -400,7 +400,7 @@ export const gluestackUIConfig = createConfig({
       backgroundLight100: '#F1F1F1',
       backgroundLight200: '#DBDBDB',
       backgroundLight300: '#D4D4D4',
-      backgroundLight400: '#A3A3A3',
+      backgroundLight400: '#999999',
       backgroundLight500: '#8C8C8C',
       backgroundLight600: '#737373',
       backgroundLight700: '#525252',
@@ -437,6 +437,7 @@ export const gluestackUIConfig = createConfig({
       // gray: secondary100,
 
       // background: backgroundLight50,
+      // input placeholder: backgroundLight400
     },
     space: {
       'px': '1px',

@@ -30,9 +30,9 @@ export function AppSecondaryRoutes() {
       headerShown: false,
       tabBarShowLabel: false,
       tabBarActiveTintColor: tokens.colors.green500,
-      tabBarInactiveTintColor: tokens.colors.blueGray200,
+      tabBarInactiveTintColor: tokens.colors.textDark400,
       tabBarStyle: {
-        backgroundColor: tokens.colors.blueGray600,
+        backgroundColor: tokens.colors.white,
         borderTopWidth: 0,
         height: Platform.OS === 'android' ? 'auto' : 96, // Android needs this to be auto, iOS needs this to be 96, because of the SafeAreaView padding on iOS
         paddingBottom: tokens.space['10'],

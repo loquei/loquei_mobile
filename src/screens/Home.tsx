@@ -8,15 +8,15 @@ export function Home() {
 
   return (
     <VStack>
-      <Text color="$white">Home</Text>
+      <Text color="$textDark800">Home</Text>
 
       <VStack>
         <Pressable onPress={() => navigation.navigate('productDetails')}>
-          <Text color="$white">ProductDetails</Text>
+          <Text color="$textDark800">ProductDetails</Text>
         </Pressable>
 
         <Pressable onPress={() => navigation.navigate('searchCategory')}>
-          <Text color="$white">SearchCategory</Text>
+          <Text color="$textDark800">SearchCategory</Text>
         </Pressable>
       </VStack>
     </VStack>

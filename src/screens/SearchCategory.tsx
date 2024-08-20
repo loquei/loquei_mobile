@@ -3,7 +3,7 @@ import { HStack, Text } from "@gluestack-ui/themed";
 export function SearchCategory() {
   return (
     <HStack>
-      <Text color="$white">SearchCategory</Text>
+      <Text color="$textDark800">SearchCategory</Text>
     </HStack>
   )
 }

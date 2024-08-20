@@ -25,24 +25,24 @@ export function SignIn() {
           <VStack>
             <Center>
               <Image source={logoImage} alt="Loquei" width={54} height={54} />
-              <Text fontFamily="$heading" fontSize="$2xl" fontWeight="$bold" color="$textDark800" mt={40}>Entre em sua conta</Text>
-              <Text fontFamily="$body" fontSize="$md" fontWeight="$regular" color="$textDark800" textAlign="center" mt={12}>A maneira mais simples e rápida de alugar qualquer coisa. Entre com sua conta e descubra um mundo de facilidades.</Text>
+              <Text fontFamily="$heading" fontSize="$2xl" color="$textDark800" mt={40}>Entre em sua conta</Text>
+              <Text fontFamily="$body" fontSize="$md" color="$textDark800" textAlign="center" mt={12}>A maneira mais simples e rápida de alugar qualquer coisa. Entre com sua conta e descubra um mundo de facilidades.</Text>
             </Center>
           </VStack>
 
           <VStack mt={48} w="$full">
             <VStack gap={8}>
-              <Text fontFamily="$body" fontSize="$md" fontWeight="$medium" color="$textDark800">Email</Text>
+              <Text fontFamily="$body" fontSize="$md" color="$textDark800">Email</Text>
               <Input placeholder="Digite seu email" keyboardType="email-address" />
             </VStack>
 
             <Button title="Entrar" onPress={handleNavitageToHome} />
 
             <HStack justifyContent="flex-end" mt={12}>
-              <Text fontFamily="$body" fontSize="$md" fontWeight="$regular" color="$textDark800" textDecorationLine="underline">Recuperar senha</Text>
+              <Text fontFamily="$body" fontSize="$md" color="$textDark800" textDecorationLine="underline">Recuperar senha</Text>
             </HStack>
 
-            <Text fontFamily="$body" fontSize="$md" fontWeight="$regular" color="$textDark800" textAlign="center" mt={30}>Ainda não tem uma conta? <Text color="$teal600" onPress={handleNavigateToSignUp}>Cadastre-se</Text></Text>
+            <Text fontFamily="$body" fontSize="$md" color="$textDark800" textAlign="center" mt={30}>Ainda não tem uma conta? <Text color="$teal600" onPress={handleNavigateToSignUp}>Cadastre-se</Text></Text>
           </VStack>
         </Center>
       </VStack>

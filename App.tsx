@@ -1,5 +1,5 @@
 import { GluestackUIProvider, Text, Center, VStack } from '@gluestack-ui/themed'
-import { config } from '@gluestack-ui/config'
+import { config } from './config/gluestack-ui.config';
 
 import {
   useFonts,
@@ -7,7 +7,8 @@ import {
   Poppins_500Medium,
   Poppins_700Bold,
 } from '@expo-google-fonts/poppins'
-import { StatusBar } from 'react-native'
+
+import { ActivityIndicator, StatusBar } from 'react-native'
 import { Routes } from '@routes/index'
 
 export default function App() {
@@ -25,9 +26,7 @@ export default function App() {
           <Routes />
         )
           :
-          <Center flex={1} bg='$backgroundLight50'>
-            <Text color='$white' fontFamily="$body" size="md">Loading...</Text>
-          </Center>
+          <ActivityIndicator size="large" color="#00AB9B" style={{ flex: 1 }} />
       }
     </GluestackUIProvider>
   );

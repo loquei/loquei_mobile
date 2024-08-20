@@ -29,8 +29,7 @@ export function Button({ title, variant = 'solid', isLoading = false, ...props }
       ) : (
         <Text
           color={variant === 'outline' ? '$textDark800' : '$white'}
-          fontFamily="$body"
-          fontWeight='$medium'
+          fontFamily="$mono"
           fontSize="$md"
         >
           {title}

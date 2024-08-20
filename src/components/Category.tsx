@@ -2,7 +2,7 @@ import { Button, Text } from '@gluestack-ui/themed';
 import { ComponentProps } from 'react';
 
 import { MonitorSmartphone, Cake, Hammer, Car } from 'lucide-react-native';
-import { gluestackUIConfig } from '@gluestack-ui/config';
+import { gluestackUIConfig } from '../../config/gluestack-ui.config';
 
 type Props = ComponentProps<typeof Button> & {
   name: string;

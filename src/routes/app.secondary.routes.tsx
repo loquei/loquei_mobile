@@ -29,7 +29,7 @@ export function AppSecondaryRoutes() {
     <Navigator screenOptions={{
       headerShown: false,
       tabBarShowLabel: false,
-      tabBarActiveTintColor: tokens.colors.green500,
+      tabBarActiveTintColor: tokens.colors.teal600,
       tabBarInactiveTintColor: tokens.colors.textDark400,
       tabBarStyle: {
         backgroundColor: tokens.colors.white,

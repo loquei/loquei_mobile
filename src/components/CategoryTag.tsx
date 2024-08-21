@@ -16,7 +16,7 @@ const iconMap: { [key: string]: React.ElementType } = {
   Carros: Car,
 };
 
-export function Category({ name, isActive, ...props }: Props) {
+export function CategoryTag({ name, isActive, ...props }: Props) {
   const { tokens } = gluestackUIConfig;
   const IconComponent = iconMap[name];
 

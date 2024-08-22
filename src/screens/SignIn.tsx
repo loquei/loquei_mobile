@@ -5,6 +5,7 @@ import logoImage from '@assets/logo.png'
 import { Button } from "@components/Button";
 import { AuthNavigatorRoutesProps } from "@routes/auth.routes";
 import { AppSecondaryNavigatorRoutesProps } from "@routes/app.secondary.routes";
+import { ScreenHeader } from "@components/ScreenHeader";
 
 export function SignIn() {
   const authNavigation = useNavigation<AuthNavigatorRoutesProps>();
@@ -20,6 +21,7 @@ export function SignIn() {
 
   return (
     <ScrollView contentContainerStyle={{ flexGrow: 1 }} showsVerticalScrollIndicator={false}>
+      <ScreenHeader title="Login" backButton />
       <VStack flex={1} px={16} py={40}>
         <Center flex={1}>
           <VStack>

@@ -2,10 +2,20 @@ import { Input } from "@components/Input";
 import { Center, HStack, VStack, Text, Image, ScrollView } from "@gluestack-ui/themed";
 import logoImage from '@assets/logo.png'
 import { Button } from "@components/Button";
+import { useNavigation } from "@react-navigation/native";
+import { AuthNavigatorRoutesProps } from "@routes/auth.routes";
+import { ScreenHeader } from "@components/ScreenHeader";
 
 export function SignUp() {
+  const authNavigation = useNavigation<AuthNavigatorRoutesProps>();
+
+  function handleNavigateToCodeVerification() {
+    authNavigation.navigate('codeVerification');
+  }
+
   return (
     <ScrollView contentContainerStyle={{ flexGrow: 1 }} showsVerticalScrollIndicator={false}>
+      <ScreenHeader title="Cadastro" backButton />
       <VStack flex={1} px={16} py={40}>
         <Center flex={1}>
           <VStack>
@@ -42,7 +52,7 @@ export function SignUp() {
               <Input placeholder="Digite sua senha novamente" type="password" />
             </VStack>
 
-            <Button title="Entrar" onPress={() => { }} />
+            <Button title="Entrar" onPress={handleNavigateToCodeVerification} />
 
             <Text fontFamily="$body" fontSize="$md" color="$textDark800" textAlign="center" mt={30}>Já tem uma conta? <Text color="$teal600" onPress={() => { }}>Entre agora</Text></Text>
           </VStack>

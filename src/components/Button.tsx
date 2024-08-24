@@ -7,20 +7,47 @@ import { ComponentProps } from 'react'
 
 type Props = ComponentProps<typeof GluestackButton> & {
   title: string
-  variant?: 'solid' | 'outline'
+  buttonVariant?: 'solid' | 'secondary' | 'outline'
   isLoading?: boolean
 }
 
-export function Button({ title, variant = 'solid', isLoading = false, ...props }: Props) {
+export function Button({ title, buttonVariant = 'solid', isLoading = false, ...props }: Props) {
+  let backgroundColor, activeBgColor, borderWidth: '$1' | '$0', borderColor, textColor;
+
+  switch (buttonVariant) {
+    case 'outline':
+      backgroundColor = '$secondary100';
+      activeBgColor = '$secondary200';
+      borderWidth = '$1';
+      borderColor = '$secondary100';
+      textColor = '$textDark800';
+      break;
+    case 'secondary':
+      backgroundColor = '$green100';
+      activeBgColor = '$green300';
+      borderWidth = '$0';
+      borderColor = undefined;
+      textColor = '$teal600';
+      break;
+    case 'solid':
+    default:
+      backgroundColor = '$teal600';
+      activeBgColor = '$teal700';
+      borderWidth = '$0';
+      borderColor = undefined;
+      textColor = '$white';
+      break;
+  }
+
   return (
     <GluestackButton
       w="$full"
       h="$12"
-      bg={variant === 'outline' ? '$secondary100' : '$teal600'}
-      borderWidth={variant === 'outline' ? '$1' : '$0'}
-      borderColor="$secondary100"
+      bg={backgroundColor}
+      borderWidth={borderWidth}
+      borderColor={borderColor}
       rounded="$sm"
-      $active-bg={variant === 'outline' ? '$secondary200' : '$teal700'}
+      $active-bg={activeBgColor}
       disabled={isLoading}
       {...props}
     >
@@ -28,7 +55,7 @@ export function Button({ title, variant = 'solid', isLoading = false, ...props }
         <ButtonSpinner color="$white" />
       ) : (
         <Text
-          color={variant === 'outline' ? '$textDark800' : '$white'}
+          color={textColor}
           fontFamily="$mono"
           fontSize="$md"
         >

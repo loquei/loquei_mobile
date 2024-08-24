@@ -26,8 +26,8 @@ export function Onboarding() {
       </Center>
 
       <VStack mt={96} gap={8}>
-        <Button title="Começar" variant="solid" onPress={handleNavigateToSignUp} />
-        <Button title="Já tenho conta" variant="outline" onPress={handleNavigateToSignIn} />
+        <Button title="Começar" buttonVariant="solid" onPress={handleNavigateToSignUp} />
+        <Button title="Já tenho conta" buttonVariant="outline" onPress={handleNavigateToSignIn} />
       </VStack>
     </VStack>
   )

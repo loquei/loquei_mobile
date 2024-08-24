@@ -1,5 +1,5 @@
 import { CategoryCard } from "@components/CategoryCard";
-import { CategoryTag } from "@components/CategoryTag";
+import { Tag } from "@components/Tag";
 import { ProductCard } from "@components/ProductCard";
 import { ScreenHeader } from "@components/ScreenHeader";
 import { HStack, VStack, Text, Pressable } from "@gluestack-ui/themed";
@@ -23,7 +23,7 @@ export function Home() {
           data={categories}
           keyExtractor={(item) => item}
           renderItem={({ item }) => (
-            <CategoryTag
+            <Tag
               name={item}
               isActive={categorySelected.toLowerCase() === item.toLowerCase()}
               onPress={() => setCategorySelected(item)}

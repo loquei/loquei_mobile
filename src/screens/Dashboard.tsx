@@ -1,9 +1,10 @@
-import { HStack, Text } from "@gluestack-ui/themed";
+import { ScreenHeader } from "@components/ScreenHeader";
+import { VStack } from "@gluestack-ui/themed";
 
 export function Dashboard() {
   return (
-    <HStack>
-      <Text>Dashboard</Text>
-    </HStack>
+    <VStack>
+      <ScreenHeader title="Sua dashboard" backButton iconButton />
+    </VStack>
   )
 }

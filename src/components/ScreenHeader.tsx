@@ -27,9 +27,9 @@ export function ScreenHeader({ title, backButton, iconButton }: HeaderProps) {
           <ChevronLeft size={24} color={tokens.colors.textDark800} onPress={handleGoBack} />
         }
       </HStack>
-      <Heading flex={1} color="$textDark800" fontSize="$xl" fontFamily="$heading" textAlign="center">
+      <Text flex={1} color="$textDark800" fontSize="$xl" fontFamily="$heading" textAlign="center">
         {title}
-      </Heading>
+      </Text>
       <HStack width={24}>
         {iconButton && <Bell size={24} color={
           tokens.colors.textDark800

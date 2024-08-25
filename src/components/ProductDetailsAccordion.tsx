@@ -14,8 +14,8 @@ export function ProductDetailsAccordion() {
               {({ isExpanded }) => {
                 return (
                   <>
-                    <AccordionTitleText>
-                      Especificações
+                    <AccordionTitleText fontFamily="$heading">
+                      <Text fontFamily="$heading" fontSize={"$sm"}>Especificações</Text>
                     </AccordionTitleText>
                     {isExpanded ? (
                       <AccordionIcon as={ChevronUpIcon} />
@@ -28,7 +28,7 @@ export function ProductDetailsAccordion() {
             </AccordionTrigger>
           </AccordionHeader>
           <AccordionContent>
-            <AccordionContentText>
+            <AccordionContentText fontFamily="$body">
               The iPhone 13 Pro Max comes with a 1-year limited warranty and up to 90 days of complimentary technical support.
             </AccordionContentText>
           </AccordionContent>
@@ -41,7 +41,7 @@ export function ProductDetailsAccordion() {
                 return (
                   <>
                     <AccordionTitleText>
-                      Garantia
+                      <Text fontFamily="$heading" fontSize={"$sm"}>Garantia</Text>
                     </AccordionTitleText>
                     {isExpanded ? (
                       <AccordionIcon as={ChevronUpIcon} />
@@ -54,7 +54,7 @@ export function ProductDetailsAccordion() {
             </AccordionTrigger>
           </AccordionHeader>
           <AccordionContent>
-            <AccordionContentText>
+            <AccordionContentText fontFamily="$body">
               The iPhone 13 Pro Max comes with a 1-year limited warranty and up to 90 days of complimentary technical support.
             </AccordionContentText>
           </AccordionContent>
@@ -67,7 +67,7 @@ export function ProductDetailsAccordion() {
                 return (
                   <>
                     <AccordionTitleText>
-                      Entrega
+                      <Text fontFamily="$heading" fontSize={"$sm"}>Entrega</Text>
                     </AccordionTitleText>
                     {isExpanded ? (
                       <AccordionIcon as={ChevronUpIcon} />
@@ -80,7 +80,7 @@ export function ProductDetailsAccordion() {
             </AccordionTrigger>
           </AccordionHeader>
           <AccordionContent>
-            <AccordionContentText>
+            <AccordionContentText fontFamily="$body">
               The delivery time for the iPhone 13 Pro Max is 3-5 business days. Shipping is free.
             </AccordionContentText>
           </AccordionContent>

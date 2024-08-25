@@ -50,7 +50,6 @@ export function Tag({ name, isActive, ...props }: Props) {
         textTransform="uppercase"
         fontSize="$xs"
         fontFamily="$heading"
-        fontWeight="$bold"
       >
         {name}
       </Text>

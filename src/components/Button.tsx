@@ -7,7 +7,7 @@ import { ComponentProps } from 'react'
 
 type Props = ComponentProps<typeof GluestackButton> & {
   title: string
-  buttonVariant?: 'solid' | 'secondary' | 'outline'
+  buttonVariant?: 'solid' | 'secondary' | 'outline' | 'danger' | 'danger-outline'
   isLoading?: boolean
 }
 
@@ -15,6 +15,20 @@ export function Button({ title, buttonVariant = 'solid', isLoading = false, ...p
   let backgroundColor, activeBgColor, borderWidth: '$1' | '$0', borderColor, textColor;
 
   switch (buttonVariant) {
+    case 'danger':
+      backgroundColor = '$red500';
+      activeBgColor = '$red600';
+      borderWidth = '$0';
+      borderColor = undefined;
+      textColor = '$white';
+      break;
+    case 'danger-outline':
+      backgroundColor = '$red100';
+      activeBgColor = '$red200';
+      borderWidth = '$1';
+      borderColor = '$red100';
+      textColor = '$red500';
+      break;
     case 'outline':
       backgroundColor = '$secondary100';
       activeBgColor = '$secondary200';

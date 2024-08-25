@@ -40,62 +40,39 @@ export function ProductReviews() {
           </VStack>
 
           <VStack flex={1}>
-            <HStack alignItems="center" gap={8}>
-              <Text fontFamily="$body" fontSize={"$lg"} color="$textDark800">
-                5
-              </Text>
-              <Progress value={80} size="sm" flex={1}>
-                <ProgressFilledTrack bg="$textDark800" />
-              </Progress>
-              <Text fontFamily="$body" fontSize={"$lg"} color="$textDark800">
-                10
-              </Text>
-            </HStack>
-            <HStack alignItems="center" gap={8}>
-              <Text fontFamily="$body" fontSize={"$lg"} color="$textDark800">
-                4
-              </Text>
-              <Progress value={60} size="sm" flex={1}>
-                <ProgressFilledTrack bg="$textDark800" />
-              </Progress>
-              <Text fontFamily="$body" fontSize={"$lg"} color="$textDark800">
-                3
-              </Text>
-            </HStack>
-            <HStack alignItems="center" gap={8}>
-              <Text fontFamily="$body" fontSize={"$lg"} color="$textDark800">
-                3
-              </Text>
-              <Progress value={40} size="sm" flex={1}>
-                <ProgressFilledTrack bg="$textDark800" />
-              </Progress>
-              <Text fontFamily="$body" fontSize={"$lg"} color="$textDark800">
-                1
-              </Text>
-            </HStack>
-            <HStack alignItems="center" gap={8}>
-              <Text fontFamily="$body" fontSize={"$lg"} color="$textDark800">
-                2
-              </Text>
-              <Progress value={20} size="sm" flex={1}>
-                <ProgressFilledTrack bg="$textDark800" />
-              </Progress>
-              <Text fontFamily="$body" fontSize={"$lg"} color="$textDark800">
-                0
-              </Text>
-            </HStack>
-            <HStack alignItems="center" gap={8}>
-              <Text fontFamily="$body" fontSize={"$lg"} color="$textDark800">
-                1
-              </Text>
-              <Progress value={10} size="sm" flex={1}>
-                <ProgressFilledTrack bg="$textDark800" />
-              </Progress>
-              <Text fontFamily="$body" fontSize={"$lg"} color="$textDark800">
-                0
-              </Text>
-            </HStack>
+            {[
+              { leftText: '5', progressValue: 80, rightText: '10' },
+              { leftText: '4', progressValue: 60, rightText: '3' },
+              { leftText: '3', progressValue: 40, rightText: '1' },
+              { leftText: '2', progressValue: 20, rightText: '0' },
+              { leftText: '1', progressValue: 10, rightText: '0' },
+            ].map(({ leftText, progressValue, rightText }, index) => (
+              <HStack alignItems="center" gap={8} key={index}>
+                <Text
+                  fontFamily="$body"
+                  fontSize="$lg"
+                  color="$textDark800"
+                  width={24}
+                  textAlign="center"
+                >
+                  {leftText}
+                </Text>
+                <Progress value={progressValue} size="sm" flex={1}>
+                  <ProgressFilledTrack bg="$textDark800" />
+                </Progress>
+                <Text
+                  fontFamily="$body"
+                  fontSize="$lg"
+                  color="$textDark800"
+                  width={24}
+                  textAlign="center"
+                >
+                  {rightText}
+                </Text>
+              </HStack>
+            ))}
           </VStack>
+
         </HStack>
 
         <Button title="Enviar avaliação" mt={16} buttonVariant="secondary" />

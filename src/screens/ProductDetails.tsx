@@ -83,10 +83,10 @@ export function ProductDetails() {
 
         </VStack>
       </ScrollView>
-      <HStack px={16} py={8} gap={8} justifyContent="space-between" bg="$white" borderTopWidth={1} borderTopColor="$textLight600">
-        <Button title="Lista de desejos" buttonVariant="outline" flex={1} />
-        <Button title="Alugar" buttonVariant="solid" flex={1} />
-      </HStack>
+      <VStack px={16} py={8} gap={8} justifyContent="space-between" bg="$white" borderTopWidth={1} borderTopColor="$textLight300">
+        <Button title="Adicionar à lista de desejos" buttonVariant="outline" />
+        <Button title="Alugar" buttonVariant="solid" />
+      </VStack>
     </View>
   );
 }

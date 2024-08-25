@@ -21,7 +21,7 @@ export function ProductCard({ title, rating, ratingCount, price, discountPrice }
 
       <VStack flex={1} p={12} justifyContent="space-between">
         <VStack>
-          <Text fontFamily="$mono" numberOfLines={3} color="$textDark800">
+          <Text fontFamily="$mono" fontSize={"$sm"} numberOfLines={2} color="$textDark800">
             {title}
           </Text>
 
@@ -29,18 +29,18 @@ export function ProductCard({ title, rating, ratingCount, price, discountPrice }
 
         <VStack>
           <HStack alignItems="center" gap={4}>
-            <Text fontFamily="$mono" fontSize="$sm" color="$textDark600">
+            <Text fontFamily="$mono" fontSize="$xs" color="$textDark600">
               {rating.toFixed(1)}
             </Text>
-            <Star size={16} fill={tokens.colors.yellow500} />
-            <Text fontFamily="$body" fontSize="$sm" color="$textDark600">
+            <Star size={12} fill={tokens.colors.yellow500} />
+            <Text fontFamily="$body" fontSize="$xs" color="$textDark600">
               ({ratingCount})
             </Text>
           </HStack>
           {
             price && discountPrice && (
               <>
-                <Text fontFamily="$body" fontSize="$sm" color="$textDark600" textDecorationLine="line-through">
+                <Text fontFamily="$body" fontSize="$xs" color="$textDark600" textDecorationLine="line-through">
                   {price}
                 </Text>
                 <Text fontFamily="$mono" fontSize="$md" color="$teal600">

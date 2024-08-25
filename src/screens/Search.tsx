@@ -1,65 +1,62 @@
-import { gluestackUIConfig } from "@gluestack-ui/config";
-import { InputIcon } from "@gluestack-ui/themed";
-import { InputSlot } from "@gluestack-ui/themed";
-import { Input, InputField, VStack } from "@gluestack-ui/themed";
-import { Search as SearchIcon, Mic } from "lucide-react-native";
+import { CategoryCard } from "@components/CategoryCard";
+import { SearchInput } from "@components/SearchInput";
+import { HStack, Text } from "@gluestack-ui/themed";
+import { Heading, VStack } from "@gluestack-ui/themed";
+import { SectionList } from "react-native";
 
 export function Search() {
-  const { tokens } = gluestackUIConfig;
+
+  const renderCategoryRow = (data:
+    { item: { id: string; title: string }[] }
+  ) => {
+    const items = data.item;
+    return (
+      <HStack justifyContent="space-between" py={2} gap={8}>
+        {items.map((item:
+          { id: string; title: string }
+        ) => (
+          <CategoryCard key={item.id} name={item.title} icon={item.title} />
+        ))}
+      </HStack>
+    );
+  };
+
+  const sectionedData = [
+    {
+      title: 'Categorias',
+      data: [
+        [
+          { id: '1', title: 'Eletrônicos' },
+          { id: '2', title: 'Roupas' }
+        ],
+        [
+          { id: '3', title: 'Móveis' },
+          { id: '4', title: 'Eletrônicos' }
+        ],
+        [
+          { id: '5', title: 'Roupas' },
+          { id: '6', title: 'Móveis' }
+        ]
+      ]
+    }
+  ];
 
   return (
-    <VStack px={16} mt={16} alignItems="center" flex={1}>
-      <Input
-        bg="$white"
-        rounded="$md"
-        p={8}
-        w={"$full"}
-        alignItems="center"
-        borderColor="$secondary100"
-        $focus={{
-          borderWidth: 1,
-          borderColor: '$teal600',
-        }}
-        height={48}
-      >
-        <InputSlot
-          bg="$white"
-          rounded="$full"
-          justifyContent="center"
-        >
-          <InputIcon>
-            <SearchIcon
-              size={16}
-              color={tokens.colors.textDark800}
-            />
-          </InputIcon>
-        </InputSlot>
-        <InputField
-          placeholder="Buscar"
-          bg="$white"
-          color="$textDark800"
-          fontFamily="$body"
-          fontSize="$md"
-          flex={1}
-          alignItems="center"
-          textAlignVertical="center"
-          height={48}
-          lineHeight={24}
-          paddingVertical={0}
-        />
-        <InputSlot
-          bg="$white"
-          rounded="$full"
-          justifyContent="center"
-        >
-          <InputIcon>
-            <Mic
-              size={16}
-              color={tokens.colors.textDark800}
-            />
-          </InputIcon>
-        </InputSlot>
-      </Input>
+    <VStack px={16} mt={16} flex={1}>
+      <SearchInput />
+
+      <SectionList
+        sections={sectionedData}
+        keyExtractor={(item, index) => index.toString()}
+        renderItem={renderCategoryRow}
+        renderSectionHeader={({ section }) => (
+          <Text py={8} fontFamily="$heading" fontSize="$lg" color="$textDark800">
+            {section.title}
+          </Text>
+        )}
+        ItemSeparatorComponent={() => <HStack height={10} />}
+        style={{ marginTop: 16 }}
+      />
     </VStack>
-  )
+  );
 }

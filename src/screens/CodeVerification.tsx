@@ -1,11 +1,11 @@
 import { Input } from "@components/Input";
 import { Center, HStack, VStack, Text, Image, ScrollView } from "@gluestack-ui/themed";
 import { useNavigation } from '@react-navigation/native'
-import logoImage from '@assets/logo.png'
+import mobileCode from '@assets/mobileSecurity.png'
 import { Button } from "@components/Button";
 import { AuthNavigatorRoutesProps } from "@routes/auth.routes";
-import { AppSecondaryNavigatorRoutesProps } from "@routes/app.secondary.routes";
 import { ScreenHeader } from "@components/ScreenHeader";
+import { gluestackUIConfig } from "../../config/gluestack-ui.config";
 
 export function CodeVerification() {
   const authNavigation = useNavigation<AuthNavigatorRoutesProps>();
@@ -16,12 +16,14 @@ export function CodeVerification() {
 
   return (
     <ScrollView contentContainerStyle={{ flexGrow: 1 }} showsVerticalScrollIndicator={false}>
-      <ScreenHeader title="Código de verificação" backButton />
+      <ScreenHeader title="Verificação" backButton />
       <VStack flex={1} px={16} py={40}>
         <Center flex={1}>
-          <VStack>
+          <Image source={mobileCode} alt="Código de verificação" width={128} height={128} />
+          <VStack mt={40}>
             <Center>
-              <Text fontFamily="$body" fontSize="$md" color="$textDark800" mt={12}>Por favor, insira o código de verificação de 4 dígitos que foi enviado para o seu endereço de e-mail registrado. Este código é necessário para verificar sua identidade e garantir a segurança de sua conta. Se você não recebeu o e-mail, verifique sua pasta de spam ou solicite um novo código.</Text>
+              <Text fontFamily="$heading" fontSize="$2xl" color="$textDark800">Código de verificação</Text>
+              <Text fontFamily="$body" fontSize="$md" color="$textDark800" mt={12}>Por favor, insira o código de verificação de 4 dígitos que foi enviado para o seu endereço de e-mail registrado.</Text>
             </Center>
           </VStack>
 

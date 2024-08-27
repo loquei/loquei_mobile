@@ -47,7 +47,7 @@ export function Wishlist() {
       <Button title="Remover todos" buttonVariant="danger-outline" marginBottom={16} onPress={handleOpenModal} />
 
       <Modal
-        title="Remover lista de desejo"
+        title="Remover lista de desejos"
         description="Tem certeza que deseja remover todos os produtos da lista de desejos? Essa ação não pode ser desfeita."
         confirmButtonText="Remover"
         isOpen={showModal}

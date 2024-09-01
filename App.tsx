@@ -8,7 +8,7 @@ import {
   Poppins_700Bold,
 } from '@expo-google-fonts/poppins'
 
-import { ActivityIndicator, StatusBar } from 'react-native'
+import { ActivityIndicator, SafeAreaView, StatusBar } from 'react-native'
 import { Routes } from '@routes/index'
 
 export default function App() {
@@ -19,15 +19,17 @@ export default function App() {
   })
 
   return (
-    <GluestackUIProvider config={config}>
-      <StatusBar barStyle='dark-content' backgroundColor="white" />
-      {
-        fontsLoaded ? (
-          <Routes />
-        )
-          :
-          <ActivityIndicator size="large" color="#00AB9B" style={{ flex: 1 }} />
-      }
-    </GluestackUIProvider>
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#F5F5F5" }}>
+      <GluestackUIProvider config={config}>
+        <StatusBar barStyle='dark-content' backgroundColor="white" />
+        {
+          fontsLoaded ? (
+            <Routes />
+          )
+            :
+            <ActivityIndicator size="large" color="#00AB9B" style={{ flex: 1 }} />
+        }
+      </GluestackUIProvider>
+    </SafeAreaView>
   );
 }

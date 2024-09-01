@@ -1,5 +1,5 @@
 import { gluestackUIConfig } from "@gluestack-ui/config";
-import { Progress } from "@gluestack-ui/themed";
+import { Pressable, Progress } from "@gluestack-ui/themed";
 import { ProgressFilledTrack } from "@gluestack-ui/themed";
 import { HStack, Text } from "@gluestack-ui/themed";
 import { VStack } from "@gluestack-ui/themed";
@@ -14,9 +14,17 @@ export function ProductReviews() {
 
   return (
     <VStack mt={16} px={16}>
-      <Text fontFamily="$heading" fontSize={"$lg"} color="$textDark800">
-        Avaliações
-      </Text>
+      <HStack justifyContent="space-between" alignItems="center">
+        <Text fontFamily="$heading" fontSize={"$lg"} color="$textDark800">
+          Avaliações
+        </Text>
+
+        <Pressable px={12} py={4} bg="$secondary100" rounded={"$md"} $active-bg="$secondary200">
+          <Text fontFamily="$body" fontSize={"$md"} color="$textDark800">
+            Ver todas
+          </Text>
+        </Pressable>
+      </HStack>
 
       <VStack mt={12}>
         <HStack gap={32}>
@@ -114,8 +122,6 @@ export function ProductReviews() {
           )}
           ItemSeparatorComponent={() => <Divider mt={16} />}
         />
-
-        <Button title="Ver todas as avaliações" mt={16} buttonVariant="outline" />
       </VStack>
     </VStack>
   )

@@ -21,18 +21,18 @@ export function ScreenHeader({ title, backButton, iconButton }: HeaderProps) {
 
   const { tokens } = gluestackUIConfig
   return (
-    <HStack bg="$backgroundLight50" px={16} marginVertical={16} alignItems="center">
+    <HStack bg="$teal600" px={16} paddingVertical={12} alignItems="center">
       <HStack width={24}>
         {backButton &&
-          <ChevronLeft size={24} color={tokens.colors.textDark800} onPress={handleGoBack} />
+          <ChevronLeft size={24} color={tokens.colors.white} onPress={handleGoBack} />
         }
       </HStack>
-      <Text flex={1} color="$textDark800" fontSize="$xl" fontFamily="$heading" textAlign="center">
+      <Text flex={1} color="$white" fontSize="$xl" fontFamily="$mono" textAlign="center">
         {title}
       </Text>
       <HStack width={24}>
         {iconButton && <Bell size={24} color={
-          tokens.colors.textDark800
+          tokens.colors.white
         } />}
       </HStack>
     </HStack>

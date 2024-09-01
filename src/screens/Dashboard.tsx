@@ -1,10 +1,105 @@
+import { Button } from "@components/Button";
 import { ScreenHeader } from "@components/ScreenHeader";
-import { VStack } from "@gluestack-ui/themed";
+import { SearchInput } from "@components/SearchInput";
+import { Box, HStack, Text, VStack, View } from "@gluestack-ui/themed";
+
+import { Plus, SquareMenu } from 'lucide-react-native'
+import { gluestackUIConfig } from "../../config/gluestack-ui.config";
+import { ItemCard } from "@components/ItemCard";
+import { FlatList, ScrollView } from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import { AppNavigatorRoutesProps } from "@routes/app.routes";
 
 export function Dashboard() {
+  const { tokens } = gluestackUIConfig;
+  const navigation = useNavigation<AppNavigatorRoutesProps>();
+
+  function handleNavigateToAddProduct() {
+    navigation.navigate('addProductStep1');
+  }
+
+  function handleNavigateToAllOrders() {
+    navigation.navigate('allOrders');
+  }
+
+  function handleNavigateToUserProducts() {
+    navigation.navigate('userProducts');
+  }
+
+  function handleNavigateProductDetails() {
+    navigation.navigate('productDetails');
+  }
+
   return (
-    <VStack>
+    <VStack flex={1}>
       <ScreenHeader title="Sua dashboard" backButton iconButton />
+
+      <ScrollView showsVerticalScrollIndicator={false} nestedScrollEnabled={true} contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 32, marginTop: 16 }}>
+        <SearchInput />
+
+        <HStack gap={8} mt={16} justifyContent="center">
+          <Box bg="$white" rounded="$md" p={8} justifyContent="center" alignItems="center" flex={1} height={84}>
+            <Text fontFamily="$heading" fontSize="$xl" color="$textDark800">24</Text>
+            <Text fontFamily="$body" fontSize={"$sm"} color="$textLight600">Negociações</Text>
+          </Box>
+
+          <Box bg="$white" rounded="$md" p={8} justifyContent="center" alignItems="center" flex={1} height={84}>
+            <Text fontFamily="$heading" fontSize="$xl" color="$textDark800">12</Text>
+            <Text fontFamily="$body" fontSize={"$sm"} color="$textLight600">Pedidos</Text>
+          </Box>
+
+          <Box bg="$white" rounded="$md" p={8} justifyContent="center" alignItems="center" flex={1} height={84}>
+            <Text fontFamily="$heading" fontSize="$xl" color="$textDark800">R$ 12.000</Text>
+            <Text fontFamily="$body" fontSize={"$sm"} color="$textLight600">Receita</Text>
+          </Box>
+        </HStack>
+
+        <HStack gap={8} mt={8} justifyContent="center">
+          <Box bg="$white" rounded="$md" p={8} justifyContent="center" alignItems="center" flex={1} height={84}>
+            <Text fontFamily="$heading" fontSize="$xl" color="$textDark800">22</Text>
+            <Text fontFamily="$body" fontSize={"$sm"} color="$textLight600">Feedbacks</Text>
+          </Box>
+
+          <Box bg="$white" rounded="$md" p={8} justifyContent="center" alignItems="center" flex={1} height={84}>
+            <Text fontFamily="$heading" fontSize="$xl" color="$textDark800">4.8/5</Text>
+            <Text fontFamily="$body" fontSize={"$sm"} color="$textLight600">Nota</Text>
+          </Box>
+
+          <Box bg="$white" rounded="$md" p={8} justifyContent="center" alignItems="center" flex={1} height={84}>
+            <Text fontFamily="$heading" fontSize="$xl" color="$textDark800">320</Text>
+            <Text fontFamily="$body" fontSize={"$sm"} color="$textLight600">Estoque</Text>
+          </Box>
+        </HStack>
+
+        <VStack gap={16} mt={16}>
+          <Button title="Adicionar produto" icon={<Plus size={20} color={tokens.colors.white} />} onPress={handleNavigateToAddProduct} />
+          <Button title="Pedidos" buttonVariant="outline" icon={<SquareMenu size={20} color={tokens.colors.textDark800} />} onPress={handleNavigateToAllOrders} />
+        </VStack>
+
+        <VStack mt={16}>
+          <Text fontFamily="$heading" fontSize="$lg" color="$textDark800">Seus produtos</Text>
+
+          <FlatList
+            scrollEnabled={false}
+            showsVerticalScrollIndicator={false}
+            data={[
+              { id: '1', title: 'Smartphone Samsung Galaxy S21', description: 'Smartphone Samsung Galaxy S21 128GB 5G', price: 'R$ 3.999,00' },
+              { id: '2', title: 'Smartwatch Samsung Galaxy Watch 4', description: 'Smartwatch Samsung Galaxy Watch 4 44mm Bluetooth', price: 'R$ 3.999,00' },
+              { id: '3', title: 'Notebook Dell Inspiron 15', description: 'Notebook Dell Inspiron 15 3000, Intel Core i5-1035G1', price: 'R$ 3.999,00' },
+            ]}
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={({ item }) => (
+              <VStack>
+                <ItemCard type="product" title={item.title} description={item.description} price={item.price} />
+              </VStack>
+            )}
+            ItemSeparatorComponent={() => <VStack height={16} />}
+            style={{ marginTop: 8 }}
+          />
+
+          <Button title="Ver todos" buttonVariant="outline" mt={16} onPress={handleNavigateToUserProducts} />
+        </VStack>
+      </ScrollView>
     </VStack>
   )
 }

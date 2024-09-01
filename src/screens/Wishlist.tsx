@@ -1,7 +1,7 @@
 import { Button } from "@components/Button";
 import { Modal } from "@components/Modal";
 import { ScreenHeader } from "@components/ScreenHeader";
-import { WishlistItem } from "@components/WishlistItem";
+import { ItemCard } from "@components/ItemCard";
 import { VStack, View } from "@gluestack-ui/themed";
 import { useRef, useState } from "react";
 import { FlatList, ScrollView } from "react-native";
@@ -22,7 +22,7 @@ export function Wishlist() {
     <View flex={1} px={16}>
       <ScreenHeader title="Lista de desejos" backButton />
 
-      <ScrollView contentContainerStyle={{ flexGrow: 1 }} showsVerticalScrollIndicator={false} nestedScrollEnabled={true} style={{ marginTop: 16 }}>
+      <ScrollView contentContainerStyle={{ flexGrow: 1 }} showsVerticalScrollIndicator={false} nestedScrollEnabled={true}>
         <FlatList
           scrollEnabled={false}
           showsVerticalScrollIndicator={false}
@@ -37,7 +37,7 @@ export function Wishlist() {
           keyExtractor={(item, index) => index.toString()}
           renderItem={({ item }) => (
             <VStack>
-              <WishlistItem title={item.title} description={item.description} price={item.price} />
+              <ItemCard type="product" title={item.title} description={item.description} price={item.price} hasRemoveButton />
             </VStack>
           )}
           ItemSeparatorComponent={() => <VStack height={16} />}

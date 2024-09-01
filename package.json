@@ -1,11 +1,10 @@
 {
-  "name": "loquei_mobile_app",
+  "name": "loquei_mobile",
   "version": "1.0.0",
-  "main": "expo/AppEntry.js",
   "scripts": {
-    "start": "expo start",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
+    "start": "expo start --dev-client",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
     "web": "expo start --web"
   },
   "dependencies": {
@@ -23,7 +22,7 @@
     "expo-font": "~12.0.9",
     "expo-image-picker": "~15.0.7",
     "expo-status-bar": "~1.12.1",
-    "loquei_mobile_app": "file:",
+    "loquei_mobile": "file:",
     "lucide-react-native": "^0.428.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",

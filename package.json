@@ -1,5 +1,5 @@
 {
-  "name": "loquei_mobile",
+  "name": "loquei_mobile_app",
   "version": "1.0.0",
   "main": "expo/AppEntry.js",
   "scripts": {
@@ -17,14 +17,15 @@
     "@react-navigation/bottom-tabs": "^6.6.1",
     "@react-navigation/native": "^6.1.18",
     "@react-navigation/native-stack": "^6.11.0",
-    "expo": "~51.0.28",
+    "expo": "~51.0.31",
     "expo-file-system": "~17.0.1",
     "expo-font": "~12.0.9",
     "expo-image-picker": "~15.0.7",
     "expo-status-bar": "~1.12.1",
-    "loquei_mobile": "file:",
+    "loquei_mobile_app": "file:",
     "lucide-react-native": "^0.428.0",
-    "react": "18.2.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "react-hook-form": "^7.52.2",
     "react-native": "0.74.5",
     "react-native-gesture-handler": "~2.16.1",
@@ -41,6 +42,17 @@
     "babel-plugin-module-resolver": "^5.0.2",
     "react-native-svg-transformer": "^1.5.0",
     "typescript": "^5.3.3"
+  },
+  "resolutions": {
+    "@react-native-community/cli": "^7.0.0",
+    "@react-native-community/cli-config": "^7.0.0",
+    "@react-native-community/cli-debugger-ui": "^7.0.0",
+    "@react-native-community/cli-doctor": "^7.0.0",
+    "@react-native-community/cli-platform-android": "^7.0.0",
+    "@react-native-community/cli-platform-ios": "^7.0.0",
+    "@react-native-community/cli-server-api": "^7.0.0",
+    "@react-native-community/cli-tools": "^7.0.0",
+    "@react-native-community/cli-types": "^7.0.0"
   },
   "private": true
 }

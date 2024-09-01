@@ -2,7 +2,7 @@ import { Button } from "@components/Button";
 import { Modal } from "@components/Modal";
 import { ScreenHeader } from "@components/ScreenHeader";
 import { ItemCard } from "@components/ItemCard";
-import { VStack, View } from "@gluestack-ui/themed";
+import { Box, VStack, View } from "@gluestack-ui/themed";
 import { useRef, useState } from "react";
 import { FlatList, ScrollView } from "react-native";
 
@@ -19,10 +19,10 @@ export function Wishlist() {
   };
 
   return (
-    <View flex={1} px={16}>
+    <View flex={1}>
       <ScreenHeader title="Lista de desejos" backButton />
 
-      <ScrollView contentContainerStyle={{ flexGrow: 1 }} showsVerticalScrollIndicator={false} nestedScrollEnabled={true}>
+      <ScrollView contentContainerStyle={{ flexGrow: 1, paddingHorizontal: 16, paddingBottom: 16, marginTop: 16 }} showsVerticalScrollIndicator={false} nestedScrollEnabled={true}>
         <FlatList
           scrollEnabled={false}
           showsVerticalScrollIndicator={false}
@@ -44,7 +44,10 @@ export function Wishlist() {
           contentContainerStyle={{ paddingBottom: 16 }}
         />
       </ScrollView>
-      <Button title="Remover todos" buttonVariant="danger-outline" marginBottom={16} onPress={handleOpenModal} />
+
+      <Box bg="$backgroundLight50" p={16} hardShadow="5">
+        <Button title="Remover todos" buttonVariant="danger-outline" onPress={handleOpenModal} />
+      </Box>
 
       <Modal
         title="Remover lista de desejos"

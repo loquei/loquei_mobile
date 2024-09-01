@@ -83,9 +83,16 @@ export function ProductDetails() {
 
         </VStack>
       </ScrollView>
-      <VStack px={16} py={8} gap={8} justifyContent="space-between" bg="$white" borderTopWidth={1} borderTopColor="$textLight300">
-        <Button title="Adicionar à lista de desejos" buttonVariant="outline" />
+      <VStack
+        px={16}
+        py={8}
+        gap={8}
+        justifyContent="space-between"
+        bg="$white"
+        hardShadow="5"
+      >
         <Button title="Alugar" buttonVariant="solid" />
+        <Button title="Adicionar à lista de desejos" buttonVariant="outline" />
       </VStack>
     </View>
   );

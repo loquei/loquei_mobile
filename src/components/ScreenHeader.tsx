@@ -21,7 +21,7 @@ export function ScreenHeader({ title, backButton, iconButton }: HeaderProps) {
 
   const { tokens } = gluestackUIConfig
   return (
-    <HStack bg="$backgroundLight50" px={16} mt={16} alignItems="center">
+    <HStack bg="$backgroundLight50" px={16} marginVertical={16} alignItems="center">
       <HStack width={24}>
         {backButton &&
           <ChevronLeft size={24} color={tokens.colors.textDark800} onPress={handleGoBack} />

@@ -2,16 +2,18 @@ import {
   ButtonSpinner,
   Button as GluestackButton,
   Text,
+  View,
 } from '@gluestack-ui/themed'
-import { ComponentProps } from 'react'
+import React, { ComponentProps } from 'react'
 
 type Props = ComponentProps<typeof GluestackButton> & {
   title: string
+  icon?: React.ReactNode
   buttonVariant?: 'solid' | 'secondary' | 'outline' | 'danger' | 'danger-outline'
   isLoading?: boolean
 }
 
-export function Button({ title, buttonVariant = 'solid', isLoading = false, ...props }: Props) {
+export function Button({ title, icon, buttonVariant = 'solid', isLoading = false, ...props }: Props) {
   let backgroundColor, activeBgColor, borderWidth: '$1' | '$0', borderColor, textColor;
 
   switch (buttonVariant) {
@@ -68,13 +70,20 @@ export function Button({ title, buttonVariant = 'solid', isLoading = false, ...p
       {isLoading ? (
         <ButtonSpinner color="$white" />
       ) : (
-        <Text
-          color={textColor}
-          fontFamily="$mono"
-          fontSize="$md"
-        >
-          {title}
-        </Text>
+        <>
+          {icon && (
+            <View mr="$2">
+              {icon}
+            </View>
+          )}
+          <Text
+            color={textColor}
+            fontFamily="$mono"
+            fontSize="$md"
+          >
+            {title}
+          </Text>
+        </>
       )}
     </GluestackButton>
   )

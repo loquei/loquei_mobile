@@ -16,6 +16,8 @@ import { SearchResults } from "@screens/SearchResults";
 import { UserProducts } from "@screens/UserProducts";
 import { AppSecondaryRoutes } from "./app.secondary.routes";
 import { Account } from "@screens/Account";
+import { Address } from "@screens/Address";
+import { Notifications } from "@screens/Notifications";
 
 export type AppSecondaryRoutes = {
   productDetails: undefined;
@@ -32,6 +34,8 @@ export type AppSecondaryRoutes = {
   orderDetails: undefined;
   secondaryRoutes: undefined;
   account: undefined;
+  addAddress: undefined;
+  notifications: undefined;
 };
 
 export type AppNavigatorRoutesProps =
@@ -71,7 +75,12 @@ export function AppRoutes() {
 
       <Screen name="orderDetails" component={OrderDetails} />
       <Screen name="secondaryRoutes" component={AppSecondaryRoutes} />
+
       <Screen name="account" component={Account} />
+
+      <Screen name="addAddress" component={Address} />
+
+      <Screen name="notifications" component={Notifications} />
     </Navigator>
   );
 }

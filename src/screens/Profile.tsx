@@ -43,6 +43,12 @@ export function Profile() {
   function handleToAccount() {
     navigation.navigate("account");
   }
+  function handleToAddAddress() {
+    navigation.navigate("addAddress");
+  }
+  function handleToNotifications() {
+    navigation.navigate("notifications");
+  }
 
   async function handleUserPhotoSelect() {
     try {
@@ -125,7 +131,10 @@ export function Profile() {
           </Pressable>
           <Divider />
 
-          <Pressable $active-backgroundColor="$backgroundLight100">
+          <Pressable
+            $active-backgroundColor="$backgroundLight100"
+            onPress={handleToAddAddress}
+          >
             <HStack justifyContent="space-between" p={16} alignItems="center">
               <HStack alignItems="center" gap={16}>
                 <MapPin size={24} color={tokens.colors.textDark800} />
@@ -138,7 +147,10 @@ export function Profile() {
           </Pressable>
           <Divider />
 
-          <Pressable $active-backgroundColor="$backgroundLight100">
+          <Pressable
+            $active-backgroundColor="$backgroundLight100"
+            onPress={handleToNotifications}
+          >
             <HStack justifyContent="space-between" p={16} alignItems="center">
               <HStack alignItems="center" gap={16}>
                 <Bell size={24} color={tokens.colors.textDark800} />

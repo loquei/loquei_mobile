@@ -1,33 +1,86 @@
-import React from "react";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import {
+  NativeStackNavigationProp,
+  createNativeStackNavigator,
+} from "@react-navigation/native-stack";
+import { AddProductStep1 } from "@screens/AddProductStep1";
+import { AddProductStep2 } from "@screens/AddProductStep2";
+import { AllOrders } from "@screens/AllOrders";
+import { Dashboard } from "@screens/Dashboard";
+import { EditProduct } from "@screens/EditProduct";
+import { Leasing } from "@screens/Leasing";
+import { OrderDetails } from "@screens/OrderDetails";
+import { ProductDetails } from "@screens/ProductDetails";
+import { ProductReviews } from "@screens/ProductReviews";
+import { SearchCategory } from "@screens/SearchCategory";
+import { SearchResults } from "@screens/SearchResults";
+import { UserProducts } from "@screens/UserProducts";
+import { AppSecondaryRoutes } from "./app.secondary.routes";
+import { Account } from "@screens/Account";
+import { Address } from "@screens/Address";
+import { Notifications } from "@screens/Notifications";
 
-import Home from "@/screens/Home";
-import Onboarding from "@/screens/Onboarding";
-import SignIn from "@/screens/SignIn";
-import SignUp from "@/screens/SignUp";
-import { theme } from "@/theme";
-import ConfirmCode from "@/screens/ConfirmCode";
-import CreateAccount from "@/screens/CreateAccount";
-import SearchItem from "@/screens/SearchItem";
+export type AppSecondaryRoutes = {
+  productDetails: undefined;
+  productReviews: undefined;
+  searchCategory: undefined;
+  searchResults: undefined;
+  leasing: undefined;
+  dashboard: undefined;
+  userProducts: undefined;
+  editProduct: undefined;
+  addProductStep1: undefined;
+  addProductStep2: undefined;
+  allOrders: undefined;
+  orderDetails: undefined;
+  secondaryRoutes: undefined;
+  account: undefined;
+  addAddress: undefined;
+  notifications: undefined;
+};
 
-const { Navigator, Screen } = createNativeStackNavigator();
+export type AppNavigatorRoutesProps =
+  NativeStackNavigationProp<AppSecondaryRoutes>;
+
+const { Navigator, Screen } = createNativeStackNavigator<AppSecondaryRoutes>();
 
 export function AppRoutes() {
   return (
     <Navigator
       screenOptions={{
         headerShown: false,
-        statusBarColor: theme.colors.gray800,
-        contentStyle: { backgroundColor: theme.colors.gray50 },
       }}
+      initialRouteName="secondaryRoutes"
     >
-      <Screen name="Onboarding" component={Onboarding} />
-      <Screen name="SignIn" component={SignIn} />
-      <Screen name="Home" component={Home} />
-      <Screen name="SignUp" component={SignUp} />
-      <Screen name="ConfirmCode" component={ConfirmCode} />
-      <Screen name="CreateAccount" component={CreateAccount} />
-      <Screen name="SearchItem" component={SearchItem} />
+      <Screen name="productDetails" component={ProductDetails} />
+
+      <Screen name="productReviews" component={ProductReviews} />
+
+      <Screen name="searchCategory" component={SearchCategory} />
+
+      <Screen name="searchResults" component={SearchResults} />
+
+      <Screen name="leasing" component={Leasing} />
+
+      <Screen name="dashboard" component={Dashboard} />
+
+      <Screen name="userProducts" component={UserProducts} />
+
+      <Screen name="editProduct" component={EditProduct} />
+
+      <Screen name="addProductStep1" component={AddProductStep1} />
+
+      <Screen name="addProductStep2" component={AddProductStep2} />
+
+      <Screen name="allOrders" component={AllOrders} />
+
+      <Screen name="orderDetails" component={OrderDetails} />
+      <Screen name="secondaryRoutes" component={AppSecondaryRoutes} />
+
+      <Screen name="account" component={Account} />
+
+      <Screen name="addAddress" component={Address} />
+
+      <Screen name="notifications" component={Notifications} />
     </Navigator>
   );
 }

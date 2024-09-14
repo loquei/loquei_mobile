@@ -4,5 +4,5 @@ type createUser = {
   email: string;
   document: string;
   phone: string;
-  birth: string;
+  birthday: string;
 }

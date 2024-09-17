@@ -5,7 +5,7 @@ interface Iauth {
   code: string
 }
 
-export const userCode = async ({ email, code }: Iauth) => {
+export const postCode = async ({ email, code }: Iauth) => {
   const headers = { 'Content-Type': 'application/json' }
   try {
     await api.post('/auth/authenticate', JSON.stringify({ email, code }), { headers })

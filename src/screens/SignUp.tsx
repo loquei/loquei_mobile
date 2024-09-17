@@ -1,12 +1,5 @@
 import { Input } from "@components/Input";
-import {
-  Center,
-  HStack,
-  VStack,
-  Text,
-  Image,
-  ScrollView,
-} from "@gluestack-ui/themed";
+import { Center, VStack, Text, Image, ScrollView } from "@gluestack-ui/themed";
 import logoImage from "@assets/logo.png";
 import { Button } from "@components/Button";
 import { useNavigation } from "@react-navigation/native";
@@ -16,6 +9,8 @@ import { useForm, Controller } from "react-hook-form";
 import * as y from "yup";
 import { CreateAccountSchema } from "../schemas/CreateAccountSchema";
 import { createUser } from "../api/createUser";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 export function SignUp() {
   type CreateAccountSchema = y.InferType<typeof CreateAccountSchema>;
   const authNavigation = useNavigation<AuthNavigatorRoutesProps>();
@@ -46,6 +41,7 @@ export function SignUp() {
         document,
         birthday,
       });
+      await AsyncStorage.setItem("userEmail", email);
       handleNavigateToCodeVerification();
     } catch (error: any) {
       console.log(error.message);
@@ -97,9 +93,9 @@ export function SignUp() {
                 render={({ field: { onChange, onBlur, value } }) => (
                   <Input
                     placeholder="João da Silva"
-                    onBlur={onBlur}
                     value={value}
-                    onChange={onChange}
+                    onChangeText={onChange}
+                    onBlur={onBlur}
                   />
                 )}
               />
@@ -120,7 +116,7 @@ export function SignUp() {
                     type="text"
                     onBlur={onBlur}
                     value={value}
-                    onChange={onChange}
+                    onChangeText={onChange}
                   />
                 )}
               />
@@ -141,7 +137,7 @@ export function SignUp() {
                     keyboardType="email-address"
                     onBlur={onBlur}
                     value={value}
-                    onChange={onChange}
+                    onChangeText={onChange}
                   />
                 )}
               />
@@ -159,9 +155,10 @@ export function SignUp() {
                   <Input
                     placeholder="99999999999"
                     keyboardType="numbers-and-punctuation"
+                    maxLength={11}
                     onBlur={onBlur}
                     value={value}
-                    onChange={onChange}
+                    onChangeText={onChange}
                   />
                 )}
               />
@@ -180,7 +177,7 @@ export function SignUp() {
                     keyboardType="numeric"
                     onBlur={onBlur}
                     value={value}
-                    onChange={onChange}
+                    onChangeText={onChange}
                   />
                 )}
               />
@@ -198,9 +195,10 @@ export function SignUp() {
                   <Input
                     placeholder="8740028922"
                     keyboardType="phone-pad"
+                    maxLength={14}
                     onBlur={onBlur}
                     value={value}
-                    onChange={onChange}
+                    onChangeText={onChange}
                   />
                 )}
               />

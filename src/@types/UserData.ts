@@ -1,6 +1,6 @@
 type create_user = {
-  name: string;
-  nickname: string;
+  personal_name: string;
+  username: string;
   email: string;
   document: string;
   phone: string;

@@ -32,7 +32,7 @@ export function SignIn() {
 
   const handleLogin = async ({ email }: { email: string }) => {
     try {
-      postEmail(email);
+      postEmail({ email });
       handleNavitageToHome();
     } catch (e: any) {
       console.log(e);

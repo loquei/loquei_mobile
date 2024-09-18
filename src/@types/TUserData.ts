@@ -1,8 +1,8 @@
 type createUser = {
-  name: string;
-  nickname: string;
+  personal_name: string;
+  username: string;
   email: string;
   document: string;
   phone: string;
-  birthday: string;
+  birth: string;
 }

@@ -10,6 +10,7 @@ import * as y from "yup";
 import { CreateAccountSchema } from "../schemas/CreateAccountSchema";
 import { createUser } from "../api/createUser";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { postEmail } from "../api/postEmail";
 
 export function SignUp() {
   type CreateAccountSchema = y.InferType<typeof CreateAccountSchema>;
@@ -21,30 +22,46 @@ export function SignUp() {
 
   const { control, handleSubmit } = useForm<CreateAccountSchema>({
     defaultValues: {
-      name: "",
-      nickname: "",
+      personal_name: "",
+      username: "",
       email: "",
       phone: "",
       document: "",
-      birthday: "",
+      birth: "",
     },
   });
 
   const handleCreateAccount = async (data: CreateAccountSchema) => {
+    // O que acontecendo é que não estamos conseguindo criar o usuário,
+    // e nem realizar o envio do codigo pelo email
+    // o segundo try deve mandar o email que vai receber o codigo de verificação
+
     try {
-      const { name, nickname, email, phone, document, birthday } = data;
+      const { personal_name, username, email, phone, document, birth } = data;
+      const formatDateToISO = (date: string) => {
+        const [day, month, year] = date.split("/");
+        return `${year}-${month}-${day}`;
+      };
+      const BirthIso = formatDateToISO(data.birth);
+      console.log("birthIso", BirthIso);
       await createUser({
-        name,
-        nickname,
+        personal_name,
+        username,
         email,
         phone,
         document,
-        birthday,
+        birth: BirthIso,
       });
       await AsyncStorage.setItem("userEmail", email);
-      handleNavigateToCodeVerification();
     } catch (error: any) {
       console.log(error.message);
+    }
+    try {
+      const { email } = data;
+      await postEmail({ email });
+      handleNavigateToCodeVerification();
+    } catch (e) {
+      console.log("a");
     }
   };
 
@@ -88,7 +105,7 @@ export function SignUp() {
 
               <Controller
                 control={control}
-                name="name"
+                name="personal_name"
                 rules={{ required: true }}
                 render={({ field: { onChange, onBlur, value } }) => (
                   <Input
@@ -108,7 +125,7 @@ export function SignUp() {
 
               <Controller
                 control={control}
-                name="nickname"
+                name="username"
                 rules={{ required: true }}
                 render={({ field: { onChange, onBlur, value } }) => (
                   <Input
@@ -170,7 +187,7 @@ export function SignUp() {
               </Text>
               <Controller
                 control={control}
-                name="birthday"
+                name="birth"
                 render={({ field: { onBlur, onChange, value } }) => (
                   <Input
                     placeholder="31/05/2004"

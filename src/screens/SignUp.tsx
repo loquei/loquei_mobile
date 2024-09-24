@@ -22,8 +22,8 @@ export function SignUp() {
 
   const { control, handleSubmit } = useForm<CreateAccountSchema>({
     defaultValues: {
-      personal_name: "",
       username: "",
+      personal_name: "",
       email: "",
       phone: "",
       document: "",
@@ -32,10 +32,7 @@ export function SignUp() {
   });
 
   const handleCreateAccount = async (data: CreateAccountSchema) => {
-    // O que acontecendo é que não estamos conseguindo criar o usuário,
-    // e nem realizar o envio do codigo pelo email
-    // o segundo try deve mandar o email que vai receber o codigo de verificação
-
+    console.log("Chave env", process.env.EXPO_BASE_URL);
     try {
       const { personal_name, username, email, phone, document, birth } = data;
       const formatDateToISO = (date: string) => {
@@ -43,10 +40,9 @@ export function SignUp() {
         return `${year}-${month}-${day}`;
       };
       const BirthIso = formatDateToISO(data.birth);
-      console.log("birthIso", BirthIso);
       await createUser({
-        personal_name,
         username,
+        personal_name,
         email,
         phone,
         document,

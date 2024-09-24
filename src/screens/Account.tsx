@@ -4,13 +4,19 @@ import { VStack, Text, Box, Pressable, HStack } from "@gluestack-ui/themed";
 import { useNavigation } from "@react-navigation/native";
 import { AppNavigatorRoutesProps } from "@routes/app.routes";
 import { Trash2 } from "lucide-react-native";
+import { deleteUser } from "../api/deleteUser";
+import { AuthNavigatorRoutesProps } from "@routes/auth.routes";
 
 export function Account() {
   const { tokens } = gluestackUIConfig;
-  const navigation = useNavigation<AppNavigatorRoutesProps>();
+  const navigation = useNavigation<AuthNavigatorRoutesProps>();
 
-  const handleToLeasing = () => {
-    navigation.navigate("leasing");
+  const handleTonBoarding = () => {
+    navigation.navigate("onBoarding");
+  };
+
+  const handleDeleteAccount = async () => {
+    await deleteUser();
   };
 
   return (
@@ -19,7 +25,7 @@ export function Account() {
       <Box mt={16} bg="$white" width="$full" rounded={"$md"}>
         <Pressable
           $active-backgroundColor="$backgroundLight100"
-          onPress={handleToLeasing}
+          onPress={handleDeleteAccount}
         >
           <HStack justifyContent="space-between" p={16} alignItems="center">
             <HStack alignItems="center" gap={16}>

@@ -17,6 +17,7 @@ import { useForm, Controller } from "react-hook-form";
 import * as y from "yup";
 import { PostEmailSchema } from "../schemas/PostEmailSchema";
 import { postEmail } from "../api/postEmail";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 export function SignIn() {
   type PostEmailSchema = y.InferType<typeof PostEmailSchema>;
   const authNavigation = useNavigation<AuthNavigatorRoutesProps>();
@@ -30,8 +31,17 @@ export function SignIn() {
     authNavigation.navigate("primaryRoutes");
   }
 
+  const getEmail = async () => {
+    const email = await AsyncStorage.getItem("userEmail");
+    return email;
+  };
+
   const handleLogin = async ({ email }: { email: string }) => {
     try {
+      const Useremail = await getEmail();
+      if (!Useremail) {
+        await AsyncStorage.setItem("userEmail", email);
+      }
       postEmail({ email });
       handleNavitageToHome();
     } catch (e: any) {

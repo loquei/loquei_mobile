@@ -1,8 +1,8 @@
-type createUser = {
-  personal_name: string;
+export interface ICreateUser {
   username: string;
+  personal_name: string;
   email: string;
-  document: string;
   phone: string;
+  document: string;
   birth: string;
 }

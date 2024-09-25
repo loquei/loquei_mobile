@@ -1,22 +1,41 @@
 import { ScreenHeader } from "@components/ScreenHeader";
 import { gluestackUIConfig } from "@gluestack-ui/config";
-import { VStack, Text, Box, Pressable, HStack } from "@gluestack-ui/themed";
+import {
+  VStack,
+  Text,
+  Box,
+  Pressable,
+  HStack,
+  AlertDialog,
+  AlertDialogBackdrop,
+  AlertDialogContent,
+  AlertDialogBody,
+  AlertDialogHeader,
+  Heading,
+  AlertDialogFooter,
+} from "@gluestack-ui/themed";
 import { useNavigation } from "@react-navigation/native";
 import { AppNavigatorRoutesProps } from "@routes/app.routes";
-import { Trash2 } from "lucide-react-native";
+import { Flag, Trash2 } from "lucide-react-native";
 import { deleteUser } from "../api/deleteUser";
 import { AuthNavigatorRoutesProps } from "@routes/auth.routes";
+import { useState } from "react";
 
 export function Account() {
+  const [showModal, setShowModal] = useState(false);
   const { tokens } = gluestackUIConfig;
   const navigation = useNavigation<AuthNavigatorRoutesProps>();
-
   const handleTonBoarding = () => {
     navigation.navigate("onBoarding");
   };
 
+  const handleOpenModal = () => {
+    setShowModal(!showModal);
+  };
+
   const handleDeleteAccount = async () => {
     await deleteUser();
+    handleOpenModal();
   };
 
   return (
@@ -25,7 +44,7 @@ export function Account() {
       <Box mt={16} bg="$white" width="$full" rounded={"$md"}>
         <Pressable
           $active-backgroundColor="$backgroundLight100"
-          onPress={handleDeleteAccount}
+          onPress={handleOpenModal}
         >
           <HStack justifyContent="space-between" p={16} alignItems="center">
             <HStack alignItems="center" gap={16}>
@@ -37,6 +56,37 @@ export function Account() {
           </HStack>
         </Pressable>
       </Box>
+      <AlertDialog isOpen={showModal} onClose={handleOpenModal}>
+        <AlertDialogBackdrop />
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <Heading fontSize="$lg" fontFamily="$body" size="md">
+              Você deseja excluir a sua conta?
+            </Heading>
+          </AlertDialogHeader>
+          <AlertDialogBody>
+            <Text fontFamily="$body" fontSize="$md">
+              Você tem certeza que deseja excluir a sua conta?
+            </Text>
+          </AlertDialogBody>
+          <AlertDialogFooter display="flex" justifyContent="space-around">
+            <Pressable onPress={handleOpenModal}>
+              <Text>Cancelar</Text>
+            </Pressable>
+            <Pressable onPress={handleDeleteAccount} w="$24">
+              <Text
+                bgColor="$red500"
+                color="$white"
+                p="$1"
+                borderRadius="$md"
+                textAlign="center"
+              >
+                Deletar
+              </Text>
+            </Pressable>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </VStack>
   );
 }

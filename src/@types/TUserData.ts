@@ -1,4 +1,4 @@
-export interface ICreateUser {
+export interface IPostUser {
   username: string;
   personal_name: string;
   email: string;

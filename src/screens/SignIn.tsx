@@ -36,7 +36,8 @@ export function SignIn() {
     return email;
   };
 
-  const handleLogin = async ({ email }: { email: string }) => {
+  {
+    /*const handleLogin = async ({ email }: { email: string }) => {
     try {
       const Useremail = await getEmail();
       if (!Useremail) {
@@ -48,6 +49,8 @@ export function SignIn() {
       console.log(e);
     }
   };
+*/
+  }
 
   const { control, handleSubmit } = useForm<PostEmailSchema>({
     defaultValues: {
@@ -108,7 +111,7 @@ export function SignIn() {
               />
             </VStack>
 
-            <Button title="Entrar" onPress={handleSubmit(handleLogin)} />
+            <Button title="Entrar" onPress={() => handleNavitageToHome()} />
 
             <Text
               fontFamily="$body"

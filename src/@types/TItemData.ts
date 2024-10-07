@@ -4,5 +4,7 @@ export interface IItemData {
   daily_value: number,
   max_days: number,
   min_days: number,
+  price: number,
+  stock: number,
   categories_id: string[]
 }

@@ -16,16 +16,13 @@ import { ScrollView } from "react-native";
 import { useForm, Controller } from "react-hook-form";
 import * as y from "yup";
 import { PostItemSchema } from "../schemas/CreateItemSchema";
-import { Divider } from "@gluestack-ui/config/build/theme";
+//import AsyncStorage from "@react-native-async-storage/async-storage";
 export function AddProductStep1() {
   const progressValue = 0;
 
   const navigation = useNavigation<AppNavigatorRoutesProps>();
   type CreateItemSchema = y.InferType<typeof PostItemSchema>;
 
-  function handleNavigateToAddProductStep2() {
-    navigation.navigate("addProductStep2");
-  }
   const { control, handleSubmit } = useForm<CreateItemSchema>({
     defaultValues: {
       name: "",
@@ -36,7 +33,18 @@ export function AddProductStep1() {
       categories_id: [],
     },
   });
-
+  const handleNavigateToAddProductStep2 = () => {
+    console.log("clic");
+    navigation.navigate("addProductStep2");
+  };
+  const handleNavigateToNextStep = async (data: CreateItemSchema) => {
+    handleNavigateToAddProductStep2();
+    try {
+      // await AsyncStorage.setItem("Step1CreateProduct", JSON.stringify(data));
+    } catch {
+      console.log("falhou");
+    }
+  };
   return (
     <VStack flex={1}>
       <ScreenHeader title="Adicionar Produto" backButton />

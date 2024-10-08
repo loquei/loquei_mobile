@@ -32,7 +32,6 @@ export function SignUp() {
   });
 
   const handleCreateAccount = async (data: CreateAccountSchema) => {
-    console.log("Chave env", process.env.EXPO_BASE_URL);
     try {
       const { personal_name, username, email, phone, document, birth } = data;
       const formatDateToISO = (date: string) => {

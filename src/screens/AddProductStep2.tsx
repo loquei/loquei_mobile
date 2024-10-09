@@ -1,8 +1,6 @@
 import { Button } from "@components/Button";
 import { Input } from "@components/Input";
 import { ScreenHeader } from "@components/ScreenHeader";
-import { Select } from "@components/Select";
-import { Textarea } from "@components/Textarea";
 import {
   Box,
   HStack,
@@ -12,7 +10,6 @@ import {
 import { VStack, Text, Image } from "@gluestack-ui/themed";
 import { useNavigation } from "@react-navigation/native";
 import { AppNavigatorRoutesProps } from "@routes/app.routes";
-import { ScrollView } from "react-native";
 import { ImageUp } from "lucide-react-native";
 import { gluestackUIConfig } from "../../config/gluestack-ui.config";
 import * as ImagePicker from "expo-image-picker";
@@ -20,7 +17,6 @@ import * as FileSystem from "expo-file-system";
 import { useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { postItem } from "../api/postItem";
-import { IPostItem } from "../@types/TItem";
 
 export function AddProductStep2() {
   const progressValue = 50;
@@ -66,8 +62,9 @@ export function AddProductStep2() {
           }
 
           setSelectedImages((prev) => [...prev, photoUri]);
-
-          await postItem(JSON.parse(productStep1Data));
+          if (selectedImages.length === 1) {
+            await postItem(JSON.parse(productStep1Data));
+          }
         }
       } catch (error) {
         console.log(error);

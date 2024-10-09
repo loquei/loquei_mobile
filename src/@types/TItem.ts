@@ -4,5 +4,8 @@ export interface IPostItem {
   daily_value: number
   max_days: number
   min_days: number
-  categories_id: string[]
+  categories: string[]
+};
+export interface IPostImage {
+  imagePath: string[]
 }

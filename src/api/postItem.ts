@@ -1,11 +1,16 @@
 import { api } from "./axios/axiosConfig"
 import { IPostItem } from "../@types/TItem"
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 
 export const postItem = async (data: IPostItem) => {
-  const headers = { 'Content-Type': 'application/json' }
+  const token = await AsyncStorage.getItem("AuthToken");
+  const headers = { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }
   try {
-    await api.post('/items', data, { headers })
+    await api.post('/items', data, { headers });
+    console.log("deu certo");
   } catch (error: any) {
-    return error
+    console.error("não deu certo", error);
+    return error;
   }
 }

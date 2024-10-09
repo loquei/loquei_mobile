@@ -16,16 +16,13 @@ import { ScrollView } from "react-native";
 import { useForm, Controller } from "react-hook-form";
 import * as y from "yup";
 import { PostItemSchema } from "../schemas/CreateItemSchema";
-import { Divider } from "@gluestack-ui/config/build/theme";
+import { postItem } from "../api/postItem";
 export function AddProductStep1() {
   const progressValue = 0;
 
   const navigation = useNavigation<AppNavigatorRoutesProps>();
   type CreateItemSchema = y.InferType<typeof PostItemSchema>;
 
-  function handleNavigateToAddProductStep2() {
-    navigation.navigate("addProductStep2");
-  }
   const { control, handleSubmit } = useForm<CreateItemSchema>({
     defaultValues: {
       name: "",
@@ -33,9 +30,24 @@ export function AddProductStep1() {
       daily_value: 0,
       max_days: 0,
       min_days: 0,
-      categories_id: [],
+      categories: ["3d32e6414a754167b5dfe9486a7bb12b"],
     },
   });
+
+  const handleNextStep = async (data: CreateItemSchema) => {
+    console.log(data);
+    try {
+      await postItem({
+        ...data,
+        categories: (data.categories ?? []).filter(
+          (category): category is string => category !== undefined
+        ),
+      });
+      navigation.navigate("addProductStep2");
+    } catch (error) {
+      console.error("Error saving data:", error);
+    }
+  };
 
   return (
     <VStack flex={1}>
@@ -73,12 +85,11 @@ export function AddProductStep1() {
           <Controller
             name="name"
             control={control}
-            rules={{ required: true }}
             render={({ field: { value, onBlur, onChange } }) => (
               <Input
                 onChangeText={onChange}
                 onBlur={onBlur}
-                value={value}
+                value={value?.toString()}
                 placeholder="Ex: Ferramenta de jardinagem"
               />
             )}
@@ -92,12 +103,11 @@ export function AddProductStep1() {
           <Controller
             name="description"
             control={control}
-            rules={{ required: true }}
             render={({ field: { value, onBlur, onChange } }) => (
               <Textarea
                 placeholder="Digite a descrição do produto"
                 onBlur={onBlur}
-                value={value}
+                value={value?.toString()}
                 onChangeText={onChange}
               />
             )}
@@ -108,25 +118,19 @@ export function AddProductStep1() {
           <Text fontFamily="$mono" fontSize="$md" color="$textDark800">
             Categoria
           </Text>
-          <Controller
-            control={control}
-            name="categories_id"
-            rules={{ required: true }}
-            render={({ field: { onBlur } }) => (
-              <Select
-                placeholder="Selecione a categoria"
-                onBlur={onBlur}
-                options={[
-                  "Eletrônicos",
-                  "Móveis",
-                  "Roupas",
-                  "Acessórios",
-                  "Livros",
-                  "Jogos",
-                  "Brinquedos",
-                ]}
-              />
-            )}
+
+          <Select
+            placeholder="Selecione a categoria"
+            options={[
+              "Eletronicos",
+              "Moveis",
+              "Roupas",
+              "Acessorios",
+              "Livros",
+              "Jogos",
+              "Brinquedos",
+              "Ferramentas",
+            ]}
           />
         </VStack>
 
@@ -138,57 +142,53 @@ export function AddProductStep1() {
             <Controller
               name="min_days"
               control={control}
-              rules={{ required: true }}
               render={({ field: { value, onBlur, onChange } }) => (
                 <Input
                   placeholder="mínimo"
                   keyboardType="numeric"
-                  value={value}
+                  value={value?.toString()}
                   onBlur={onBlur}
-                  onChange={onChange}
+                  onChangeText={onChange}
                 />
               )}
             />
             <Controller
-              name="min_days"
+              name="max_days"
               control={control}
-              rules={{ required: true }}
               render={({ field: { value, onBlur, onChange } }) => (
                 <Input
                   placeholder="máximo"
                   keyboardType="numeric"
-                  value={value}
+                  value={value?.toString()}
                   onBlur={onBlur}
-                  onChange={onChange}
+                  onChangeText={onChange}
                 />
               )}
             />
           </HStack>
+          <VStack mt={16} gap={8} flex={1}>
+            <Text fontFamily="$mono" fontSize="$md" color="$textDark800">
+              Qual seria o valor da diária:
+            </Text>
+            <Controller
+              name="daily_value"
+              control={control}
+              render={({ field: { value, onBlur, onChange } }) => (
+                <Input
+                  placeholder="Digite o valor da diária"
+                  keyboardType="numeric"
+                  value={value.toString()}
+                  onBlur={onBlur}
+                  onChangeText={onChange}
+                />
+              )}
+            />
+          </VStack>
         </VStack>
-
-        <VStack mt={16} gap={8}>
-          <Text fontFamily="$mono" fontSize="$md" color="$textDark800">
-            Preço da diária
-          </Text>
-          <Controller
-            name="daily_value"
-            control={control}
-            rules={{ required: true }}
-            render={({ field: { value, onBlur, onChange } }) => (
-              <Input
-                onChangeText={onChange}
-                onBlur={onBlur}
-                value={value}
-                placeholder="Ex: R$50,00"
-              />
-            )}
-          />
-        </VStack>
-
         <Button
-          title="Próxima etapa"
-          onPress={handleNavigateToAddProductStep2}
           mt={16}
+          title="Proxima etapa"
+          onPress={handleSubmit(handleNextStep)}
         />
       </ScrollView>
     </VStack>

@@ -132,7 +132,7 @@ export function AddProductStep1() {
 
         <VStack mt={16} gap={8} flex={1}>
           <Text fontFamily="$mono" fontSize="$md" color="$textDark800">
-            Por quanto tempo você deseja alugar:
+            Por quanto tempo você deseja alugar (dias):
           </Text>
           <HStack gap={8} justifyContent="space-between">
             <Controller
@@ -164,6 +164,25 @@ export function AddProductStep1() {
               )}
             />
           </HStack>
+        </VStack>
+
+        <VStack mt={16} gap={8}>
+          <Text fontFamily="$mono" fontSize="$md" color="$textDark800">
+            Preço da diária
+          </Text>
+          <Controller
+            name="daily_value"
+            control={control}
+            rules={{ required: true }}
+            render={({ field: { value, onBlur, onChange } }) => (
+              <Input
+                onChangeText={onChange}
+                onBlur={onBlur}
+                value={value}
+                placeholder="Ex: R$50,00"
+              />
+            )}
+          />
         </VStack>
 
         <Button

@@ -21,6 +21,7 @@ type Props = ComponentProps<typeof SelectTrigger> & {
   isInvalid?: boolean;
   isReadOnly?: boolean;
   placeholder?: string;
+  value?: string;
   options?: string[];
 };
 
@@ -29,6 +30,7 @@ export function Select({
   errorMessage = null,
   isInvalid = false,
   placeholder,
+  value,
   options,
   ...props
 }: Props) {
@@ -37,7 +39,7 @@ export function Select({
 
   const invalid = !!errorMessage || isInvalid;
 
-  const textColor = selectedValue ? "$textDark800" : "$textLight400";
+  const textColor = selectedValue || value != "" ? "$textDark800" : "$textLight400";
 
   return (
     <FormControl isInvalid={invalid} mb="$4" w="$full">
@@ -76,8 +78,8 @@ export function Select({
             fontFamily="$body"
             color={textColor}
             placeholderTextColor="$backgroundLight400"
+            value={selectedValue || value}
             px="$4"
-            value={selectedValue || ""}
           />
           <SelectIcon as={ChevronDownIcon} mr="$3" />
         </SelectTrigger>

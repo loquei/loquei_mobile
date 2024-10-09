@@ -24,6 +24,11 @@ export function ItemCard({ type, title, description, price, date, hasRemoveButto
   function handleNavigateToProductDetails() {
     type === 'product' ? navigation.navigate('productDetails') : navigation.navigate('orderDetails');
   }
+
+  function handleNavigateToEditProduct() {
+    navigation.navigate('editProduct');
+  }
+
   return (
     <TouchableOpacity onPress={handleNavigateToProductDetails}>
       <HStack alignItems="center" bg="$white" p={16} rounded={"$md"}>
@@ -58,7 +63,7 @@ export function ItemCard({ type, title, description, price, date, hasRemoveButto
               </TouchableOpacity>
             )}
             {hasEditButton && (
-              <TouchableOpacity >
+              <TouchableOpacity onPress={handleNavigateToEditProduct} >
                 <Pencil size={24} color={tokens.colors.warning500} />
               </TouchableOpacity>
             )}

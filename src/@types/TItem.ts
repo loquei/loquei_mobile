@@ -1,4 +1,6 @@
 export interface IPostItem {
+  id?: string
+  rating?: number
   name: string
   description: string
   daily_value: number

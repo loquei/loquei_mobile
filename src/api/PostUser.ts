@@ -1,5 +1,4 @@
-import axios from "axios"
-import { IPostUser } from "../@types/TUserData"
+import { IPostUser } from "../@types/TUser"
 import { api } from "./axios/axiosConfig"
 
 export const create_user = async (data: IPostUser) => {

@@ -1,4 +1,3 @@
-import { IGetItemResponse } from "../@types/TItem";
 import { api } from "./axios/axiosConfig";
 
 export const DeleteItems = async (id: string) => {
@@ -6,7 +5,6 @@ export const DeleteItems = async (id: string) => {
   try {
     await api.delete(`/items/${id}`, { headers });
   } catch (error) {
-    console.error('Erro ao deletar itens:', error);
     throw error;
   }
 }

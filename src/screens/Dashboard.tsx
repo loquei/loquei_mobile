@@ -38,7 +38,6 @@ export function Dashboard() {
     const fetchData = async () => {
       const data = await ListMyItems();
       if (data) {
-        console.log(data);
         setItemData(data);
       }
     };

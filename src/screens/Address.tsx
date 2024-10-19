@@ -9,8 +9,8 @@ export function Address() {
   const { tokens } = gluestackUIConfig;
   const navigation = useNavigation<AppNavigatorRoutesProps>();
 
-  const handleToLeasing = () => {
-    navigation.navigate("leasing");
+  const handleToAddAddress = () => {
+    navigation.navigate("addUserAddress");
   };
 
   return (
@@ -19,7 +19,7 @@ export function Address() {
       <Box mt={16} bg="$white" width="$full" rounded={"$md"}>
         <Pressable
           $active-backgroundColor="$backgroundLight100"
-          onPress={handleToLeasing}
+          onPress={handleToAddAddress}
         >
           <HStack justifyContent="space-between" p={16} alignItems="center">
             <HStack alignItems="center" gap={16}>

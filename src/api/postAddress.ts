@@ -5,7 +5,7 @@ export const postAddress = async (data: IPostAddress) => {
   const headers = { 'Content-Type': 'application/json' }
   try {
     await api.post("/addresses", data, { headers })
-  } catch {
-    console.log("erro")
+  } catch (e) {
+    console.log("deu erro", e)
   }
 }

@@ -3,7 +3,6 @@ import { Input } from "@components/Input";
 import {
   VStack,
   Text,
-  Pressable,
   ScrollView,
   Center,
   RadioGroup,
@@ -11,7 +10,6 @@ import {
   RadioIcon,
   CircleIcon,
   RadioLabel,
-  Box,
 } from "@gluestack-ui/themed";
 import { Button } from "@components/Button";
 import { Controller, useForm } from "react-hook-form";
@@ -19,12 +17,61 @@ import * as y from "yup";
 import { createAddressSchema } from "../schemas/CreateAddressSchema";
 import MaskInput from "react-native-mask-input";
 import { Radio } from "@gluestack-ui/themed";
+import { useEffect, useState } from "react";
+import { postAddress } from "../api/postAddress";
 
 const zipCodeMask = [/\d/, /\d/, /\d/, /\d/, /\d/, "-", /\d/, /\d/, /\d/];
 export function AddAddress() {
   type createAddress = y.InferType<typeof createAddressSchema>;
+  const [userId, setUserId] = useState("");
+  useEffect(() => {
+    setUserId("5e16501c0e964d379729adb6293a1697");
+  }, []);
 
-  const { control, handleSubmit } = useForm<createAddress>();
+  const { control, handleSubmit } = useForm<createAddress>({
+    defaultValues: {
+      postal_code: "",
+      city: "",
+      neighborhood: "",
+      street: "",
+      number: 0,
+      state: "",
+      country: "Brasil",
+      main: false,
+      user_id: userId,
+    },
+  });
+
+  const handlePostAddress = async (data: createAddress) => {
+    try {
+      const {
+        postal_code,
+        city,
+        neighborhood,
+        street,
+        number,
+        state,
+        country,
+        main,
+        user_id,
+      } = data;
+      const removeMask = (maskedValue: string) => {
+        return maskedValue.replace(/\D/g, "");
+      };
+      const codeNomask = removeMask(postal_code);
+      await postAddress({
+        postal_code: codeNomask,
+        city,
+        neighborhood,
+        street,
+        number,
+        state,
+        country,
+        main,
+        user_id: userId,
+      });
+    } catch {}
+  };
 
   return (
     <ScrollView
@@ -145,7 +192,26 @@ export function AddAddress() {
                 name="state"
                 render={({ field: { onBlur, onChange, value } }) => (
                   <Input
-                    placeholder="Estado"
+                    placeholder="Sigla do Estado"
+                    keyboardType="default"
+                    onBlur={onBlur}
+                    value={value}
+                    onChangeText={onChange}
+                  />
+                )}
+              />
+            </VStack>
+
+            <VStack gap={8}>
+              <Text fontFamily="$body" fontSize="$md" color="$textDark800">
+                País
+              </Text>
+              <Controller
+                control={control}
+                name="country"
+                render={({ field: { onBlur, onChange, value } }) => (
+                  <Input
+                    placeholder="País"
                     keyboardType="default"
                     onBlur={onBlur}
                     value={value}
@@ -160,18 +226,21 @@ export function AddAddress() {
               </Text>
               <Controller
                 control={control}
-                name="number"
+                name="main"
                 rules={{ required: true, maxLength: 14 }}
                 render={({ field: { onChange, value } }) => (
-                  <RadioGroup value={value?.toString()}>
-                    <Radio value="sim" mb={8} size="md">
+                  <RadioGroup
+                    onChange={(newValue) => onChange(newValue === "true")}
+                    value={value ? "true" : "false"}
+                  >
+                    <Radio value="true" mb={8} size="md">
                       <RadioIndicator>
                         <RadioIcon as={CircleIcon} />
                       </RadioIndicator>
                       <RadioLabel p={8}>Sim</RadioLabel>
                     </Radio>
 
-                    <Radio value="nao" mb={16} size="md">
+                    <Radio value="" mb={16} size="md">
                       <RadioIndicator>
                         <RadioIcon as={CircleIcon} />
                       </RadioIndicator>
@@ -181,7 +250,10 @@ export function AddAddress() {
                 )}
               />
             </VStack>
-            <Button title="Cadastrar" />
+            <Button
+              title="Cadastrar"
+              onPress={handleSubmit(handlePostAddress)}
+            />
           </VStack>
         </Center>
       </VStack>

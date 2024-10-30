@@ -11,7 +11,7 @@ import {
   VStack,
   View,
 } from "@gluestack-ui/themed";
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { AppNavigatorRoutesProps } from "@routes/app.routes";
 import {
   Bell,
@@ -27,12 +27,14 @@ import { TouchableOpacity } from "react-native";
 
 import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from "expo-file-system";
-import { useState } from "react";
+import { useCallback, useState } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export function Profile() {
   const [userPhoto, setUserPhoto] = useState(
     "https://img.freepik.com/free-photo/how-may-i-help-you-smiling-young-modern-guy-with-beard-waiting-looking-hopeful-assisting-standing-white-background_176420-49644.jpg?t=st=1724706288~exp=1724709888~hmac=87b19bdaedc452696bd6888e87642e5ebc9ec98d2d982f5ec3f25b98bd819ebb&w=1380"
   );
+  const [user, setUser] = useState<any>({});
 
   const { tokens } = gluestackUIConfig;
   const navigation = useNavigation<AppNavigatorRoutesProps>();
@@ -84,6 +86,25 @@ export function Profile() {
     }
   }
 
+  useFocusEffect(
+    useCallback(() => {
+      const fetchCurrentUser = async () => {
+        try {
+          const currentUser = await AsyncStorage.getItem("currentUser");
+          if (currentUser) {
+            const parsedUser = JSON.parse(currentUser);
+            setUser(parsedUser);
+            console.log("currentUser", parsedUser);
+          }
+        } catch (error) {
+          console.error("Error fetching current user:", error);
+        }
+      };
+
+      fetchCurrentUser();
+    }, [])
+  );
+
   return (
     <VStack>
       <ScreenHeader title="Perfil" backButton />
@@ -104,7 +125,7 @@ export function Profile() {
           fontFamily="$heading"
           textAlign="center"
         >
-          John Doe
+          {user && user.items[0].personal_name ? user.items[0].personal_name : "Usuário"}
         </Heading>
         <TouchableOpacity onPress={handleUserPhotoSelect}>
           <Text color="$teal600" fontSize="$sm" fontFamily="$heading">

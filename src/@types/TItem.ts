@@ -9,7 +9,7 @@ export interface IPostItem {
   categories: string[]
 };
 export interface IPostImage {
-  imagePath: string[]
+  imagePaths: string[]
 }
 export interface IGetItemResponse {
   current_page: number;
@@ -20,6 +20,9 @@ export interface IGetItemResponse {
 
 export interface IGetItem {
   id: string;
+  images: {
+    links: string[];
+  };
   name: string;
   description: string;
   daily_value: number;

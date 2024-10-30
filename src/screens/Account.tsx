@@ -20,12 +20,15 @@ import { Flag, Trash2 } from "lucide-react-native";
 import { deleteUser } from "../api/deleteUser";
 import { AuthNavigatorRoutesProps } from "@routes/auth.routes";
 import { useState } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export function Account() {
   const [showModal, setShowModal] = useState(false);
   const { tokens } = gluestackUIConfig;
   const navigation = useNavigation<AuthNavigatorRoutesProps>();
-  const handleTonBoarding = () => {
+
+  const handleToOnBoarding = () => {
+    AsyncStorage.removeItem("AuthToken");
     navigation.navigate("onBoarding");
   };
 
@@ -33,9 +36,9 @@ export function Account() {
     setShowModal(!showModal);
   };
 
-  const handleDeleteAccount = async () => {
-    await deleteUser();
-    handleOpenModal();
+  const handleSignOutAccount = async () => {
+    // await deleteUser();
+    handleToOnBoarding();
   };
 
   return (
@@ -50,7 +53,7 @@ export function Account() {
             <HStack alignItems="center" gap={16}>
               <Trash2 size={24} color={tokens.colors.red400} />
               <Text color="$red500" fontSize="$md" fontFamily="$body">
-                Deletar conta
+                Sair da conta
               </Text>
             </HStack>
           </HStack>
@@ -61,19 +64,19 @@ export function Account() {
         <AlertDialogContent>
           <AlertDialogHeader>
             <Heading fontSize="$lg" fontFamily="$body" size="md">
-              Você deseja excluir a sua conta?
+              Você deseja sair da sua conta?
             </Heading>
           </AlertDialogHeader>
           <AlertDialogBody>
             <Text fontFamily="$body" fontSize="$md">
-              Você tem certeza que deseja excluir a sua conta?
+              Você tem certeza que deseja sair da sua conta?
             </Text>
           </AlertDialogBody>
           <AlertDialogFooter display="flex" justifyContent="space-around">
             <Pressable onPress={handleOpenModal}>
               <Text>Cancelar</Text>
             </Pressable>
-            <Pressable onPress={handleDeleteAccount} w="$24">
+            <Pressable onPress={handleSignOutAccount} w="$24">
               <Text
                 bgColor="$red500"
                 color="$white"
@@ -81,7 +84,7 @@ export function Account() {
                 borderRadius="$md"
                 textAlign="center"
               >
-                Deletar
+                Sair
               </Text>
             </Pressable>
           </AlertDialogFooter>

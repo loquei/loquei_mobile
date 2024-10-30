@@ -8,12 +8,13 @@ export interface IPostUser {
 }
 
 export interface IPostAddress {
-  postal_code: 12345678,
+  postal_code: string,
   street: string,
   neighborhood: string,
   city: string,
   state: string,
   country: string,
   number: number,
-  user_id: string
+  user_id: string,
+  main: boolean
 }

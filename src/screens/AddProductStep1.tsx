@@ -10,18 +10,43 @@ import {
   ProgressFilledTrack,
 } from "@gluestack-ui/themed";
 import { VStack, Text } from "@gluestack-ui/themed";
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { AppNavigatorRoutesProps } from "@routes/app.routes";
 import { ScrollView } from "react-native";
 import { useForm, Controller } from "react-hook-form";
 import * as y from "yup";
 import { PostItemSchema } from "../schemas/CreateItemSchema";
 import { postItem } from "../api/postItem";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useCallback, useState } from "react";
 export function AddProductStep1() {
   const progressValue = 0;
 
   const navigation = useNavigation<AppNavigatorRoutesProps>();
   type CreateItemSchema = y.InferType<typeof PostItemSchema>;
+
+  const [userId, setUserId] = useState<string>("");
+
+  useFocusEffect(
+    useCallback(() => {
+      const fetchData = async () => {
+        try {
+          const currentUser = await AsyncStorage.getItem("currentUser");
+          if (currentUser) {
+            console.log("currentUser", currentUser);
+            const parsedUser = JSON.parse(currentUser);
+            setUserId(parsedUser.items[0].id);
+          }
+        } catch (error) {
+          console.error("Erro ao buscar o ID do usuário:", error);
+        }
+      };
+
+      fetchData();
+    }, [])
+  );
+
+  console.log(userId);
 
   const { control, handleSubmit } = useForm<CreateItemSchema>({
     defaultValues: {
@@ -30,19 +55,19 @@ export function AddProductStep1() {
       daily_value: 0,
       max_days: 0,
       min_days: 0,
-      categories: ["22e0ce82021746c9870d46c19b7a1b3c"],
+      categories: ["155f348722ec410384c0cac085c911c3"],
     },
   });
 
   const handleNextStep = async (data: CreateItemSchema) => {
-    console.log(data);
+    const newData = {
+      ...data,
+      user_id: userId,
+    }
+
+    console.log(newData);
     try {
-      await postItem({
-        ...data,
-        categories: (data.categories ?? []).filter(
-          (category): category is string => category !== undefined
-        ),
-      });
+      await AsyncStorage.setItem("productDataStep1", JSON.stringify(newData));
       navigation.navigate("addProductStep2");
     } catch (error) {
       console.error("Error saving data:", error);

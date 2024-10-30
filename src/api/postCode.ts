@@ -6,10 +6,12 @@ interface Iauth {
 }
 
 export const postCode = async ({ email, code }: Iauth) => {
-  const headers = { 'Content-Type': 'application/json' }
+  const tempAuthToken = await AsyncStorage.getItem("tempAuthToken")
+  const headers = { 'Content-Type': 'application/json', 'Authorization': `Bearer ${tempAuthToken}` }
   try {
     const response = await api.post('/security/auth/authenticate', { email, code }, { headers })
-    await AsyncStorage.setItem("AuthCode", response.data.token)
+    await AsyncStorage.setItem("AuthToken", response.data.token)
+    console.log("Auth Token:", response.data.token)
   } catch (error: any) {
     return error.message
   }

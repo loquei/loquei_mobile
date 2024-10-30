@@ -9,32 +9,36 @@ import { gluestackUIConfig } from "../../config/gluestack-ui.config";
 import { DeleteItems } from "../api/deleteItem";
 
 interface ItemCardProps {
-  id?: string;
+  id: string;
   type?: "product" | "order";
   title: string;
   description: string;
   price: string;
   date?: string;
+  imagesPaths: string[];
   hasRemoveButton?: boolean;
   hasEditButton?: boolean;
 }
 
 export function ItemCard({
+  id,
   type,
   title,
   description,
   price,
   date,
+  imagesPaths,
   hasRemoveButton,
   hasEditButton,
-  id,
 }: ItemCardProps) {
   const navigation = useNavigation<AppNavigatorRoutesProps>();
   const { tokens } = gluestackUIConfig;
 
+  const baseURL = "http://192.168.3.2:8080";
+
   function handleNavigateToProductDetails() {
     type === "product"
-      ? navigation.navigate("productDetails")
+      ? navigation.navigate("productDetails", { id })
       : navigation.navigate("orderDetails");
   }
 
@@ -46,7 +50,11 @@ export function ItemCard({
     <TouchableOpacity onPress={handleNavigateToProductDetails}>
       <HStack alignItems="center" bg="$white" p={16} rounded={"$md"}>
         <Image
-          source={ItemCardImage}
+          source={
+            imagesPaths.length > 0
+              ? { uri: baseURL + imagesPaths[0] }
+              : ItemCardImage
+          }
           width={110}
           height={110}
           alt="ItemCardImage"
@@ -80,7 +88,7 @@ export function ItemCard({
           )}
 
           <Text fontFamily="$heading" fontSize="$md" color="$teal600">
-            {price}
+            R$ {price}
           </Text>
 
           <HStack gap={12} alignSelf="flex-end">

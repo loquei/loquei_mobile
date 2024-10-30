@@ -8,12 +8,14 @@ import CarouselComponent, {
 
 interface ICarouselProps {
   setScrollEnabled: (value: boolean) => void;
+  imagesPaths: string[];
 }
 
-export function ProductImagesCarousel({ setScrollEnabled }: ICarouselProps) {
+export function ProductImagesCarousel({ setScrollEnabled, imagesPaths }: ICarouselProps) {
   const ref = useRef<ICarouselInstance>(null);
-  const data = Array.from({ length: 3 }, (_, i) => i);
+  const data = Array.from({ length: imagesPaths.length }, (_, i) => i);
   const windowWidth = useWindowDimensions().width;
+  const baseURL = "http://192.168.3.2:8080";
 
   const [activeIndex, setActiveIndex] = useState(0);
   return (
@@ -32,7 +34,10 @@ export function ProductImagesCarousel({ setScrollEnabled }: ICarouselProps) {
             flex={1}
             borderRadius={16}
           >
-            <Image source={{ uri: "https://www.consertasmart.com/seguro-de/Apple-iPhone-13-Mini.gif" }} w={200} h={200} alt="" objectFit="cover" alignSelf="center" />
+            <Image source={{
+              uri:
+                baseURL + imagesPaths[index]
+            }} w={200} h={200} alt="" objectFit="cover" alignSelf="center" />
           </View>
         )}
         pagingEnabled

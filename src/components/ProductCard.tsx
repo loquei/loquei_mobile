@@ -6,6 +6,7 @@ import { gluestackUIConfig } from "../../config/gluestack-ui.config";
 import { HStack } from "@gluestack-ui/themed";
 
 interface ProductCardProps {
+  imagePath: string;
   title: string;
   rating?: number;
   ratingCount?: number;
@@ -14,6 +15,7 @@ interface ProductCardProps {
 }
 
 export function ProductCard({
+  imagePath,
   title,
   rating,
   ratingCount,
@@ -24,7 +26,7 @@ export function ProductCard({
   return (
     <VStack flex={1} w={160} bg="$white" rounded="$2xl">
       <Image
-        source={eletronicsImage}
+        source={imagePath ? { uri: imagePath } : eletronicsImage}
         alt="Eletrônicos"
         w={160}
         h={120}
@@ -50,13 +52,13 @@ export function ProductCard({
               ({ratingCount})
             </Text>
           </HStack>
-          {price && (
+          {price ? (
             <>
-              <Text fontFamily="$body" fontSize="$md" color="$textDark800">
+              <Text fontFamily="$heading" fontSize="$md" color="$teal600">
                 R${price}
               </Text>
             </>
-          )}
+          ) : null}
         </VStack>
       </VStack>
     </VStack>

@@ -2,21 +2,60 @@ import { Button } from "@components/Button";
 import { ProductImagesCarousel } from "@components/ProductImagesCarousel";
 import { ScreenHeader } from "@components/ScreenHeader";
 import { Tag } from "@components/Tag";
-import { HStack, Text, VStack, View } from "@gluestack-ui/themed";
-import { useState } from "react";
+import { HStack, Text, VStack, View, set } from "@gluestack-ui/themed";
+import { useCallback, useState } from "react";
 import { FlatList } from "react-native";
 import { ScrollView } from "react-native";
 import { ProductDetailsAccordion } from "@components/ProductDetailsAccordion";
 import { ProductReviews } from "@components/ProductContainerReviews";
 import { RelatedProductsList } from "@components/RelatedProductsList";
-
+import { useFocusEffect, useRoute } from "@react-navigation/native";
+import { GetItem } from "../api/getItem";
+import { IGetItem } from "../@types/TItem";
+import { Loading } from "@components/Loading";
 
 export function ProductDetails() {
 
-  const [rentalTimes, setRentalTimes] = useState(['1 dia', '3 dias', '7 dias']);
-  const [rentalTimeSelected, setRentalTimeSelected] = useState('1 dia');
-
   const [scrollEnabled, setScrollEnabled] = useState(true);
+  const [productDetails, setProductDetails] = useState<IGetItem>();
+
+  const [rentalTimes, setRentalTimes] = useState<string[]>([]);
+  const [rentalTimeSelected, setRentalTimeSelected] = useState('');
+
+  const route = useRoute();
+  const { id } = route.params as { id: string };
+
+  const fetchProductDetails = useCallback(async () => {
+    try {
+      console.log(`Buscando detalhes do produto ${id}...`);
+      const item = await GetItem(id);
+      console.log(`Detalhes do produto ${id} recebidos:`, item);
+      setProductDetails(item);
+
+      const times: string[] = [];
+      if (item.min_days) {
+        times.push(item.min_days.toString() + ' dias');
+      }
+      if (item.max_days) {
+        times.push(item.max_days.toString() + ' dias');
+      }
+
+      setRentalTimes(times);
+      setRentalTimeSelected(times[0]);
+    } catch (error) {
+      console.error('Erro ao buscar detalhes do produto:', error);
+    }
+  }, [id]);
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchProductDetails();
+    }, [fetchProductDetails])
+  );
+
+  if (!productDetails) {
+    return <Loading />;
+  }
 
   return (
     <View flex={1} margin={0} padding={0}>
@@ -24,14 +63,16 @@ export function ProductDetails() {
         <VStack flex={1} pb={32}>
           <ScreenHeader title="Detalhes do produto" backButton />
 
-          <ProductImagesCarousel setScrollEnabled={setScrollEnabled} />
+          <ProductImagesCarousel setScrollEnabled={setScrollEnabled} imagesPaths={
+            productDetails.images.links.map((link) => link)
+          } />
 
           <Text fontFamily="$heading" fontSize={"$2xl"} mt={24} px={16} color="$textDark800">
-            Apple iPhone 13 Pro Max
+            {productDetails.name}
           </Text>
 
           <Text fontFamily="$mono" fontSize={"$lg"} mt={8} px={16} color="$textDark800">
-            The iPhone 13 Pro Max features a 6.7-inch Super Retina XDR display, A15 Bionic chip, and a Pro camera system.
+            {productDetails.description}
           </Text>
 
           <Text fontFamily="$body" mt={8} px={16} color="$textDark800">
@@ -42,12 +83,16 @@ export function ProductDetails() {
             <VStack>
               <HStack>
                 <Text fontFamily="$body" fontSize={"$lg"} color="$textDark800">
-                  De <Text fontFamily="$body" fontSize={"$lg"} textDecorationLine="line-through">R$ 7.599,00</Text>
+                  De <Text fontFamily="$body" fontSize={"$lg"} textDecorationLine="line-through">
+                    R$ {productDetails.daily_value.toFixed(2).replace('.', ',')}
+                  </Text>
                 </Text>
               </HStack>
               <HStack>
                 <Text fontFamily="$body" fontSize={"$lg"} color="$textDark800" alignItems="center">
-                  Por <Text fontFamily="$heading" fontSize={"$2xl"} color="$teal600">R$ 7.599,00</Text>
+                  Por <Text fontFamily="$heading" fontSize={"$2xl"} color="$teal600">
+                    R$ {productDetails.daily_value.toFixed(2).replace('.', ',')}
+                  </Text>
                 </Text>
               </HStack>
             </VStack>

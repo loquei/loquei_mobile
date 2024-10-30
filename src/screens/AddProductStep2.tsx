@@ -8,73 +8,101 @@ import {
   ProgressFilledTrack,
 } from "@gluestack-ui/themed";
 import { VStack, Text, Image } from "@gluestack-ui/themed";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { AppNavigatorRoutesProps } from "@routes/app.routes";
 import { ImageUp } from "lucide-react-native";
 import { gluestackUIConfig } from "../../config/gluestack-ui.config";
 import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from "expo-file-system";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { postItem } from "../api/postItem";
+import Toast from 'react-native-toast-message';
+import { postItemImage } from "../api/postImage";
 
 export function AddProductStep2() {
   const progressValue = 50;
-
   const navigation = useNavigation<AppNavigatorRoutesProps>();
   const { tokens } = gluestackUIConfig;
 
   const [selectedImages, setSelectedImages] = useState<string[]>([]);
+  const [step1Data, setStep1Data] = useState<any>({});
 
-  const getProductStep1Data = async () => {
-    const step1Data = await AsyncStorage.getItem("Step1CreateProduct");
-    return step1Data;
-  };
-  const productStep1Data = getProductStep1Data();
-  const isDisable = !productStep1Data;
+  const showToast = () => {
+    Toast.show({
+      type: 'error',
+      text1: 'Limites de imagens excedido',
+      text2: 'Você pode adicionar até 3 imagens por produto.',
+    });
+  }
 
-  async function handleUserPhotoSelect() {
-    if (isDisable) {
-      try {
-        const photoSelected = await ImagePicker.launchImageLibraryAsync({
-          mediaTypes: ImagePicker.MediaTypeOptions.Images,
-          quality: 1,
-          aspect: [4, 4],
-          allowsEditing: true,
-        });
+  useFocusEffect(
+    useCallback(() => {
+      const checkData = async () => {
+        const data = await AsyncStorage.getItem("productDataStep1");
+        if (data) {
+          setStep1Data(JSON.parse(data));
+        }
+      };
+      checkData();
+    }, [])
+  );
 
-        if (photoSelected.canceled) {
+  async function handleItemPhotoSelect() {
+    if (selectedImages.length >= 3) {
+      showToast();
+      return;
+    }
+
+    try {
+      const photoSelected = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        quality: 1,
+        aspect: [4, 4],
+        allowsEditing: true,
+      });
+
+      if (photoSelected.canceled) {
+        return;
+      }
+
+      const photoUri = photoSelected.assets[0].uri;
+
+      if (photoUri) {
+        const photoInfo = (await FileSystem.getInfoAsync(photoUri)) as {
+          size: number;
+        };
+
+        if (photoInfo.size && photoInfo.size / 1024 / 1024 > 5) {
+          alert(
+            "A imagem selecionada é muito grande, selecione uma imagem de até 5MB"
+          );
           return;
         }
 
-        const photoUri = photoSelected.assets[0].uri;
-
-        if (photoUri) {
-          const photoInfo = (await FileSystem.getInfoAsync(photoUri)) as {
-            size: number;
-          };
-
-          if (photoInfo.size && photoInfo.size / 1024 / 1024 > 5) {
-            alert(
-              "A imagem selecionada é muito grande, selecione uma imagem de até 5MB"
-            );
-            return;
-          }
-
-          setSelectedImages((prev) => [...prev, photoUri]);
-          if (selectedImages.length === 1) {
-            await postItem(JSON.parse(productStep1Data));
-          }
+        if (selectedImages.length < 3) {
+          setSelectedImages([...selectedImages, photoSelected.assets[0].uri]);
+          return;
         }
-      } catch (error) {
-        console.log(error);
       }
+    } catch (error) {
+      console.log(error);
     }
-    console.log("Os dados estão em falta.");
   }
 
-  function handleNavigateToAddProductStep2() {
-    navigation.navigate("addProductStep2");
+  async function handleCreateProduct() {
+    try {
+      await postItem({ ...step1Data });
+
+      await postItemImage({ imagePaths: selectedImages });
+
+      await AsyncStorage.removeItem("productDataStep1");
+
+      // navigation.navigate("dashboard");
+    } catch (error) {
+      console.error("Error saving data:", error);
+    }
+
   }
 
   return (
@@ -129,7 +157,7 @@ export function AddProductStep2() {
             <Button
               title="Adicionar imagem"
               buttonVariant="outline"
-              onPress={handleUserPhotoSelect} // Chama a função para selecionar fotos
+              onPress={handleItemPhotoSelect}
             />
           </Box>
 
@@ -151,17 +179,19 @@ export function AddProductStep2() {
               ))}
             </HStack>
           </VStack>
+
         </VStack>
 
         <VStack flex={1} />
         <Button
           title="Confirmar"
-          onPress={handleNavigateToAddProductStep2}
           alignSelf="flex-end"
           mb={16}
-          isDisabled={isDisable}
+          isDisabled={selectedImages.length === 0}
+          onPress={handleCreateProduct}
         />
       </VStack>
+      <Toast />
     </VStack>
   );
 }

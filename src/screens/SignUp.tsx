@@ -6,21 +6,28 @@ import { useNavigation } from "@react-navigation/native";
 import { AuthNavigatorRoutesProps } from "@routes/auth.routes";
 import { ScreenHeader } from "@components/ScreenHeader";
 import { useForm, Controller } from "react-hook-form";
-import * as y from "yup";
 import { CreateAccountSchema } from "../schemas/CreateAccountSchema";
-import { createUser } from "../api/createUser";
+import { yupResolver } from '@hookform/resolvers/yup'; // Importando o resolver do yup
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { postEmail } from "../api/postEmail";
+import { createUser } from "../api/createUser";
+import * as y from "yup";
+import { cpfMask, phoneMask, dateMask } from "../utils/masks";
 
 export function SignUp() {
   type CreateAccountSchema = y.InferType<typeof CreateAccountSchema>;
   const authNavigation = useNavigation<AuthNavigatorRoutesProps>();
 
+  function handleNavigateToSignIn() {
+    authNavigation.navigate("signIn");
+  }
+
   function handleNavigateToCodeVerification() {
     authNavigation.navigate("codeVerification");
   }
 
-  const { control, handleSubmit } = useForm<CreateAccountSchema>({
+  const { control, handleSubmit, formState: { errors } } = useForm<CreateAccountSchema>({
+    resolver: yupResolver(CreateAccountSchema),
     defaultValues: {
       username: "",
       personal_name: "",
@@ -34,11 +41,14 @@ export function SignUp() {
   const handleCreateAccount = async (data: CreateAccountSchema) => {
     try {
       const { personal_name, username, email, phone, document, birth } = data;
+
       const formatDateToISO = (date: string) => {
         const [day, month, year] = date.split("/");
         return `${year}-${month}-${day}`;
       };
+
       const BirthIso = formatDateToISO(data.birth);
+
       await createUser({
         username,
         personal_name,
@@ -47,18 +57,16 @@ export function SignUp() {
         document,
         birth: BirthIso,
       });
+
       await AsyncStorage.setItem("userEmail", email);
-    } catch (error: any) {
-      console.log(error.message);
-    }
-    try {
-      const { email } = data;
+
       await postEmail({ email });
       handleNavigateToCodeVerification();
-    } catch (e) {
-      console.log("a");
+    } catch (error) {
+      console.error("Erro ao criar conta ou enviar e-mail:", error);
     }
   };
+
 
   return (
     <ScrollView
@@ -101,14 +109,17 @@ export function SignUp() {
               <Controller
                 control={control}
                 name="personal_name"
-                rules={{ required: true }}
                 render={({ field: { onChange, onBlur, value } }) => (
-                  <Input
-                    placeholder="João da Silva"
-                    value={value}
-                    onChangeText={onChange}
-                    onBlur={onBlur}
-                  />
+                  <>
+                    <Input
+                      placeholder="João da Silva"
+                      type="text"
+                      value={value}
+                      onBlur={onBlur}
+                      onChangeText={onChange}
+                      errorMessage={errors.personal_name?.message}
+                    />
+                  </>
                 )}
               />
             </VStack>
@@ -121,15 +132,17 @@ export function SignUp() {
               <Controller
                 control={control}
                 name="username"
-                rules={{ required: true }}
                 render={({ field: { onChange, onBlur, value } }) => (
-                  <Input
-                    placeholder="João do gás"
-                    type="text"
-                    onBlur={onBlur}
-                    value={value}
-                    onChangeText={onChange}
-                  />
+                  <>
+                    <Input
+                      placeholder="joao_silva"
+                      type="text"
+                      value={value}
+                      onBlur={onBlur}
+                      onChangeText={onChange}
+                      errorMessage={errors.username?.message}
+                    />
+                  </>
                 )}
               />
             </VStack>
@@ -142,15 +155,17 @@ export function SignUp() {
               <Controller
                 control={control}
                 name="email"
-                rules={{ required: true }}
                 render={({ field: { onChange, onBlur, value } }) => (
-                  <Input
-                    placeholder="ex: seuemial@gmail.com"
-                    keyboardType="email-address"
-                    onBlur={onBlur}
-                    value={value}
-                    onChangeText={onChange}
-                  />
+                  <>
+                    <Input
+                      placeholder="ex: seuemail@gmail.com"
+                      keyboardType="email-address"
+                      value={value}
+                      onBlur={onBlur}
+                      onChangeText={onChange}
+                      errorMessage={errors.email?.message}
+                    />
+                  </>
                 )}
               />
             </VStack>
@@ -162,16 +177,17 @@ export function SignUp() {
               <Controller
                 control={control}
                 name="document"
-                rules={{ required: true, maxLength: 11 }}
                 render={({ field: { onChange, onBlur, value } }) => (
-                  <Input
-                    placeholder="99999999999"
-                    keyboardType="numbers-and-punctuation"
-                    maxLength={11}
-                    onBlur={onBlur}
-                    value={value}
-                    onChangeText={onChange}
-                  />
+                  <>
+                    <Input
+                      placeholder="999.999.999-99"
+                      keyboardType="number-pad"
+                      value={value}
+                      onBlur={onBlur}
+                      onChangeText={(text) => onChange(cpfMask(text))}
+                      errorMessage={errors.document?.message}
+                    />
+                  </>
                 )}
               />
             </VStack>
@@ -183,14 +199,17 @@ export function SignUp() {
               <Controller
                 control={control}
                 name="birth"
-                render={({ field: { onBlur, onChange, value } }) => (
-                  <Input
-                    placeholder="31/05/2004"
-                    keyboardType="numeric"
-                    onBlur={onBlur}
-                    value={value}
-                    onChangeText={onChange}
-                  />
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <>
+                    <Input
+                      placeholder="DD/MM/AAAA"
+                      keyboardType="number-pad"
+                      value={value}
+                      onBlur={onBlur}
+                      onChangeText={(text) => onChange(dateMask(text))}
+                      errorMessage={errors.birth?.message}
+                    />
+                  </>
                 )}
               />
             </VStack>
@@ -202,16 +221,17 @@ export function SignUp() {
               <Controller
                 control={control}
                 name="phone"
-                rules={{ required: true, maxLength: 14 }}
-                render={({ field: { onBlur, onChange, value } }) => (
-                  <Input
-                    placeholder="8740028922"
-                    keyboardType="phone-pad"
-                    maxLength={14}
-                    onBlur={onBlur}
-                    value={value}
-                    onChangeText={onChange}
-                  />
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <>
+                    <Input
+                      placeholder="(99) 99999-9999"
+                      keyboardType="phone-pad"
+                      value={value}
+                      onBlur={onBlur}
+                      onChangeText={(text) => onChange(text)}
+                      errorMessage={errors.phone?.message}
+                    />
+                  </>
                 )}
               />
             </VStack>
@@ -229,7 +249,7 @@ export function SignUp() {
               mt={30}
             >
               Já tem uma conta?{" "}
-              <Text color="$teal600" onPress={() => {}}>
+              <Text color="$teal600" onPress={handleNavigateToSignIn}>
                 Entre agora
               </Text>
             </Text>

@@ -1,7 +1,6 @@
 import { Input } from "@components/Input";
 import {
   Center,
-  HStack,
   VStack,
   Text,
   Image,
@@ -16,43 +15,58 @@ import { ScreenHeader } from "@components/ScreenHeader";
 import { useForm, Controller } from "react-hook-form";
 import * as y from "yup";
 import { PostEmailSchema } from "../schemas/PostEmailSchema";
-import { postEmail } from "../api/postEmail";
+import { yupResolver } from '@hookform/resolvers/yup';
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useState } from "react";
+import { postEmail } from "../api/postEmail";
+import Toast from 'react-native-toast-message';
+
 export function SignIn() {
   type PostEmailSchema = y.InferType<typeof PostEmailSchema>;
   const authNavigation = useNavigation<AuthNavigatorRoutesProps>();
   const appNavigation = useNavigation<AppSecondaryNavigatorRoutesProps>();
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   function handleNavigateToSignUp() {
     authNavigation.navigate("signUp");
   }
 
-  function handleNavitageToHome() {
-    authNavigation.navigate("primaryRoutes");
+  const showToast = () => {
+    Toast.show({
+      type: 'error',
+      text1: 'Erro ao enviar o email',
+      text2: 'O email não foi encontrado. Verifique o endereço de email.',
+    });
   }
 
-  const getEmail = async () => {
-    const email = await AsyncStorage.getItem("userEmail");
-    return email;
-  };
-
-  {
-    /*const handleLogin = async ({ email }: { email: string }) => {
+  const handleLogin = async (data: PostEmailSchema) => {
     try {
-      const Useremail = await getEmail();
-      if (!Useremail) {
-        await AsyncStorage.setItem("userEmail", email);
+
+      setErrorMessage(null);
+
+      const response = await postEmail(data);
+
+      if (response === 200) {
+        await AsyncStorage.setItem("userEmail", data.email);
+        authNavigation.navigate("codeVerification");
+      } else if (response === 404) {
+        setErrorMessage("Email não encontrado. Verifique o endereço de email.");
+        console.log(errorMessage);
+        showToast();
+      } else {
+        setErrorMessage("Erro ao enviar o email. Tente novamente mais tarde.");
+        console.log(errorMessage);
       }
-      postEmail({ email });
-      handleNavitageToHome();
-    } catch (e: any) {
-      console.log(e);
+
+    } catch (error: any) {
+
+      setErrorMessage("Ocorreu um erro ao tentar fazer login. Tente novamente.");
+      console.log("Erro de login:", error);
     }
   };
-*/
-  }
 
-  const { control, handleSubmit } = useForm<PostEmailSchema>({
+  const { control, handleSubmit, formState: { errors } } = useForm<PostEmailSchema>({
+    resolver: yupResolver(PostEmailSchema),
     defaultValues: {
       email: "",
     },
@@ -64,6 +78,7 @@ export function SignIn() {
       showsVerticalScrollIndicator={false}
     >
       <ScreenHeader title="Login" backButton />
+      <Toast />
       <VStack flex={1} px={16} py={40}>
         <Center flex={1}>
           <VStack>
@@ -96,22 +111,24 @@ export function SignIn() {
                 Email
               </Text>
               <Controller
-                name="email"
                 control={control}
-                rules={{ required: true }}
-                render={({ field: { value, onBlur, onChange } }) => (
-                  <Input
-                    placeholder="Digite seu email"
-                    keyboardType="email-address"
-                    value={value}
-                    onBlur={onBlur}
-                    onChangeText={onChange}
-                  />
+                name="email"
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <>
+                    <Input
+                      placeholder="ex: seuemail@gmail.com"
+                      keyboardType="email-address"
+                      value={value}
+                      onBlur={onBlur}
+                      onChangeText={onChange}
+                      errorMessage={errors.email?.message}
+                    />
+                  </>
                 )}
               />
             </VStack>
 
-            <Button title="Entrar" onPress={() => handleNavitageToHome()} />
+            <Button title="Entrar" onPress={handleSubmit(handleLogin)} />
 
             <Text
               fontFamily="$body"

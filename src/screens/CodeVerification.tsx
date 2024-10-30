@@ -13,10 +13,12 @@ import { Button } from "@components/Button";
 import { AuthNavigatorRoutesProps } from "@routes/auth.routes";
 import { ScreenHeader } from "@components/ScreenHeader";
 import { useForm, Controller } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
 import { SendCodeSchema } from "../schemas/SendCodeSchema";
-import * as y from "yup";
 import { postCode } from "../api/postCode";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as y from "yup";
+import { ListUsers } from "../api/listUsers";
 
 export function CodeVerification() {
   type SendCodeSchema = y.InferType<typeof SendCodeSchema>;
@@ -25,7 +27,13 @@ export function CodeVerification() {
   function handleNavitageToHome() {
     authNavigation.navigate("primaryRoutes");
   }
-  const { control, handleSubmit } = useForm<SendCodeSchema>({
+
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<SendCodeSchema>({
+    resolver: yupResolver(SendCodeSchema),
     defaultValues: {
       code: "",
     },
@@ -44,11 +52,15 @@ export function CodeVerification() {
           code,
           email,
         });
+        await AsyncStorage.setItem("currentUserEmail", email);
         handleNavitageToHome();
       }
     } catch (e: any) {
       console.log(e);
     }
+
+    // await ListUsers();
+
   };
 
   return (
@@ -76,7 +88,7 @@ export function CodeVerification() {
                 color="$textDark800"
                 mt={12}
               >
-                Por favor, insira o código de verificação de 4 dígitos que foi
+                Por favor, insira o código de verificação de 6 dígitos que foi
                 enviado para o seu endereço de e-mail registrado.
               </Text>
             </Center>
@@ -91,7 +103,6 @@ export function CodeVerification() {
               <Controller
                 control={control}
                 name="code"
-                rules={{ required: true }}
                 render={({ field: { onChange, onBlur, value } }) => (
                   <Input
                     placeholder="Insira o código"
@@ -99,6 +110,7 @@ export function CodeVerification() {
                     onChangeText={onChange}
                     value={value}
                     onBlur={onBlur}
+                    errorMessage={errors.code?.message}
                   />
                 )}
               />

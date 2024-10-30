@@ -21,7 +21,7 @@ import { Notifications } from "@screens/Notifications";
 import { AddAddress } from "@screens/AddAddress";
 
 export type AppSecondaryRoutes = {
-  productDetails: undefined;
+  productDetails: { id: string };
   productReviews: undefined;
   searchCategory: undefined;
   searchResults: undefined;
@@ -53,7 +53,9 @@ export function AppRoutes() {
       }}
       initialRouteName="secondaryRoutes"
     >
-      <Screen name="productDetails" component={ProductDetails} />
+      <Screen name="productDetails" component={ProductDetails} getId={
+        ({ params }) => params.id
+      } />
 
       <Screen name="productReviews" component={ProductReviews} />
 
@@ -84,6 +86,7 @@ export function AppRoutes() {
 
       <Screen name="notifications" component={Notifications} />
       <Screen name="addUserAddress" component={AddAddress} />
+
     </Navigator>
   );
 }

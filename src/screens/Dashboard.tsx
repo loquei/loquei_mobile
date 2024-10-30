@@ -7,11 +7,12 @@ import { Plus, SquareMenu } from "lucide-react-native";
 import { gluestackUIConfig } from "../../config/gluestack-ui.config";
 import { ItemCard } from "@components/ItemCard";
 import { FlatList, ScrollView } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { AppNavigatorRoutesProps } from "@routes/app.routes";
-import { useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { IGetItem } from "../@types/TItem";
 import { ListMyItems } from "../api/listMyItems";
+import { ListItems } from "../api/listItem";
 
 export function Dashboard() {
   const { tokens } = gluestackUIConfig;
@@ -30,19 +31,18 @@ export function Dashboard() {
     navigation.navigate("userProducts");
   }
 
-  function handleNavigateProductDetails() {
-    navigation.navigate("productDetails");
-  }
+  useFocusEffect(
+    useCallback(() => {
+      const fetchData = async () => {
+        const data = await ListItems();
+        if (data) {
+          setItemData(data);
+        }
+      };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const data = await ListMyItems();
-      if (data) {
-        setItemData(data);
-      }
-    };
-    fetchData();
-  }, []);
+      fetchData();
+    }, [])
+  );
 
   return (
     <VStack flex={1}>
@@ -192,10 +192,12 @@ export function Dashboard() {
             renderItem={({ item }) => (
               <VStack>
                 <ItemCard
+                  id={item.id}
                   type="product"
                   title={item.name}
                   description={item.description}
-                  price={item.daily_value.toString()}
+                  price={item.daily_value.toFixed(2).replace('.', ',')}
+                  imagesPaths={item.images.links}
                 />
               </VStack>
             )}

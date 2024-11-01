@@ -15,7 +15,7 @@ interface ItemCardProps {
   description: string;
   price: string;
   date?: string;
-  imagesPaths: string[];
+  imagesPaths: string[] | string;
   hasRemoveButton?: boolean;
   hasEditButton?: boolean;
 }
@@ -34,12 +34,12 @@ export function ItemCard({
   const navigation = useNavigation<AppNavigatorRoutesProps>();
   const { tokens } = gluestackUIConfig;
 
-  const baseURL = "http://192.168.3.2:8080";
+  const baseURL = process.env.EXPO_BASE_URL;
 
   function handleNavigateToProductDetails() {
     type === "product"
       ? navigation.navigate("productDetails", { id })
-      : navigation.navigate("orderDetails");
+      : navigation.navigate("orderDetails", { id });
   }
 
   function handleNavigateToEditProduct() {
@@ -51,15 +51,18 @@ export function ItemCard({
       <HStack alignItems="center" bg="$white" p={16} rounded={"$md"}>
         <Image
           source={
-            imagesPaths.length > 0
-              ? { uri: baseURL + imagesPaths[0] }
-              : ItemCardImage
+            typeof imagesPaths === "string"
+              ? { uri: imagesPaths }
+              : imagesPaths.length > 0
+                ? { uri: baseURL + imagesPaths[0] }
+                : ItemCardImage
           }
           width={110}
           height={110}
           alt="ItemCardImage"
           rounded={"$md"}
         />
+
 
         <VStack flex={1} px={16} py={8} gap={4}>
           <VStack>

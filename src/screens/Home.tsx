@@ -27,7 +27,7 @@ export function Home() {
   const [isUserAuthenticated, setIsUserAuthenticated] = useState(false);
   const [currentUser, setCurrentUser] = useState<any>();
 
-  const baseURL = "http://192.168.3.2:8080";
+  const baseURL = process.env.EXPO_BASE_URL;
 
   useFocusEffect(
     useCallback(() => {
@@ -37,9 +37,6 @@ export function Home() {
           if (data) {
             setItemData(data);
             console.log("data", data);
-            if (data.length > 0) {
-              console.log("First item image link", baseURL + data[0].images.links[0]);
-            }
           }
         } catch (error) {
           console.error("Error fetching data: ", error);
@@ -63,15 +60,9 @@ export function Home() {
         }
       };
 
-      const fetchFirstImage = async () => {
-        const response = await GetItemFirstImage("3b883edcb3024669befb171954b60334");
-        console.log("First image response", response);
-      }
-
       fetchData();
       checkAuthentication();
       fetchCurrentUser();
-      fetchFirstImage();
     }, [])
   );
 

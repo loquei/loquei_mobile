@@ -15,7 +15,7 @@ export function ProductImagesCarousel({ setScrollEnabled, imagesPaths }: ICarous
   const ref = useRef<ICarouselInstance>(null);
   const data = Array.from({ length: imagesPaths.length }, (_, i) => i);
   const windowWidth = useWindowDimensions().width;
-  const baseURL = "http://192.168.3.2:8080";
+  const baseURL = process.env.EXPO_BASE_URL;
 
   const [activeIndex, setActiveIndex] = useState(0);
   return (

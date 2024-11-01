@@ -23,7 +23,7 @@ import {
   CircleHelp,
   Info,
 } from "lucide-react-native";
-import { TouchableOpacity } from "react-native";
+import { ScrollView, TouchableOpacity } from "react-native";
 
 import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from "expo-file-system";
@@ -93,8 +93,14 @@ export function Profile() {
           const currentUser = await AsyncStorage.getItem("currentUser");
           if (currentUser) {
             const parsedUser = JSON.parse(currentUser);
-            setUser(parsedUser);
-            console.log("currentUser", parsedUser);
+            if (parsedUser && parsedUser.items) {
+              setUser(parsedUser);
+              console.log("SEU PERFIL", parsedUser);
+            } else {
+              console.warn("Formato inesperado em currentUser:", currentUser);
+            }
+          } else {
+            console.warn("Nenhum usuário atual encontrado no AsyncStorage.");
           }
         } catch (error) {
           console.error("Error fetching current user:", error);
@@ -105,8 +111,13 @@ export function Profile() {
     }, [])
   );
 
+
   return (
-    <VStack>
+    <ScrollView
+      contentContainerStyle={{ flexGrow: 1 }}
+      showsVerticalScrollIndicator={false}
+      nestedScrollEnabled={true}
+    >
       <ScreenHeader title="Perfil" backButton />
 
       <VStack justifyContent="center" alignItems="center" px={16} mt={16}>
@@ -125,7 +136,7 @@ export function Profile() {
           fontFamily="$heading"
           textAlign="center"
         >
-          {user && user.items[0].personal_name ? user.items[0].personal_name : "Usuário"}
+          {user?.items?.[0]?.personal_name}
         </Heading>
         <TouchableOpacity onPress={handleUserPhotoSelect}>
           <Text color="$teal600" fontSize="$sm" fontFamily="$heading">
@@ -239,6 +250,6 @@ export function Profile() {
           </Pressable>
         </Box>
       </VStack>
-    </VStack>
+    </ScrollView>
   );
 }

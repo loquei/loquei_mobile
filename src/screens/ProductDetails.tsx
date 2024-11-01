@@ -2,25 +2,32 @@ import { Button } from "@components/Button";
 import { ProductImagesCarousel } from "@components/ProductImagesCarousel";
 import { ScreenHeader } from "@components/ScreenHeader";
 import { Tag } from "@components/Tag";
-import { HStack, Text, VStack, View, set } from "@gluestack-ui/themed";
+import { HStack, Text, VStack, View } from "@gluestack-ui/themed";
 import { useCallback, useState } from "react";
-import { FlatList } from "react-native";
-import { ScrollView } from "react-native";
+import { FlatList, ScrollView } from "react-native";
 import { ProductDetailsAccordion } from "@components/ProductDetailsAccordion";
 import { ProductReviews } from "@components/ProductContainerReviews";
 import { RelatedProductsList } from "@components/RelatedProductsList";
-import { useFocusEffect, useRoute } from "@react-navigation/native";
+import { useFocusEffect, useNavigation, useRoute } from "@react-navigation/native";
 import { GetItem } from "../api/getItem";
 import { IGetItem } from "../@types/TItem";
 import { Loading } from "@components/Loading";
+import { postRental } from "../api/postRental";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { listRentals } from "../api/listRentals";
+import { AppNavigatorRoutesProps } from "@routes/app.routes";
 
 export function ProductDetails() {
-
   const [scrollEnabled, setScrollEnabled] = useState(true);
   const [productDetails, setProductDetails] = useState<IGetItem>();
-
   const [rentalTimes, setRentalTimes] = useState<string[]>([]);
   const [rentalTimeSelected, setRentalTimeSelected] = useState('');
+  const [productRentals, setProductRentals] = useState<any[]>([]);
+  const [filteredRentals, setFilteredRentals] = useState<any[]>([]);
+  const [currentUserId, setCurrentUserId] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+
+  const navigation = useNavigation<AppNavigatorRoutesProps>();
 
   const route = useRoute();
   const { id } = route.params as { id: string };
@@ -47,10 +54,125 @@ export function ProductDetails() {
     }
   }, [id]);
 
+  const fetchRentals = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      console.log(`Buscando aluguéis do produto ${id} e do usuário ${currentUserId}...`);
+
+      if (currentUserId) {
+        const rentals = await listRentals(currentUserId);
+
+        if (rentals && Array.isArray(rentals.items)) {
+          console.log(`Aluguéis do produto ${id} e do usuário ${currentUserId} recebidos:`, rentals.items);
+          setProductRentals(rentals.items);
+
+          const filteredRentals = rentals.items.filter((rental: { item: string; }) => rental.item === id);
+          console.log(`Aluguéis do produto ${id} recebidos:`, filteredRentals);
+
+          setFilteredRentals(filteredRentals);
+        } else {
+          console.warn("Os dados recebidos não estão no formato esperado:", rentals);
+        }
+      } else {
+        console.warn("currentUserId não está definido.");
+      }
+    } catch (error) {
+      console.error('Erro ao buscar aluguéis do produto:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [id, currentUserId]);
+
+  const createRental = async () => {
+    if (!productDetails) {
+      console.error('Detalhes do produto não encontrados.');
+      return;
+    }
+
+    const rentalTimeNumber = parseInt(rentalTimeSelected.replace(/\D/g, ''), 10);
+    const rental = {
+      lessor_id: productDetails?.user_id,
+      lessee_id: currentUserId,
+      item_id: id,
+      rental_time: rentalTimeNumber,
+    };
+
+    console.log('Rental:', rental);
+
+    // Tente criar o aluguel
+    try {
+      await postRental(
+        rental.lessor_id,
+        rental.lessee_id,
+        rental.item_id,
+        rental.rental_time
+      );
+
+      // Após criar o aluguel, faça uma nova chamada para buscar os aluguéis atualizados
+      await fetchRentals(); // Chama a função que você já criou para buscar aluguéis
+
+    } catch (error) {
+      console.error('Erro ao criar o aluguel:', error);
+    }
+  };
+
+
+  function handleUserToDashboard() {
+    navigation.navigate('dashboard');
+  }
+
+  const getStatusDescription = (status: string) => {
+    switch (status) {
+      case "PENDING":
+        return "Pendente";
+      case "ACCEPTED":
+        return "Aceita";
+      case "REFUSED":
+        return "Recusada";
+      case "CANCELED":
+        return "Cancelada";
+      case "COMPLETED":
+        return "Concluída";
+      case "IN_PROGRESS":
+        return "Em andamento";
+      default:
+        return "Status desconhecido";
+    }
+  };
+
   useFocusEffect(
     useCallback(() => {
-      fetchProductDetails();
-    }, [fetchProductDetails])
+      setIsLoading(true);
+      const fetchCurrentUser = async () => {
+        try {
+          const currentUser = await AsyncStorage.getItem("currentUser");
+          if (currentUser) {
+            const parsedUser = JSON.parse(currentUser);
+            if (parsedUser && parsedUser.items[0].id) {
+              setCurrentUserId(parsedUser.items[0].id);
+            } else {
+              console.warn("Formato inesperado em currentUser:", currentUser);
+            }
+          } else {
+            console.warn("Nenhum usuário atual encontrado no AsyncStorage.");
+          }
+        } catch (error) {
+          console.error("Error fetching current user:", error);
+        }
+      };
+
+      const loadData = async () => {
+        await fetchCurrentUser();
+        console.log('O CURRENT USER ID', currentUserId);
+        await fetchProductDetails();
+
+        if (currentUserId) {
+          await fetchRentals();
+        }
+      };
+
+      loadData();
+    }, [fetchProductDetails, fetchRentals, currentUserId])
   );
 
   if (!productDetails) {
@@ -136,9 +258,31 @@ export function ProductDetails() {
         bg="$white"
         hardShadow="5"
       >
-        <Button title="Alugar" buttonVariant="solid" />
-        <Button title="Adicionar à lista de desejos" buttonVariant="outline" />
+        {isLoading ? (
+          <Button title="Carregando" buttonVariant="solid" disabled />
+        ) : (
+          <>
+            {currentUserId === productDetails.user_id ? (
+              <Button title="Gerenciar Produto" buttonVariant="solid" onPress={handleUserToDashboard} />
+            ) : (
+              <>
+                {filteredRentals.length > 0 ? (
+                  <Button
+                    title={`Locação ${getStatusDescription(filteredRentals[0].status)}`}
+                    buttonVariant="outline"
+                  />
+                ) : (
+                  <>
+                    <Button title="Alugar" buttonVariant="solid" onPress={createRental} />
+                    <Button title="Adicionar à lista de desejos" buttonVariant="outline" />
+                  </>
+                )}
+              </>
+            )}
+          </>
+        )}
       </VStack>
+
     </View>
   );
 }

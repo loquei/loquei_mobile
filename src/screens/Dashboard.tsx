@@ -12,7 +12,7 @@ import { AppNavigatorRoutesProps } from "@routes/app.routes";
 import { useCallback, useState } from "react";
 import { IGetItem } from "../@types/TItem";
 import { ListMyItems } from "../api/listMyItems";
-import { ListItems } from "../api/listItem";
+import { ListItems } from "../api/listItems";
 
 export function Dashboard() {
   const { tokens } = gluestackUIConfig;

@@ -8,7 +8,7 @@ import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { AppNavigatorRoutesProps } from "@routes/app.routes";
 import { useCallback, useState } from "react";
 import { FlatList, ScrollView, SectionList } from "react-native";
-import { ListItems } from "../api/listItem";
+import { ListItems } from "../api/listItems";
 import { IGetItem } from "../@types/TItem";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { GetItemFirstImage } from "../api/getItemFirstImage";

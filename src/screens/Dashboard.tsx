@@ -34,9 +34,10 @@ export function Dashboard() {
   useFocusEffect(
     useCallback(() => {
       const fetchData = async () => {
-        const data = await ListItems();
+        const data = await ListMyItems();
         if (data) {
           setItemData(data);
+          console.log("data", data);
         }
       };
 

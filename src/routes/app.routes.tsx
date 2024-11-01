@@ -32,7 +32,7 @@ export type AppSecondaryRoutes = {
   addProductStep1: undefined;
   addProductStep2: undefined;
   allOrders: undefined;
-  orderDetails: undefined;
+  orderDetails: { id: string };
   secondaryRoutes: undefined;
   account: undefined;
   addAddress: undefined;
@@ -77,7 +77,9 @@ export function AppRoutes() {
 
       <Screen name="allOrders" component={AllOrders} />
 
-      <Screen name="orderDetails" component={OrderDetails} />
+      <Screen name="orderDetails" component={OrderDetails} getId={
+        ({ params }) => params.id
+      } />
       <Screen name="secondaryRoutes" component={AppSecondaryRoutes} />
 
       <Screen name="account" component={Account} />

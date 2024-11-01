@@ -2,21 +2,159 @@ import { Button } from "@components/Button";
 import { ItemCard } from "@components/ItemCard";
 import { ScreenHeader } from "@components/ScreenHeader";
 import { VStack, Text, HStack, Divider, View, Pressable } from "@gluestack-ui/themed";
-import { useState } from "react";
+import { useFocusEffect, useNavigation, useRoute } from "@react-navigation/native";
+import { useState, useCallback, useEffect } from "react";
+import { getRental } from "../api/getRental";
+import { GetItem } from "../api/getItem";
+import { IGetItem } from "../@types/TItem";
+import { getUser } from "../api/getUser";
+import { getLessee } from "../api/getLessee";
+import { Loading } from "@components/Loading";
+import { Linking, ScrollView } from "react-native";
+import { acceptRental } from "../api/putAcceptRental";
+import { refuseRental } from "../api/putRefuseRental";
+
+interface IRentalDetails {
+  created_at: string;
+  end_date: string;
+  id: string;
+  item: string;
+  lessee: string;
+  lessor: string;
+  start_date: string;
+  status: "PENDING" | "ACCEPTED" | "IN_PROGRESS" | "COMPLETED" | "CANCELLED" | "REFUSED";
+  total_value: number;
+  updated_at: string;
+}
+
+interface IGetUser {
+  id: string;
+  user_name: string;
+  personal_name: string;
+  email: string;
+  phone: string;
+  document: string;
+  birth: string;
+  created_at: string;
+  updated_at: string;
+}
 
 export function OrderDetails() {
-  const [orderAccepted, setOrderAccepted] = useState<boolean | undefined>(undefined);
+  const [rentalDetails, setRentalDetails] = useState<IRentalDetails | null>(null);
+  const [itemDetails, setItemDetails] = useState<IGetItem | null>(null);
+  const [lesseeDetails, setLesseeDetails] = useState<IGetUser | null>(null);
 
-  function handleOrderAccept() {
-    setOrderAccepted(true);
+  const route = useRoute();
+  const { id } = route.params as { id: string };
+
+  const fetchRental = async () => {
+    try {
+      const rentalResponse = await getRental(id);
+      if (rentalResponse) {
+        console.log("Rental details:", rentalResponse);
+        setRentalDetails(rentalResponse);
+      }
+    } catch (error) {
+      console.error("Erro ao buscar os detalhes do aluguel:", error);
+    }
+  };
+
+  const getStatusDescription = (status: string) => {
+    switch (status) {
+      case "PENDING":
+        return "Pendente";
+      case "ACCEPTED":
+        return "Aceita";
+      case "REFUSED":
+        return "Recusada";
+      case "CANCELED":
+        return "Cancelada";
+      case "COMPLETED":
+        return "Concluída";
+      case "IN_PROGRESS":
+        return "Em andamento";
+      default:
+        return "Status desconhecido";
+    }
+  };
+
+  async function handleOrderAccept() {
+    const acceptResponse = await acceptRental(id);
+
+    if (acceptResponse) {
+      await fetchRental();
+    }
   }
 
-  function handleOrderReject() {
-    setOrderAccepted(false);
+  async function handleOrderRefuse() {
+    const refuseResponse = await refuseRental(id);
+
+    if (refuseResponse) {
+      await fetchRental();
+    }
+  }
+
+  function handleLessorToLesseeChat() {
+    const phoneNumber = lesseeDetails?.phone;
+    if (phoneNumber) {
+      Linking.openURL(`https://wa.me/${phoneNumber}`)
+        .catch(err => console.error("Erro ao abrir URL:", err));
+    } else {
+      console.error("Número de telefone não disponível");
+    }
+  }
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchRental();
+    }, [id])
+  );
+
+  useEffect(() => {
+    const fetchItem = async (itemId: string) => {
+      console.log("Buscando detalhes do item:", itemId);
+      try {
+        const itemResponse = await GetItem(itemId);
+        if (itemResponse) {
+          console.log("Item details:", itemResponse);
+          setItemDetails(itemResponse);
+        }
+      } catch (error) {
+        console.error("Erro ao buscar os detalhes do item:", error);
+      }
+    };
+
+    const fetchLessee = async (lesseeId: string) => {
+      try {
+        const lesseeResponse = await getLessee(lesseeId);
+        if (lesseeResponse) {
+          console.log("Lessee details:", lesseeResponse);
+          setLesseeDetails(lesseeResponse);
+        }
+      } catch (error) {
+        console.error("Erro ao buscar os detalhes do locatário:", error);
+      }
+    };
+
+    if (rentalDetails) {
+      fetchItem(rentalDetails.item);
+
+      if (rentalDetails.lessee) {
+        fetchLessee(rentalDetails.lessee);
+      }
+    }
+  }, [rentalDetails]);
+
+  if (!rentalDetails || !itemDetails) {
+    return <Loading />;
   }
 
   return (
-    <VStack>
+    <ScrollView
+      contentContainerStyle={{ flexGrow: 1 }}
+      showsVerticalScrollIndicator={false}
+      nestedScrollEnabled={true}
+    >
       <ScreenHeader title="Detalhes do pedido" backButton />
 
       <VStack px={16} mt={16}>
@@ -24,44 +162,44 @@ export function OrderDetails() {
           Detalhes do pedido
         </Text>
 
-        <HStack justifyContent="space-between" py={16}>
+        <VStack justifyContent="space-between" py={16}>
           <Text fontFamily="$heading" fontSize="$md" color="$textDark800">
             ID do pedido
           </Text>
           <Text fontFamily="$body" fontSize="$md" color="$textDark800">
-            #12345
+            #{id}
           </Text>
-        </HStack>
+        </VStack>
         <Divider />
 
-        <HStack justifyContent="space-between" py={16}>
+        <VStack justifyContent="space-between" py={16}>
           <Text fontFamily="$heading" fontSize="$md" color="$textDark800">
             Cliente
           </Text>
           <Text fontFamily="$body" fontSize="$md" color="$textDark800">
-            John Doe
+            {lesseeDetails?.personal_name}
           </Text>
-        </HStack>
+        </VStack>
         <Divider />
 
-        <HStack justifyContent="space-between" py={16}>
+        <VStack justifyContent="space-between" py={16}>
           <Text fontFamily="$heading" fontSize="$md" color="$textDark800">
             Data
           </Text>
           <Text fontFamily="$body" fontSize="$md" color="$textDark800">
-            12/08/2024
+            {rentalDetails.start_date}
           </Text>
-        </HStack>
+        </VStack>
         <Divider />
 
-        <HStack justifyContent="space-between" py={16}>
+        <VStack justifyContent="space-between" py={16}>
           <Text fontFamily="$heading" fontSize="$md" color="$textDark800">
             Status
           </Text>
           <Text fontFamily="$body" fontSize="$md" color="$textDark800">
-            {orderAccepted === undefined ? 'Pendente' : orderAccepted ? 'Aceito' : 'Recusado'}
+            {getStatusDescription(rentalDetails.status)}
           </Text>
-        </HStack>
+        </VStack>
         <Divider />
 
         <VStack py={16}>
@@ -69,22 +207,31 @@ export function OrderDetails() {
             Produto
           </Text>
 
-          <ItemCard
-            type="product"
-            title="Nome do produto"
-            description="Descrição do produto"
-            price="R$ 3.999,00"
-          />
+          {itemDetails && (
+            <ItemCard
+              id={rentalDetails.item}
+              date={rentalDetails.start_date}
+              imagesPaths={
+                itemDetails.images.links.length > 0
+                  ? itemDetails.images.links
+                  : ["https://via.placeholder.com/150"]
+              }
+              type="product"
+              title={itemDetails.name}
+              description={itemDetails.description}
+              price={rentalDetails.total_value ? rentalDetails.total_value.toString() : "0"}
+            />
+          )}
         </VStack>
 
-        {orderAccepted === undefined && (
+        {rentalDetails.status === "PENDING" && (
           <HStack justifyContent="space-between" py={16} gap={8}>
-            <Button title="Recusar pedido" buttonVariant="danger-outline" flex={1} onPress={handleOrderReject} />
+            <Button title="Recusar pedido" buttonVariant="danger-outline" flex={1} onPress={handleOrderRefuse} />
             <Button title="Aceitar pedido" flex={1} onPress={handleOrderAccept} />
           </HStack>
         )}
 
-        {orderAccepted === true && (
+        {rentalDetails.status === "ACCEPTED" && (
           <VStack>
             <Text fontFamily="$heading" fontSize="$lg" color="$textDark800" mb={8}>
               Conversar com o cliente
@@ -94,12 +241,12 @@ export function OrderDetails() {
               <HStack alignItems="center" gap={16}>
                 <View width={48} height={48} bg="$backgroundLight100" rounded={"$full"} justifyContent="center" alignItems="center" />
                 <Text fontFamily="$body" fontSize="$md" color="$textDark800">
-                  John Doe
+                  {lesseeDetails?.personal_name}
                 </Text>
               </HStack>
 
               <Pressable px={16} py={8} bg="$green100" rounded={"$md"} $active-bg="$green200">
-                <Text fontFamily="$mono" fontSize="$md" color="$teal600">
+                <Text fontFamily="$mono" fontSize="$md" color="$teal600" onPress={handleLessorToLesseeChat}>
                   Conversar
                 </Text>
               </Pressable>
@@ -107,18 +254,12 @@ export function OrderDetails() {
           </VStack>
         )}
 
-        {orderAccepted === false && (
+        {rentalDetails.status === "REFUSED" && (
           <Text fontFamily="$body" fontSize="$md" color="$red500" mt={16} textAlign="center">
             Pedido recusado.
           </Text>
         )}
       </VStack>
-
-      <Pressable onPress={() => setOrderAccepted(undefined)}>
-        <Text fontFamily="$body" fontSize="$md" color="$teal600" textAlign="center">
-          Voltar estado do pedido
-        </Text>
-      </Pressable>
-    </VStack>
+    </ScrollView>
   );
 }

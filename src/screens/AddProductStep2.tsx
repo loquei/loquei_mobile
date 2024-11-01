@@ -98,7 +98,7 @@ export function AddProductStep2() {
 
       await AsyncStorage.removeItem("productDataStep1");
 
-      // navigation.navigate("dashboard");
+      navigation.navigate("dashboard");
     } catch (error) {
       console.error("Error saving data:", error);
     }

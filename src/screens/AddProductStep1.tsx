@@ -55,7 +55,7 @@ export function AddProductStep1() {
       daily_value: 0,
       max_days: 0,
       min_days: 0,
-      categories: ["155f348722ec410384c0cac085c911c3"],
+      categories: ["3190b248bfff44469eb01394bbbd51e8"],
     },
   });
 

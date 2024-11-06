@@ -1,4 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { api } from "./axios/axiosConfig";
 
 export const getUser = async () => {
   const token = await AsyncStorage.getItem("AuthToken");
@@ -18,7 +19,6 @@ export const getUser = async () => {
         headers
       });
 
-      // Verifique o status da resposta
       if (!response.ok) {
         throw new Error(`Erro: ${response.status}`);
       }
@@ -36,3 +36,33 @@ export const getUser = async () => {
     console.error("Erro ao buscar email do usuario do AsyncStorage: currentUserEmail não encontrado");
   }
 };
+
+export const getUserById = async (userId: string) => {
+  const token = await AsyncStorage.getItem("AuthToken");
+
+  const headers = {
+    "Content-Type": "application/json",
+    "Authorization": `Bearer ${token}`
+  };
+
+  if (userId) {
+    try {
+      const response = await api.get(`/users/${userId}`, {
+        headers
+      });
+
+      if (!response) {
+        throw new Error(`Erro: sem resposta`);
+      }
+
+      return response.data.personal_name;
+
+    } catch (error) {
+      console.error("Erro ao buscar usuario:", error);
+      throw error;
+    }
+  } else {
+    console.error("Erro ao buscar email do usuario do AsyncStorage: currentUserEmail não encontrado");
+  }
+}
+

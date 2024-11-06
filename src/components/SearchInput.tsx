@@ -3,9 +3,22 @@ import { InputIcon } from "@gluestack-ui/themed";
 import { InputSlot } from "@gluestack-ui/themed";
 import { Input, InputField } from "@gluestack-ui/themed";
 import { Search as SearchIcon, Mic } from "lucide-react-native";
+import { useState } from "react";
 
-export function SearchInput() {
+interface SearchInputProps {
+  onChangeText: (text: string) => void;
+  onSearch?: () => void;
+}
+
+export function SearchInput({ onChangeText, onSearch }: SearchInputProps) {
   const { tokens } = gluestackUIConfig;
+  const [text, setText] = useState("");
+
+  const handleTextChange = (value: string) => {
+    setText(value);
+    onChangeText(value);
+  };
+
   return (
     <Input
       bg="$white"
@@ -44,6 +57,9 @@ export function SearchInput() {
         height={48}
         lineHeight={24}
         paddingVertical={0}
+        value={text}
+        onChangeText={handleTextChange}
+        onSubmitEditing={onSearch}
       />
       <InputSlot
         bg="$white"
@@ -58,5 +74,5 @@ export function SearchInput() {
         </InputIcon>
       </InputSlot>
     </Input>
-  )
+  );
 }

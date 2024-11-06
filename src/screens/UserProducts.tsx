@@ -65,6 +65,7 @@ export function UserProducts() {
                   title={item.name}
                   description={item.description}
                   price={item.daily_value.toString()}
+                  imagesPaths={item.images.links}
                   hasRemoveButton
                   hasEditButton
                 />

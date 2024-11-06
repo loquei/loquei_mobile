@@ -3,7 +3,7 @@ import { CodeVerification } from '@screens/CodeVerification';
 import { Onboarding } from '@screens/Onboarding';
 import { SignIn } from '@screens/SignIn';
 import { SignUp } from '@screens/SignUp';
-import { AppRoutes } from './app.routes';
+import { UseAuthRoutes } from './useRoutes';
 
 type AuthRoutes = {
   onBoarding: undefined;
@@ -44,7 +44,7 @@ export function AuthRoutes() {
       />
       <Screen
         name="primaryRoutes"
-        component={AppRoutes}
+        component={UseAuthRoutes().AppRoutes}
       />
     </Navigator>
   )

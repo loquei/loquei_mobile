@@ -14,17 +14,18 @@ import { ProductReviews } from "@screens/ProductReviews";
 import { SearchCategory } from "@screens/SearchCategory";
 import { SearchResults } from "@screens/SearchResults";
 import { UserProducts } from "@screens/UserProducts";
-import { AppSecondaryRoutes } from "./app.secondary.routes";
 import { Account } from "@screens/Account";
 import { Address } from "@screens/Address";
 import { Notifications } from "@screens/Notifications";
 import { AddAddress } from "@screens/AddAddress";
+import { AppSecondaryRoutes } from "./app.secondary.routes";
+import { UseAuthRoutes } from './useRoutes';
 
 export type AppSecondaryRoutes = {
   productDetails: { id: string };
   productReviews: undefined;
   searchCategory: undefined;
-  searchResults: undefined;
+  searchResults: { searchTerm: string };
   leasing: undefined;
   dashboard: undefined;
   userProducts: undefined;
@@ -33,11 +34,12 @@ export type AppSecondaryRoutes = {
   addProductStep2: undefined;
   allOrders: undefined;
   orderDetails: { id: string };
-  secondaryRoutes: undefined;
   account: undefined;
   addAddress: undefined;
   notifications: undefined;
   addUserAddress: undefined;
+  secondaryRoutes: undefined;
+  authRoutes: undefined;
 };
 
 export type AppNavigatorRoutesProps =
@@ -61,7 +63,9 @@ export function AppRoutes() {
 
       <Screen name="searchCategory" component={SearchCategory} />
 
-      <Screen name="searchResults" component={SearchResults} />
+      <Screen name="searchResults" component={SearchResults} getId={
+        ({ params }) => params.searchTerm
+      } />
 
       <Screen name="leasing" component={Leasing} />
 
@@ -80,14 +84,18 @@ export function AppRoutes() {
       <Screen name="orderDetails" component={OrderDetails} getId={
         ({ params }) => params.id
       } />
-      <Screen name="secondaryRoutes" component={AppSecondaryRoutes} />
 
       <Screen name="account" component={Account} />
 
       <Screen name="addAddress" component={Address} />
 
       <Screen name="notifications" component={Notifications} />
+
       <Screen name="addUserAddress" component={AddAddress} />
+
+      <Screen name="secondaryRoutes" component={AppSecondaryRoutes} />
+
+      <Screen name="authRoutes" component={UseAuthRoutes().AuthRoutes} />
 
     </Navigator>
   );

@@ -29,8 +29,8 @@ export function SignUp() {
   const { control, handleSubmit, formState: { errors } } = useForm<CreateAccountSchema>({
     resolver: yupResolver(CreateAccountSchema),
     defaultValues: {
-      username: "",
       personal_name: "",
+      username: "",
       email: "",
       phone: "",
       document: "",
@@ -50,8 +50,8 @@ export function SignUp() {
       const BirthIso = formatDateToISO(data.birth);
 
       await createUser({
-        username,
         personal_name,
+        username,
         email,
         phone,
         document,

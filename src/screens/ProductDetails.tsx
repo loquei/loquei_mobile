@@ -6,7 +6,7 @@ import { HStack, Text, VStack, View } from "@gluestack-ui/themed";
 import { useCallback, useState } from "react";
 import { FlatList, ScrollView } from "react-native";
 import { ProductDetailsAccordion } from "@components/ProductDetailsAccordion";
-import { ProductReviews } from "@components/ProductContainerReviews";
+import { ProductContainerReviews } from "@components/ProductContainerReviews";
 import { RelatedProductsList } from "@components/RelatedProductsList";
 import { useFocusEffect, useNavigation, useRoute } from "@react-navigation/native";
 import { GetItem } from "../api/getItem";
@@ -99,7 +99,6 @@ export function ProductDetails() {
 
     console.log('Rental:', rental);
 
-    // Tente criar o aluguel
     try {
       await postRental(
         rental.lessor_id,
@@ -108,14 +107,12 @@ export function ProductDetails() {
         rental.rental_time
       );
 
-      // Após criar o aluguel, faça uma nova chamada para buscar os aluguéis atualizados
-      await fetchRentals(); // Chama a função que você já criou para buscar aluguéis
+      await fetchRentals();
 
     } catch (error) {
       console.error('Erro ao criar o aluguel:', error);
     }
   };
-
 
   function handleUserToDashboard() {
     navigation.navigate('dashboard');
@@ -246,7 +243,9 @@ export function ProductDetails() {
 
           <RelatedProductsList />
 
-          <ProductReviews />
+          <ProductContainerReviews itemId={id} raterId={currentUserId} isItemOwner={
+            currentUserId === productDetails.user_id
+          } perPage={3} />
 
         </VStack>
       </ScrollView>

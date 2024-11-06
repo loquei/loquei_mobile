@@ -1,5 +1,6 @@
-import { Text } from '@gluestack-ui/themed';
-import { X } from 'lucide-react-native'
+import React, { useRef } from 'react';
+import { Text, VStack } from '@gluestack-ui/themed';
+import { X } from 'lucide-react-native';
 
 import {
   Modal as ModalContainer,
@@ -12,21 +13,37 @@ import {
 } from '../../config/components/modal';
 
 import { Button } from './Button';
-
 import { Heading } from '@gluestack-ui/themed';
 import { gluestackUIConfig } from '../../config/gluestack-ui.config';
+import { RatingForm } from './RatingForm';
 
 interface ModalProps {
+  type?: 'default' | 'rating';
   title: string;
   description: string;
   confirmButtonText: string;
   isOpen: boolean;
+  onConfirm: () => void;
   onClose: () => void;
   modalRef: React.RefObject<any>;
+  itemId?: string;
+  raterId?: string;
 }
 
-export function Modal({ title, description, confirmButtonText, isOpen, onClose, modalRef }: ModalProps) {
+export function Modal({
+  type,
+  title,
+  description,
+  confirmButtonText,
+  isOpen,
+  onConfirm,
+  onClose,
+  modalRef,
+  itemId,
+  raterId,
+}: ModalProps) {
   const { tokens } = gluestackUIConfig;
+  const handleSubmitRef = useRef<() => void>();
 
   return (
     <ModalContainer
@@ -48,17 +65,23 @@ export function Modal({ title, description, confirmButtonText, isOpen, onClose, 
             {title}
           </Heading>
           <ModalCloseButton onPress={onClose}>
-            <X
-              size={16}
-              color={tokens.colors.textDark800}
-            />
+            <X size={16} color={tokens.colors.textDark800} />
           </ModalCloseButton>
         </ModalHeader>
 
         <ModalBody>
-          <Text size="sm" color="$textDark500">
-            {description}
-          </Text>
+          {type === 'rating' ? (
+            <RatingForm
+              itemId={itemId!}
+              raterId={raterId!}
+              onSubmitSuccess={onClose}
+              onSubmitExternal={(submitFn) => (handleSubmitRef.current = submitFn)}
+            />
+          ) : (
+            <Text size="sm" color="$textDark500">
+              {description}
+            </Text>
+          )}
         </ModalBody>
 
         <ModalFooter>
@@ -70,12 +93,26 @@ export function Modal({ title, description, confirmButtonText, isOpen, onClose, 
             mr="$2"
             flex={1}
           />
-          <Button
-            title={confirmButtonText}
-            buttonVariant="danger"
-            onPress={onClose}
-            flex={1}
-          />
+          {type === 'rating' ? (
+            <Button
+              title={confirmButtonText}
+              buttonVariant="solid"
+              onPress={() => {
+                handleSubmitRef.current?.();
+              }}
+              flex={1}
+            />
+          ) : (
+            <Button
+              title={confirmButtonText}
+              buttonVariant="danger"
+              onPress={() => {
+                onConfirm();
+                onClose();
+              }}
+              flex={1}
+            />
+          )}
         </ModalFooter>
       </ModalContent>
     </ModalContainer>

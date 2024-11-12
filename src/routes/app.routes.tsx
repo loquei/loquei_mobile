@@ -20,9 +20,28 @@ import { Notifications } from "@screens/Notifications";
 import { AddAddress } from "@screens/AddAddress";
 import { AppSecondaryRoutes } from "./app.secondary.routes";
 import { UseAuthRoutes } from './useRoutes';
+import { Calendar } from "@screens/Calendar";
 
 export type AppSecondaryRoutes = {
   productDetails: { id: string };
+  calendar: {
+    itemId: string,
+    lessorId: string,
+    lesseeId: string,
+    minDays: number,
+    maxDays: number,
+    filteredRentals: Array<{
+      id: string;
+      item: string;
+      lessee: string;
+      lessor: string;
+      start_date: string;
+      end_date: string;
+      status: string;
+      total_value: number;
+    }>,
+  };
+
   productReviews: undefined;
   searchCategory: undefined;
   searchResults: { searchTerm: string };
@@ -60,6 +79,8 @@ export function AppRoutes() {
       } />
 
       <Screen name="productReviews" component={ProductReviews} />
+
+      <Screen name="calendar" component={Calendar} />
 
       <Screen name="searchCategory" component={SearchCategory} />
 

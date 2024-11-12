@@ -71,6 +71,8 @@ export function ProductContainerReviews({ itemId, raterId, isItemOwner, isAllRat
     console.error('Erro ao buscar avaliações:', error);
   }
 
+  const filteredRatings = ratings.filter((rating: Rating) => rating.item_id === itemId);
+
   return (
     <VStack mt={16} px={16}>
       <HStack justifyContent="space-between" alignItems="center">
@@ -137,10 +139,10 @@ export function ProductContainerReviews({ itemId, raterId, isItemOwner, isAllRat
           <HStack mt={16} justifyContent="center">
             <Loading />
           </HStack>
-        ) : ratings.length > 0 ? (
+        ) : filteredRatings.length > 0 ? (
           <FlatList
             scrollEnabled={false}
-            data={ratings}
+            data={filteredRatings}
             keyExtractor={(item: Rating) => item.id}
             renderItem={({ item }) => (
               <VStack mt={16}>

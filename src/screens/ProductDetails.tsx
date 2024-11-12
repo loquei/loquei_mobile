@@ -7,14 +7,12 @@ import { useCallback, useState } from "react";
 import { FlatList, ScrollView } from "react-native";
 import { ProductDetailsAccordion } from "@components/ProductDetailsAccordion";
 import { ProductContainerReviews } from "@components/ProductContainerReviews";
-import { RelatedProductsList } from "@components/RelatedProductsList";
 import { useFocusEffect, useNavigation, useRoute } from "@react-navigation/native";
 import { GetItem } from "../api/getItem";
 import { IGetItem } from "../@types/TItem";
 import { Loading } from "@components/Loading";
-import { postRental } from "../api/postRental";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { listRentals } from "../api/listRentals";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { AppNavigatorRoutesProps } from "@routes/app.routes";
 
 export function ProductDetails() {
@@ -83,39 +81,21 @@ export function ProductDetails() {
     }
   }, [id, currentUserId]);
 
-  const createRental = async () => {
-    if (!productDetails) {
-      console.error('Detalhes do produto não encontrados.');
-      return;
-    }
-
-    const rentalTimeNumber = parseInt(rentalTimeSelected.replace(/\D/g, ''), 10);
-    const rental = {
-      lessor_id: productDetails?.user_id,
-      lessee_id: currentUserId,
-      item_id: id,
-      rental_time: rentalTimeNumber,
-    };
-
-    console.log('Rental:', rental);
-
-    try {
-      await postRental(
-        rental.lessor_id,
-        rental.lessee_id,
-        rental.item_id,
-        rental.rental_time
-      );
-
-      await fetchRentals();
-
-    } catch (error) {
-      console.error('Erro ao criar o aluguel:', error);
-    }
-  };
-
   function handleUserToDashboard() {
     navigation.navigate('dashboard');
+  }
+
+  function handleUserToCalendar() {
+    if (productDetails?.user_id) {
+      navigation.navigate('calendar', {
+        itemId: id,
+        lessorId: productDetails.user_id,
+        lesseeId: currentUserId,
+        minDays: productDetails.min_days,
+        maxDays: productDetails.max_days,
+        filteredRentals: filteredRentals,
+      });
+    }
   }
 
   const getStatusDescription = (status: string) => {
@@ -241,8 +221,6 @@ export function ProductDetails() {
 
           <ProductDetailsAccordion />
 
-          <RelatedProductsList />
-
           <ProductContainerReviews itemId={id} raterId={currentUserId} isItemOwner={
             currentUserId === productDetails.user_id
           } perPage={3} />
@@ -266,14 +244,16 @@ export function ProductDetails() {
             ) : (
               <>
                 {filteredRentals.length > 0 ? (
-                  <Button
-                    title={`Locação ${getStatusDescription(filteredRentals[0].status)}`}
-                    buttonVariant="outline"
-                  />
+                  <>
+                    <Button
+                      title={`Locação ${getStatusDescription(filteredRentals[0].status)}`}
+                      buttonVariant="outline"
+                    />
+                    <Button title="Selecionar data de aluguel" buttonVariant="solid" onPress={handleUserToCalendar} />
+                  </>
                 ) : (
                   <>
-                    <Button title="Alugar" buttonVariant="solid" onPress={createRental} />
-                    <Button title="Adicionar à lista de desejos" buttonVariant="outline" />
+                    <Button title="Selecionar data de aluguel" buttonVariant="solid" onPress={handleUserToCalendar} />
                   </>
                 )}
               </>
@@ -281,7 +261,6 @@ export function ProductDetails() {
           </>
         )}
       </VStack>
-
     </View>
   );
 }

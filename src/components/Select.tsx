@@ -12,9 +12,9 @@ import {
   SelectDragIndicatorWrapper,
   SelectDragIndicator,
   SelectItem,
-} from '@gluestack-ui/themed';
-import { ChevronDownIcon } from 'lucide-react-native';
-import { ComponentProps, useState } from 'react';
+} from "@gluestack-ui/themed";
+import { ChevronDownIcon } from "lucide-react-native";
+import { ComponentProps, useState } from "react";
 
 type Props = ComponentProps<typeof SelectTrigger> & {
   errorMessage?: string | null;
@@ -22,7 +22,8 @@ type Props = ComponentProps<typeof SelectTrigger> & {
   isReadOnly?: boolean;
   placeholder?: string;
   value?: string;
-  options?: string[];
+  options?: { id: string; name: string }[];
+  handleChangeCategoryValueId: (id: string) => void;
 };
 
 export function Select({
@@ -32,6 +33,7 @@ export function Select({
   placeholder,
   value,
   options,
+  handleChangeCategoryValueId,
   ...props
 }: Props) {
   const [selectedValue, setSelectedValue] = useState<string | null>(null);
@@ -39,38 +41,40 @@ export function Select({
 
   const invalid = !!errorMessage || isInvalid;
 
-  const textColor = selectedValue || value != "" ? "$textDark800" : "$textLight400";
-
+  const textColor =
+    selectedValue || value != "" ? "$textDark800" : "$textLight400";
   return (
     <FormControl isInvalid={invalid} mb="$4" w="$full">
       <GluestackSelect
         onValueChange={(value) => {
-          setSelectedValue(value);
+          if (value !== null) {
+            setSelectedValue(value);
+            const filterValue = options?.filter(
+              (option) => option.name === value
+            );
+            if (filterValue && filterValue.length > 0) {
+              handleChangeCategoryValueId(filterValue[0].id);
+            }
+          }
         }}
-        onOpen={
-          () => {
-            setIsFocused(true);
-          }
-        }
-        onClose={
-          () => {
-            setIsFocused(false);
-          }
-        }
+        onOpen={() => {
+          setIsFocused(true);
+        }}
+        onClose={() => {
+          setIsFocused(false);
+        }}
       >
         <SelectTrigger
-          bg='$secondary100'
-          borderWidth={
-            isFocused ? 1 : 0
-          }
+          bg="$secondary100"
+          borderWidth={isFocused ? 1 : 0}
           borderRadius="$md"
           h="$12"
           opacity={isReadOnly ? 0.5 : 1}
           $invalid={{
             borderWidth: 1,
-            borderColor: '$red500',
+            borderColor: "$red500",
           }}
-          borderColor={isFocused ? '$teal600' : 'transparent'}
+          borderColor={isFocused ? "$teal600" : "transparent"}
           {...props}
         >
           <SelectInput
@@ -90,15 +94,13 @@ export function Select({
             <SelectDragIndicatorWrapper>
               <SelectDragIndicator />
             </SelectDragIndicatorWrapper>
-            {
-              options?.map((option, index) => (
-                <SelectItem
-                  key={index}
-                  label={option}
-                  value={option}
-                />
-              ))
-            }
+            {options?.map((option) => (
+              <SelectItem
+                key={option.id}
+                label={option.name}
+                value={option.name}
+              />
+            ))}
           </SelectContent>
         </SelectPortal>
       </GluestackSelect>

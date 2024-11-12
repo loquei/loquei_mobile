@@ -1,7 +1,7 @@
 import { Button } from "@components/Button";
 import { ScreenHeader } from "@components/ScreenHeader";
 import { SearchInput } from "@components/SearchInput";
-import { Box, HStack, Text, VStack, View } from "@gluestack-ui/themed";
+import { Box, Center, HStack, Text, VStack, View } from "@gluestack-ui/themed";
 
 import { Plus, SquareMenu } from "lucide-react-native";
 import { gluestackUIConfig } from "../../config/gluestack-ui.config";
@@ -9,10 +9,12 @@ import { ItemCard } from "@components/ItemCard";
 import { FlatList, ScrollView } from "react-native";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { AppNavigatorRoutesProps } from "@routes/app.routes";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { IGetItem } from "../@types/TItem";
 import { ListMyItems } from "../api/listMyItems";
 import { ListItems } from "../api/listItems";
+import { useQuery } from "@tanstack/react-query";
+import { Loading } from "@components/Loading";
 
 export function Dashboard() {
   const { tokens } = gluestackUIConfig;
@@ -31,10 +33,26 @@ export function Dashboard() {
     navigation.navigate("userProducts");
   }
 
+  const {
+    data: MyItems,
+    isLoading,
+    error,
+    refetch,
+  } = useQuery({
+    queryKey: ["MyItems"],
+    queryFn: () => ListMyItems(),
+  });
+
+  useEffect(() => {
+    if (MyItems) {
+      setItemData(MyItems);
+    }
+  }, [MyItems]);
+
   useFocusEffect(
     useCallback(() => {
       const fetchData = async () => {
-        const data = await ListMyItems();
+        const data = MyItems;
         if (data) {
           setItemData(data);
           console.log("data", data);
@@ -42,8 +60,29 @@ export function Dashboard() {
       };
 
       fetchData();
-    }, [])
+      refetch();
+    }, [refetch])
   );
+
+  if (isLoading) {
+    return <Loading />;
+  }
+
+  if (error) {
+    return (
+      <VStack flex={1}>
+        <ScreenHeader title="São Paulo, SP" iconButton />
+        <Center>
+          <Text fontFamily="$heading" fontSize="$lg" color="$textDark800">
+            Erro ao carregar os dados
+          </Text>
+          <Text fontFamily="$body" fontSize="$md" color="$textDark800">
+            Tente novamente mais tarde
+          </Text>
+        </Center>
+      </VStack>
+    );
+  }
 
   return (
     <VStack flex={1}>
@@ -58,7 +97,7 @@ export function Dashboard() {
           marginTop: 16,
         }}
       >
-        <SearchInput />
+        <SearchInput onChangeText={function (text: string): void {}} />
 
         <HStack gap={8} mt={16} justifyContent="center">
           <Box
@@ -197,7 +236,7 @@ export function Dashboard() {
                   type="product"
                   title={item.name}
                   description={item.description}
-                  price={item.daily_value.toFixed(2).replace('.', ',')}
+                  price={item.daily_value.toFixed(2).replace(".", ",")}
                   imagesPaths={item.images.links}
                 />
               </VStack>

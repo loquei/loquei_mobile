@@ -1,5 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { api } from "./axios/axiosConfig";
+import { baseURL } from "../constants/authentications";
 
 export const getUser = async () => {
   const token = await AsyncStorage.getItem("AuthToken");
@@ -15,7 +16,7 @@ export const getUser = async () => {
 
   if (currentUserEmail) {
     try {
-      const response = await fetch(`http://192.168.3.2:8080/api/users?search=${currentUserEmail}`, {
+      const response = await fetch(`${baseURL}/users?search=${currentUserEmail}`, {
         headers
       });
 

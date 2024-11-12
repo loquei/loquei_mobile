@@ -1,4 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { baseURL } from "../constants/authentications";
 
 export const getLessee = async (lesseeId: string) => {
   const token = await AsyncStorage.getItem("AuthToken");
@@ -11,7 +12,7 @@ export const getLessee = async (lesseeId: string) => {
   };
 
   try {
-    const response = await fetch(`http://192.168.3.2:8080/api/users/${lesseeId}`, {
+    const response = await fetch(`${baseURL}/users/${lesseeId}`, {
       headers
     });
 

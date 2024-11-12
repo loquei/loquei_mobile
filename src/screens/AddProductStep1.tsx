@@ -19,13 +19,17 @@ import { PostItemSchema } from "../schemas/CreateItemSchema";
 import { postItem } from "../api/postItem";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useCallback, useState } from "react";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { ListCategories } from "../api/listCategory";
+import { ICategories } from "../@types/TCategories";
 export function AddProductStep1() {
   const progressValue = 0;
 
   const navigation = useNavigation<AppNavigatorRoutesProps>();
   type CreateItemSchema = y.InferType<typeof PostItemSchema>;
-
+  const [categories, setCategories] = useState<ICategories[]>([]);
   const [userId, setUserId] = useState<string>("");
+  const [selectedCategory, setSelectedCategory] = useState<string>("");
 
   useFocusEffect(
     useCallback(() => {
@@ -41,31 +45,50 @@ export function AddProductStep1() {
           console.error("Erro ao buscar o ID do usuário:", error);
         }
       };
-
+      const fetchCategories = async () => {
+        try {
+          const listCategories = await ListCategories();
+          if (categories) {
+            setCategories(listCategories);
+          }
+        } catch (error) {
+          console.error("Erro ao buscar categorias:", error);
+        }
+      };
       fetchData();
+      fetchCategories();
     }, [])
   );
 
   console.log(userId);
 
-  const { control, handleSubmit } = useForm<CreateItemSchema>({
+  const {
+    control,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm<CreateItemSchema>({
+    resolver: yupResolver(PostItemSchema),
     defaultValues: {
       name: "",
       description: "",
       daily_value: 0,
       max_days: 0,
       min_days: 0,
-      categories: ["e1529d9a5e4e4084968856dea770a309"],
+      categories: [],
     },
   });
+  const [MaxDays, MinDays] = watch(["max_days", "min_days"]);
+
+  console.log("Selected", selectedCategory);
 
   const handleNextStep = async (data: CreateItemSchema) => {
     const newData = {
       ...data,
       user_id: userId,
-    }
+      categories: selectedCategory && [selectedCategory],
+    };
 
-    console.log(newData);
     try {
       await AsyncStorage.setItem("productDataStep1", JSON.stringify(newData));
       navigation.navigate("addProductStep2");
@@ -74,6 +97,14 @@ export function AddProductStep1() {
     }
   };
 
+  const filteredCategories = categories.map((category) => ({
+    id: category.id,
+    name: category.name,
+  }));
+
+  const handleChangeCategoryValueId = (id: string) => {
+    setSelectedCategory(id);
+  };
   return (
     <VStack flex={1}>
       <ScreenHeader title="Adicionar Produto" backButton />
@@ -116,6 +147,7 @@ export function AddProductStep1() {
                 onBlur={onBlur}
                 value={value?.toString()}
                 placeholder="Ex: Ferramenta de jardinagem"
+                errorMessage={errors.name?.message}
               />
             )}
           />
@@ -134,6 +166,7 @@ export function AddProductStep1() {
                 onBlur={onBlur}
                 value={value?.toString()}
                 onChangeText={onChange}
+                errorMessage={errors.description?.message}
               />
             )}
           />
@@ -146,16 +179,9 @@ export function AddProductStep1() {
 
           <Select
             placeholder="Selecione a categoria"
-            options={[
-              "Eletronicos",
-              "Moveis",
-              "Roupas",
-              "Acessorios",
-              "Livros",
-              "Jogos",
-              "Brinquedos",
-              "Ferramentas",
-            ]}
+            options={filteredCategories}
+            handleChangeCategoryValueId={handleChangeCategoryValueId}
+            errorMessage={errors.categories?.message}
           />
         </VStack>
 
@@ -167,6 +193,11 @@ export function AddProductStep1() {
             <Controller
               name="min_days"
               control={control}
+              rules={{
+                validate: (value: number) =>
+                  (value < MaxDays && value > 0) ||
+                  "O minimo de valor deve ser maior que a quantidade maxima de dias ",
+              }}
               render={({ field: { value, onBlur, onChange } }) => (
                 <Input
                   placeholder="mínimo"
@@ -174,12 +205,18 @@ export function AddProductStep1() {
                   value={value?.toString()}
                   onBlur={onBlur}
                   onChangeText={onChange}
+                  errorMessage={errors.min_days?.message}
                 />
               )}
             />
             <Controller
               name="max_days"
               control={control}
+              rules={{
+                validate: (value: number) =>
+                  value > MinDays ||
+                  "O maximo de valor deve ser maior que a quantidade minima de dias ",
+              }}
               render={({ field: { value, onBlur, onChange } }) => (
                 <Input
                   placeholder="máximo"
@@ -187,6 +224,7 @@ export function AddProductStep1() {
                   value={value?.toString()}
                   onBlur={onBlur}
                   onChangeText={onChange}
+                  errorMessage={errors.max_days?.message}
                 />
               )}
             />
@@ -205,6 +243,7 @@ export function AddProductStep1() {
                   value={value.toString()}
                   onBlur={onBlur}
                   onChangeText={onChange}
+                  errorMessage={errors.daily_value?.message}
                 />
               )}
             />

@@ -2,17 +2,20 @@ import { CategoryCard } from "@components/CategoryCard";
 import { Tag } from "@components/Tag";
 import { ProductCard } from "@components/ProductCard";
 import { ScreenHeader } from "@components/ScreenHeader";
-import { HStack, VStack, Text, Pressable, get } from "@gluestack-ui/themed";
+import { HStack, VStack, Text, Pressable, Center } from "@gluestack-ui/themed";
 
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { AppNavigatorRoutesProps } from "@routes/app.routes";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { FlatList, ScrollView, SectionList } from "react-native";
 import { ListItems } from "../api/listItems";
 import { IGetItem } from "../@types/TItem";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { GetItemFirstImage } from "../api/getItemFirstImage";
 import { getUser } from "../api/getUser";
+import { useQuery } from "@tanstack/react-query";
+import { Loading } from "@components/Loading";
+import { baseURL } from "../constants/authentications";
 
 export function Home() {
   const [itemData, setItemData] = useState<IGetItem[]>([]);
@@ -27,22 +30,19 @@ export function Home() {
   const [isUserAuthenticated, setIsUserAuthenticated] = useState(false);
   const [currentUser, setCurrentUser] = useState<any>();
 
-  const baseURL = process.env.EXPO_BASE_URL;
+  const { data, isLoading, error, refetch } = useQuery({
+    queryKey: ["items"],
+    queryFn: ListItems,
+  });
+
+  useEffect(() => {
+    if (data) {
+      setItemData(data);
+    }
+  }, [data]);
 
   useFocusEffect(
     useCallback(() => {
-      const fetchData = async () => {
-        try {
-          const data = await ListItems();
-          if (data) {
-            setItemData(data);
-            console.log("data", data);
-          }
-        } catch (error) {
-          console.error("Error fetching data: ", error);
-        }
-      };
-
       const checkAuthentication = async () => {
         const authToken = await AsyncStorage.getItem("AuthToken");
         console.log("authToken", authToken);
@@ -53,18 +53,42 @@ export function Home() {
         try {
           const currentUser = await getUser();
           setCurrentUser(currentUser);
-          await AsyncStorage.setItem("currentUser", JSON.stringify(currentUser));
+          await AsyncStorage.setItem(
+            "currentUser",
+            JSON.stringify(currentUser)
+          );
           console.log("currentUser", currentUser);
         } catch (error) {
           console.error("Error fetching current user:", error);
         }
       };
 
-      fetchData();
       checkAuthentication();
       fetchCurrentUser();
-    }, [])
+
+      refetch();
+    }, [refetch])
   );
+
+  if (isLoading) {
+    return <Loading />;
+  }
+
+  if (error) {
+    return (
+      <VStack flex={1}>
+        <ScreenHeader title="São Paulo, SP" iconButton />
+        <Center>
+          <Text fontFamily="$heading" fontSize="$lg" color="$textDark800">
+            Erro ao carregar os dados
+          </Text>
+          <Text fontFamily="$body" fontSize="$md" color="$textDark800">
+            Tente novamente mais tarde
+          </Text>
+        </Center>
+      </VStack>
+    );
+  }
 
   return (
     <ScrollView
@@ -76,10 +100,16 @@ export function Home() {
         <ScreenHeader title="São Paulo, SP" iconButton />
 
         {isUserAuthenticated && (
-          <Text fontFamily="$heading" fontSize="$lg" color="$textDark800" px={16} mt={16}>
-            {
-              currentUser ? `Olá, ${currentUser.items[0].personal_name}` : "Olá, usuário"
-            }
+          <Text
+            fontFamily="$heading"
+            fontSize="$lg"
+            color="$textDark800"
+            px={16}
+            mt={16}
+          >
+            {currentUser
+              ? `Olá, ${currentUser.items[0].personal_name}`
+              : "Olá, usuário"}
           </Text>
         )}
 
@@ -106,13 +136,15 @@ export function Home() {
               sections={[
                 {
                   title: "Produtos Principais",
-                  data: itemData.map(item => ({
+                  data: itemData.map((item) => ({
                     id: item.id,
                     title: item.name,
                     rating: 5,
                     ratingCount: 5,
-                    price: item.daily_value.toFixed(2).replace('.', ','),
-                    discountPrice: item.daily_value.toFixed(2).replace('.', ','),
+                    price: item.daily_value.toFixed(2).replace(".", ","),
+                    discountPrice: item.daily_value
+                      .toFixed(2)
+                      .replace(".", ","),
                     images: item.images,
                   })),
                 },
@@ -137,10 +169,16 @@ export function Home() {
                     showsHorizontalScrollIndicator={false}
                     renderItem={({ item }) => (
                       <Pressable
-                        onPress={() => navigation.navigate("productDetails", { id: item.id })}
+                        onPress={() =>
+                          navigation.navigate("productDetails", { id: item.id })
+                        }
                       >
                         <ProductCard
-                          imagePath={item.images && item.images.links.length > 0 ? baseURL + item.images.links[0] : ''}
+                          imagePath={
+                            item.images && item.images.links.length > 0
+                              ? baseURL + item.images.links[0]
+                              : ""
+                          }
                           title={item.title}
                           price={item.price}
                           discountPrice={item.discountPrice}
@@ -157,11 +195,16 @@ export function Home() {
             />
           ) : null
         ) : (
-          <Text fontFamily="$heading" fontSize="$lg" color="$textDark800" px={16} mt={16}>
+          <Text
+            fontFamily="$heading"
+            fontSize="$lg"
+            color="$textDark800"
+            px={16}
+            mt={16}
+          >
             Carregando...
           </Text>
         )}
-
 
         <SectionList
           scrollEnabled={false}

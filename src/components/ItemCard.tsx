@@ -7,6 +7,7 @@ import { AppNavigatorRoutesProps } from "@routes/app.routes";
 import { Trash2, Pencil } from "lucide-react-native";
 import { gluestackUIConfig } from "../../config/gluestack-ui.config";
 import { DeleteItems } from "../api/deleteItem";
+import { baseURL } from "../constants/authentications";
 
 interface ItemCardProps {
   id: string;
@@ -34,8 +35,6 @@ export function ItemCard({
   const navigation = useNavigation<AppNavigatorRoutesProps>();
   const { tokens } = gluestackUIConfig;
 
-  const baseURL = process.env.EXPO_BASE_URL;
-
   function handleNavigateToProductDetails() {
     type === "product"
       ? navigation.navigate("productDetails", { id })
@@ -54,15 +53,14 @@ export function ItemCard({
             typeof imagesPaths === "string"
               ? { uri: imagesPaths }
               : imagesPaths.length > 0
-                ? { uri: baseURL + imagesPaths[0] }
-                : ItemCardImage
+              ? { uri: baseURL + imagesPaths[0] }
+              : ItemCardImage
           }
           width={110}
           height={110}
           alt="ItemCardImage"
           rounded={"$md"}
         />
-
 
         <VStack flex={1} px={16} py={8} gap={4}>
           <VStack>

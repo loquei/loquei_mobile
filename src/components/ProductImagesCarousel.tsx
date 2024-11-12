@@ -5,17 +5,20 @@ import { useWindowDimensions } from "react-native";
 import CarouselComponent, {
   ICarouselInstance,
 } from "react-native-reanimated-carousel";
+import { baseURL } from "../constants/authentications";
 
 interface ICarouselProps {
   setScrollEnabled: (value: boolean) => void;
   imagesPaths: string[];
 }
 
-export function ProductImagesCarousel({ setScrollEnabled, imagesPaths }: ICarouselProps) {
+export function ProductImagesCarousel({
+  setScrollEnabled,
+  imagesPaths,
+}: ICarouselProps) {
   const ref = useRef<ICarouselInstance>(null);
   const data = Array.from({ length: imagesPaths.length }, (_, i) => i);
   const windowWidth = useWindowDimensions().width;
-  const baseURL = process.env.EXPO_BASE_URL;
 
   const [activeIndex, setActiveIndex] = useState(0);
   return (
@@ -34,10 +37,16 @@ export function ProductImagesCarousel({ setScrollEnabled, imagesPaths }: ICarous
             flex={1}
             borderRadius={16}
           >
-            <Image source={{
-              uri:
-                baseURL + imagesPaths[index]
-            }} w={200} h={200} alt="" objectFit="cover" alignSelf="center" />
+            <Image
+              source={{
+                uri: baseURL + imagesPaths[index],
+              }}
+              w={200}
+              h={200}
+              alt=""
+              objectFit="cover"
+              alignSelf="center"
+            />
           </View>
         )}
         pagingEnabled
@@ -47,10 +56,7 @@ export function ProductImagesCarousel({ setScrollEnabled, imagesPaths }: ICarous
       />
 
       <HStack justifyContent="center" alignItems="center">
-        <HStack
-          alignItems="center"
-          zIndex={1}
-        >
+        <HStack alignItems="center" zIndex={1}>
           {data.map((_, index) => (
             <View
               key={index}
@@ -64,12 +70,19 @@ export function ProductImagesCarousel({ setScrollEnabled, imagesPaths }: ICarous
         </HStack>
 
         <HStack position="absolute" right={0}>
-          <Text color="$teal600" fontFamily="$mono" fontSize="$sm" px={16} bg="$green100" lineHeight={24} rounded={"$full"}>
+          <Text
+            color="$teal600"
+            fontFamily="$mono"
+            fontSize="$sm"
+            px={16}
+            bg="$green100"
+            lineHeight={24}
+            rounded={"$full"}
+          >
             {activeIndex + 1}/{data.length}
           </Text>
         </HStack>
       </HStack>
-
     </VStack>
   );
 }

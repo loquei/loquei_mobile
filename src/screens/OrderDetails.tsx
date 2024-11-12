@@ -1,8 +1,19 @@
 import { Button } from "@components/Button";
 import { ItemCard } from "@components/ItemCard";
 import { ScreenHeader } from "@components/ScreenHeader";
-import { VStack, Text, HStack, Divider, View, Pressable } from "@gluestack-ui/themed";
-import { useFocusEffect, useNavigation, useRoute } from "@react-navigation/native";
+import {
+  VStack,
+  Text,
+  HStack,
+  Divider,
+  View,
+  Pressable,
+} from "@gluestack-ui/themed";
+import {
+  useFocusEffect,
+  useNavigation,
+  useRoute,
+} from "@react-navigation/native";
 import { useState, useCallback, useEffect } from "react";
 import { getRental } from "../api/getRental";
 import { GetItem } from "../api/getItem";
@@ -13,6 +24,7 @@ import { Loading } from "@components/Loading";
 import { Linking, ScrollView } from "react-native";
 import { acceptRental } from "../api/putAcceptRental";
 import { refuseRental } from "../api/putRefuseRental";
+import { useQuery } from "@tanstack/react-query";
 
 interface IRentalDetails {
   created_at: string;
@@ -22,7 +34,13 @@ interface IRentalDetails {
   lessee: string;
   lessor: string;
   start_date: string;
-  status: "PENDING" | "ACCEPTED" | "IN_PROGRESS" | "COMPLETED" | "CANCELLED" | "REFUSED";
+  status:
+    | "PENDING"
+    | "ACCEPTED"
+    | "IN_PROGRESS"
+    | "COMPLETED"
+    | "CANCELLED"
+    | "REFUSED";
   total_value: number;
   updated_at: string;
 }
@@ -40,12 +58,30 @@ interface IGetUser {
 }
 
 export function OrderDetails() {
-  const [rentalDetails, setRentalDetails] = useState<IRentalDetails | null>(null);
+  const [rentalDetails, setRentalDetails] = useState<IRentalDetails | null>(
+    null
+  );
   const [itemDetails, setItemDetails] = useState<IGetItem | null>(null);
   const [lesseeDetails, setLesseeDetails] = useState<IGetUser | null>(null);
 
   const route = useRoute();
   const { id } = route.params as { id: string };
+
+  const {
+    data: rentals,
+    isLoading,
+    error,
+    refetch,
+  } = useQuery({
+    queryKey: [`rentals/${id}`],
+    queryFn: () => getRental(id),
+  });
+
+  useEffect(() => {
+    if (rentals) {
+      setRentalDetails(rentals);
+    }
+  }, [rentals]);
 
   const fetchRental = async () => {
     try {
@@ -97,8 +133,9 @@ export function OrderDetails() {
   function handleLessorToLesseeChat() {
     const phoneNumber = lesseeDetails?.phone;
     if (phoneNumber) {
-      Linking.openURL(`https://wa.me/${phoneNumber}`)
-        .catch(err => console.error("Erro ao abrir URL:", err));
+      Linking.openURL(`https://wa.me/${phoneNumber}`).catch((err) =>
+        console.error("Erro ao abrir URL:", err)
+      );
     } else {
       console.error("Número de telefone não disponível");
     }
@@ -107,7 +144,7 @@ export function OrderDetails() {
   useFocusEffect(
     useCallback(() => {
       fetchRental();
-    }, [id])
+    }, [id, rentals])
   );
 
   useEffect(() => {
@@ -203,7 +240,12 @@ export function OrderDetails() {
         <Divider />
 
         <VStack py={16}>
-          <Text fontFamily="$heading" fontSize="$lg" color="$textDark800" mb={8}>
+          <Text
+            fontFamily="$heading"
+            fontSize="$lg"
+            color="$textDark800"
+            mb={8}
+          >
             Produto
           </Text>
 
@@ -219,34 +261,76 @@ export function OrderDetails() {
               type="product"
               title={itemDetails.name}
               description={itemDetails.description}
-              price={rentalDetails.total_value ? rentalDetails.total_value.toString() : "0"}
+              price={
+                rentalDetails.total_value
+                  ? rentalDetails.total_value.toString()
+                  : "0"
+              }
             />
           )}
         </VStack>
 
         {rentalDetails.status === "PENDING" && (
           <HStack justifyContent="space-between" py={16} gap={8}>
-            <Button title="Recusar pedido" buttonVariant="danger-outline" flex={1} onPress={handleOrderRefuse} />
-            <Button title="Aceitar pedido" flex={1} onPress={handleOrderAccept} />
+            <Button
+              title="Recusar pedido"
+              buttonVariant="danger-outline"
+              flex={1}
+              onPress={handleOrderRefuse}
+            />
+            <Button
+              title="Aceitar pedido"
+              flex={1}
+              onPress={handleOrderAccept}
+            />
           </HStack>
         )}
 
         {rentalDetails.status === "ACCEPTED" && (
           <VStack>
-            <Text fontFamily="$heading" fontSize="$lg" color="$textDark800" mb={8}>
+            <Text
+              fontFamily="$heading"
+              fontSize="$lg"
+              color="$textDark800"
+              mb={8}
+            >
               Conversar com o cliente
             </Text>
 
-            <HStack bg="$white" p={16} rounded={"$md"} alignItems="center" justifyContent="space-between">
+            <HStack
+              bg="$white"
+              p={16}
+              rounded={"$md"}
+              alignItems="center"
+              justifyContent="space-between"
+            >
               <HStack alignItems="center" gap={16}>
-                <View width={48} height={48} bg="$backgroundLight100" rounded={"$full"} justifyContent="center" alignItems="center" />
+                <View
+                  width={48}
+                  height={48}
+                  bg="$backgroundLight100"
+                  rounded={"$full"}
+                  justifyContent="center"
+                  alignItems="center"
+                />
                 <Text fontFamily="$body" fontSize="$md" color="$textDark800">
                   {lesseeDetails?.personal_name}
                 </Text>
               </HStack>
 
-              <Pressable px={16} py={8} bg="$green100" rounded={"$md"} $active-bg="$green200">
-                <Text fontFamily="$mono" fontSize="$md" color="$teal600" onPress={handleLessorToLesseeChat}>
+              <Pressable
+                px={16}
+                py={8}
+                bg="$green100"
+                rounded={"$md"}
+                $active-bg="$green200"
+              >
+                <Text
+                  fontFamily="$mono"
+                  fontSize="$md"
+                  color="$teal600"
+                  onPress={handleLessorToLesseeChat}
+                >
                   Conversar
                 </Text>
               </Pressable>
@@ -255,7 +339,13 @@ export function OrderDetails() {
         )}
 
         {rentalDetails.status === "REFUSED" && (
-          <Text fontFamily="$body" fontSize="$md" color="$red500" mt={16} textAlign="center">
+          <Text
+            fontFamily="$body"
+            fontSize="$md"
+            color="$red500"
+            mt={16}
+            textAlign="center"
+          >
             Pedido recusado.
           </Text>
         )}

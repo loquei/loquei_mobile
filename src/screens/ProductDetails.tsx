@@ -5,7 +5,7 @@ import { Tag } from "@components/Tag";
 import { HStack, Text, VStack, View } from "@gluestack-ui/themed";
 import { useCallback, useState } from "react";
 import { FlatList, ScrollView } from "react-native";
-import { ProductDetailsAccordion } from "@components/ProductDetailsAccordion";
+import accordionData, { DetailsAccordion } from "@components/DetailsAccordion";
 import { ProductContainerReviews } from "@components/ProductContainerReviews";
 import { useFocusEffect, useNavigation, useRoute } from "@react-navigation/native";
 import { GetItem } from "../api/getItem";
@@ -19,7 +19,6 @@ export function ProductDetails() {
   const [scrollEnabled, setScrollEnabled] = useState(true);
   const [productDetails, setProductDetails] = useState<IGetItem>();
   const [rentalTimes, setRentalTimes] = useState<string[]>([]);
-  const [rentalTimeSelected, setRentalTimeSelected] = useState('');
   const [productRentals, setProductRentals] = useState<any[]>([]);
   const [filteredRentals, setFilteredRentals] = useState<any[]>([]);
   const [currentUserId, setCurrentUserId] = useState<string>("");
@@ -46,7 +45,6 @@ export function ProductDetails() {
       }
 
       setRentalTimes(times);
-      setRentalTimeSelected(times[0]);
     } catch (error) {
       console.error('Erro ao buscar detalhes do produto:', error);
     }
@@ -207,19 +205,30 @@ export function ProductDetails() {
                 keyExtractor={(item) => item}
                 horizontal
                 showsHorizontalScrollIndicator={false}
-                renderItem={({ item }) => (
-                  <Tag
-                    name={item}
-                    isActive={item === rentalTimeSelected}
-                    onPress={() => setRentalTimeSelected(item)}
-                  />
+                renderItem={({ item, index }) => (
+                  <>
+                    <VStack>
+                      {index === 0 && (
+                        <Tag
+                          name={'Mínimo ' + item}
+                        />
+                      )}
+
+                      {index === 1 && (
+                        <Tag
+                          name={'Máximo ' + item}
+                        />
+                      )}
+
+                    </VStack>
+                  </>
                 )}
                 ItemSeparatorComponent={() => <HStack width={12} />}
               />
             </HStack>
           </VStack>
 
-          <ProductDetailsAccordion />
+          <DetailsAccordion type="productDetailsScreen" items={accordionData.productDetailsScreen} />
 
           <ProductContainerReviews itemId={id} raterId={currentUserId} isItemOwner={
             currentUserId === productDetails.user_id

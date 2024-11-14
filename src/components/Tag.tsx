@@ -6,7 +6,7 @@ import { gluestackUIConfig } from '../../config/gluestack-ui.config';
 
 type Props = ComponentProps<typeof Button> & {
   name: string;
-  isActive: boolean;
+  isActive?: boolean;
 };
 
 const iconMap: { [key: string]: React.ElementType } = {

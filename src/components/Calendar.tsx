@@ -5,7 +5,7 @@ import { ptBR } from "@utils/localeCalendar";
 import { Box, Text, Button, VStack } from "@gluestack-ui/themed";
 import { gluestackUIConfig } from '../../config/gluestack-ui.config';
 import { Button as StyledButton } from '@components/Button';
-import { format } from 'date-fns';
+import { format } from 'date-fns-tz';
 import { ptBR as ptBRLocale } from 'date-fns/locale';
 import Toast from 'react-native-toast-message';
 
@@ -35,8 +35,9 @@ export function CalendarComponent({ minDays, maxDays, rentalDates, onSelectDate,
   const { tokens } = gluestackUIConfig;
 
   const adjustToBrazilianTimeZone = (date: Date) => {
-    const timeZoneOffset = -3 * 60;
-    const adjustedDate = new Date(date.getTime() + (timeZoneOffset + date.getTimezoneOffset()) * 60000);
+    const brazilOffset = -180;
+    const localOffset = date.getTimezoneOffset();
+    const adjustedDate = new Date(date.getTime() + (brazilOffset - localOffset) * 60000);
     adjustedDate.setHours(0, 0, 0, 0);
     return adjustedDate;
   };

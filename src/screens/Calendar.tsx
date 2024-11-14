@@ -33,9 +33,9 @@ export function Calendar() {
       console.log('Data de fim:', endDate);
 
       console.log('DADOS DO ALUGUEL', itemId, lessorId, lesseeId, startDate, endDate);
-      await postRental(lessorId, lesseeId, itemId, startDate, endDate);
+      // await postRental(lessorId, lesseeId, itemId, startDate, endDate);
 
-      navigation.navigate('productDetails', { id: itemId });
+      // navigation.navigate('productDetails', { id: itemId });
     } catch (error) {
       console.error('Erro ao criar aluguel:', error);
     } finally {

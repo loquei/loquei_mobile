@@ -21,6 +21,9 @@ import { AddAddress } from "@screens/AddAddress";
 import { AppSecondaryRoutes } from "./app.secondary.routes";
 import { UseAuthRoutes } from './useRoutes';
 import { Calendar } from "@screens/Calendar";
+import { Privacy } from "@screens/Privacy";
+import { Help } from "@screens/Help";
+import { About } from "@screens/About";
 
 export type AppSecondaryRoutes = {
   productDetails: { id: string };
@@ -57,6 +60,9 @@ export type AppSecondaryRoutes = {
   addAddress: undefined;
   notifications: undefined;
   addUserAddress: undefined;
+  privacy: undefined;
+  help: undefined;
+  about: undefined;
   secondaryRoutes: undefined;
   authRoutes: undefined;
 };
@@ -113,6 +119,12 @@ export function AppRoutes() {
       <Screen name="notifications" component={Notifications} />
 
       <Screen name="addUserAddress" component={AddAddress} />
+
+      <Screen name="privacy" component={Privacy} />
+
+      <Screen name="help" component={Help} />
+
+      <Screen name="about" component={About} />
 
       <Screen name="secondaryRoutes" component={AppSecondaryRoutes} />
 

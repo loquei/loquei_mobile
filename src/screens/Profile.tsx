@@ -39,17 +39,25 @@ export function Profile() {
   const { tokens } = gluestackUIConfig;
   const navigation = useNavigation<AppNavigatorRoutesProps>();
 
-  function handleToLeasing() {
-    navigation.navigate("leasing");
-  }
-  function handleToAccount() {
-    navigation.navigate("account");
-  }
-  function handleToAddAddress() {
-    navigation.navigate("addAddress");
-  }
-  function handleToNotifications() {
-    navigation.navigate("notifications");
+  function handleUserRedirect(url: string) {
+    switch (url) {
+      case "account":
+        return navigation.navigate("account");
+      case "addAddress":
+        return navigation.navigate("addAddress");
+      case "notifications":
+        return navigation.navigate("notifications");
+      case "privacy":
+        return navigation.navigate("privacy");
+      case "leasing":
+        return navigation.navigate("leasing");
+      case "help":
+        return navigation.navigate("help");
+      case "about":
+        return navigation.navigate("about");
+
+      default:
+    }
   }
 
   async function handleUserPhotoSelect() {
@@ -149,7 +157,7 @@ export function Profile() {
         <Box mt={16} bg="$white" width="$full" rounded={"$md"}>
           <Pressable
             $active-backgroundColor="$backgroundLight100"
-            onPress={handleToAccount}
+            onPress={() => handleUserRedirect("account")}
           >
             <HStack justifyContent="space-between" p={16} alignItems="center">
               <HStack alignItems="center" gap={16}>
@@ -165,7 +173,7 @@ export function Profile() {
 
           <Pressable
             $active-backgroundColor="$backgroundLight100"
-            onPress={handleToAddAddress}
+            onPress={() => handleUserRedirect("addAddress")}
           >
             <HStack justifyContent="space-between" p={16} alignItems="center">
               <HStack alignItems="center" gap={16}>
@@ -181,7 +189,7 @@ export function Profile() {
 
           <Pressable
             $active-backgroundColor="$backgroundLight100"
-            onPress={handleToNotifications}
+            onPress={() => handleUserRedirect("notifications")}
           >
             <HStack justifyContent="space-between" p={16} alignItems="center">
               <HStack alignItems="center" gap={16}>
@@ -195,12 +203,15 @@ export function Profile() {
           </Pressable>
           <Divider />
 
-          <Pressable $active-backgroundColor="$backgroundLight100">
+          <Pressable
+            $active-backgroundColor="$backgroundLight100"
+            onPress={() => handleUserRedirect("privacy")}
+          >
             <HStack justifyContent="space-between" p={16} alignItems="center">
               <HStack alignItems="center" gap={16}>
                 <LockKeyhole size={24} color={tokens.colors.textDark800} />
                 <Text color="$textDark800" fontSize="$md" fontFamily="$body">
-                  Privacidade
+                  Política de privacidade
                 </Text>
               </HStack>
               <ChevronRight size={24} color={tokens.colors.textDark800} />
@@ -210,7 +221,7 @@ export function Profile() {
 
           <Pressable
             $active-backgroundColor="$backgroundLight100"
-            onPress={handleToLeasing}
+            onPress={() => handleUserRedirect("leasing")}
           >
             <HStack justifyContent="space-between" p={16} alignItems="center">
               <HStack alignItems="center" gap={16}>
@@ -224,7 +235,10 @@ export function Profile() {
           </Pressable>
           <Divider />
 
-          <Pressable $active-backgroundColor="$backgroundLight100">
+          <Pressable
+            $active-backgroundColor="$backgroundLight100"
+            onPress={() => handleUserRedirect("help")}
+          >
             <HStack justifyContent="space-between" p={16} alignItems="center">
               <HStack alignItems="center" gap={16}>
                 <CircleHelp size={24} color={tokens.colors.textDark800} />
@@ -237,7 +251,10 @@ export function Profile() {
           </Pressable>
           <Divider />
 
-          <Pressable $active-backgroundColor="$backgroundLight100">
+          <Pressable
+            $active-backgroundColor="$backgroundLight100"
+            onPress={() => handleUserRedirect("about")}
+          >
             <HStack justifyContent="space-between" p={16} alignItems="center">
               <HStack alignItems="center" gap={16}>
                 <Info size={24} color={tokens.colors.textDark800} />

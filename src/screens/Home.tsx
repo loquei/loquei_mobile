@@ -97,7 +97,7 @@ export function Home() {
       nestedScrollEnabled={true}
     >
       <VStack>
-        <ScreenHeader title="São Paulo, SP" iconButton />
+        <ScreenHeader title="Loquei" iconButton />
 
         {isUserAuthenticated && (
           <Text
@@ -175,7 +175,7 @@ export function Home() {
                       >
                         <ProductCard
                           imagePath={
-                            item.images && item.images.links.length > 0
+                            item.images && item.images?.links.length > 0
                               ? baseURL + item.images.links[0]
                               : ""
                           }

@@ -11,7 +11,7 @@ import { baseURL } from "../constants/authentications";
 
 interface ItemCardProps {
   id: string;
-  type?: "product" | "order";
+  type?: "wishlistItem" | "product" | "order";
   title: string;
   description: string;
   price: string;
@@ -19,6 +19,7 @@ interface ItemCardProps {
   imagesPaths: string[] | string;
   hasRemoveButton?: boolean;
   hasEditButton?: boolean;
+  onRemove?: () => void;
 }
 
 export function ItemCard({
@@ -31,12 +32,14 @@ export function ItemCard({
   imagesPaths,
   hasRemoveButton,
   hasEditButton,
+  onRemove
 }: ItemCardProps) {
   const navigation = useNavigation<AppNavigatorRoutesProps>();
   const { tokens } = gluestackUIConfig;
 
   function handleNavigateToProductDetails() {
-    type === "product"
+    console.log('Redirecting to product details', id)
+    type === "product" || type === "wishlistItem"
       ? navigation.navigate("productDetails", { id })
       : navigation.navigate("orderDetails", { id });
   }
@@ -53,8 +56,8 @@ export function ItemCard({
             typeof imagesPaths === "string"
               ? { uri: imagesPaths }
               : imagesPaths.length > 0
-              ? { uri: baseURL + imagesPaths[0] }
-              : ItemCardImage
+                ? { uri: baseURL + imagesPaths[0] }
+                : ItemCardImage
           }
           width={110}
           height={110}
@@ -94,7 +97,7 @@ export function ItemCard({
 
           <HStack gap={12} alignSelf="flex-end">
             {hasRemoveButton && (
-              <TouchableOpacity onPress={() => id && DeleteItems(id)}>
+              <TouchableOpacity onPress={onRemove}>
                 <Trash2 size={24} color={tokens.colors.red500} />
               </TouchableOpacity>
             )}

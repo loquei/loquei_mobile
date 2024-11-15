@@ -11,7 +11,6 @@ import { FlatList, ScrollView, SectionList } from "react-native";
 import { ListItems } from "../api/listItems";
 import { IGetItem } from "../@types/TItem";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { GetItemFirstImage } from "../api/getItemFirstImage";
 import { getUser } from "../api/getUser";
 import { useQuery } from "@tanstack/react-query";
 import { Loading } from "@components/Loading";
@@ -126,7 +125,7 @@ export function Home() {
           horizontal
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={{ paddingHorizontal: 16 }}
-          style={{ marginTop: 16, maxHeight: 44, minHeight: 44 }}
+          style={{ marginTop: 16, marginBottom: 8, maxHeight: 44, minHeight: 44 }}
         />
 
         {itemData ? (
@@ -239,10 +238,11 @@ export function Home() {
 
         <Text
           fontFamily="$body"
-          fontSize="$md"
+          fontSize="$sm"
           color="$textDark800"
           textAlign="center"
-          mt={16}
+          my={16}
+          px={16}
         >
           © 2024 Loquei. Todos os direitos reservados.
         </Text>

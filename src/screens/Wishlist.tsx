@@ -1,65 +1,175 @@
 import { Button } from "@components/Button";
 import { ScreenHeader } from "@components/ScreenHeader";
 import { ItemCard } from "@components/ItemCard";
-import { Box, VStack, View } from "@gluestack-ui/themed";
+import { Box, VStack, View, Text } from "@gluestack-ui/themed";
 import { FlatList, ScrollView } from "react-native";
-import eletronicsImage from "@assets/eletronics.jpg";
 import { useModal } from "@contexts/ModalContext";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import { listWishlistItems } from "../api/listWishlistItems";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useCallback, useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { Loading } from "@components/Loading";
+import { AppSecondaryNavigatorRoutesProps } from "@routes/app.secondary.routes";
+import { baseURL } from "../constants/authentications";
+import { deleteWishlistItem } from "../api/deleteWishlistItem";
+
+interface WishlistItem {
+  item_id: string;
+  name: string;
+  description: string;
+  daily_value: number;
+  item_image_path: string;
+}
 
 export function Wishlist() {
   const { showModal, getActionMessage } = useModal();
+  const navigation = useNavigation<AppSecondaryNavigatorRoutesProps>();
+  const [currentUserId, setCurrentUserId] = useState<string>("");
+  const queryClient = useQueryClient();
 
-  function handleDeleteAllItemsFromWishlist() {
+  const fetchWishlistItems = async () => {
+    const currentUser = await AsyncStorage.getItem("currentUser");
+    if (currentUser) {
+      const parsedCurrentUser = JSON.parse(currentUser);
+      return listWishlistItems(parsedCurrentUser.items[0].id);
+    }
+    return [];
+  };
 
-  }
+  const { data: wishlistItems = [], isLoading, error, refetch } = useQuery({
+    queryKey: ["wishlistItems"],
+    queryFn: fetchWishlistItems,
+    staleTime: 1000 * 60 * 5, // 5 minutos
+  });
 
   const handleOpenModal = (action: "deleteAllItemsFromWishlist") => {
     const actionMessage = getActionMessage(action);
-    const onConfirm = action === "deleteAllItemsFromWishlist" ? handleDeleteAllItemsFromWishlist : () => { };
-
+    const onConfirm = action === "deleteAllItemsFromWishlist" ? () => handleDeleteAllItemsFromWishlist(currentUserId) : () => { };
     showModal({
       ...actionMessage,
       onConfirm,
     });
   };
 
+  const handleUserToHome = () => {
+    navigation.navigate("home");
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      const fetchCurrentUser = async () => {
+        try {
+          const currentUser = await AsyncStorage.getItem("currentUser");
+          if (currentUser) {
+            const parsedUser = JSON.parse(currentUser);
+            if (parsedUser && parsedUser.items[0].id) {
+              setCurrentUserId(parsedUser.items[0].id);
+            } else {
+              console.warn("Formato inesperado em currentUser:", currentUser);
+            }
+          } else {
+            console.warn("Nenhum usuário atual encontrado no AsyncStorage.");
+          }
+        } catch (error) {
+          console.error("Error fetching current user:", error);
+        }
+      };
+
+      fetchCurrentUser();
+    }, [])
+  );
+
+  const handleDeleteUniqueItemFromWishlist = async (userId: string, itemId: string) => {
+    try {
+      await deleteWishlistItem(userId, itemId);
+      queryClient.invalidateQueries({ queryKey: ["wishlistItems"] });
+    } catch (error) {
+      console.error("Erro ao excluir o item da lista de desejos:", error);
+    }
+  };
+
+  const handleDeleteAllItemsFromWishlist = async (userId: string) => {
+    try {
+      for (const item of wishlistItems) {
+        await deleteWishlistItem(currentUserId, item.item_id);
+      }
+      queryClient.invalidateQueries({ queryKey: ["wishlistItems"] });
+    } catch (error) {
+      console.error("Erro ao excluir todos os itens da lista de desejos:", error);
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <View flex={1} justifyContent="center" alignItems="center">
+        <Loading />
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View p={16} flex={1} justifyContent="center" alignItems="center">
+        <Text textAlign="center" fontSize="$2xl" fontFamily="$heading" color="red.500">
+          Erro ao carregar a lista de desejos.
+        </Text>
+        <Button title="Tentar novamente" onPress={() => refetch()} mt={16} />
+      </View>
+    );
+  }
+
   return (
     <View flex={1}>
       <ScreenHeader title="Lista de desejos" backButton />
 
-      <ScrollView contentContainerStyle={{ flexGrow: 1, paddingHorizontal: 16, paddingBottom: 16, marginTop: 16 }} showsVerticalScrollIndicator={false} nestedScrollEnabled={true}>
-        <FlatList
-          scrollEnabled={false}
+      {wishlistItems.length === 0 ? (
+        <View p={16} flex={1} justifyContent="center">
+          <Text textAlign="center" fontSize="$2xl" fontFamily="$heading" color="gray.500">
+            Sua lista de desejos está vazia.
+          </Text>
+          <Text textAlign="center" fontSize="$lg" color="gray.500">
+            Volte para a tela inicial e adicione produtos.
+          </Text>
+          <Button title="Voltar para a tela inicial" onPress={handleUserToHome} mt={16} />
+        </View>
+      ) : (
+        <ScrollView
+          contentContainerStyle={{ flexGrow: 1, paddingHorizontal: 16, paddingBottom: 16, marginTop: 16 }}
           showsVerticalScrollIndicator={false}
-          data={[
-            { id: '1', title: 'Smartphone Samsung Galaxy S21', description: 'Smartphone Samsung Galaxy S21 128GB 5G', price: 3999 },
-            { id: '2', title: 'Smartwatch Samsung Galaxy Watch 4', description: 'Smartwatch Samsung Galaxy Watch 4 44mm Bluetooth', price: 3999 },
-            { id: '3', title: 'Notebook Dell Inspiron 15', description: 'Notebook Dell Inspiron 15 3000, Intel Core i5-1035G1', price: 3999 },
-            { id: '4', title: 'Smart TV LG 50" 4K', description: 'Smart TV LG 50" 4K UHD LED 50UP7500PSB ThinQ AI ', price: 3999 },
-            { id: '1', title: 'Smartphone Samsung Galaxy S21', description: 'Smartphone Samsung Galaxy S21 128GB 5G', price: 3999 },
-            { id: '2', title: 'Smartwatch Samsung Galaxy Watch 4', description: 'Smartwatch Samsung Galaxy Watch 4 44mm Bluetooth', price: 3999 },
-          ]}
-          keyExtractor={(item, index) => index.toString()}
-          renderItem={({ item }) => (
-            <VStack>
-              <ItemCard
-                id={item.id}
-                type="product"
-                title={item.title}
-                description={item.description}
-                price={item.price.toFixed(2).replace('.', ',')}
-                imagesPaths={eletronicsImage}
-              />
-            </VStack>
-          )}
-          ItemSeparatorComponent={() => <VStack height={16} />}
-          contentContainerStyle={{ paddingBottom: 16 }}
-        />
-      </ScrollView>
+          nestedScrollEnabled={true}
+        >
+          <FlatList
+            scrollEnabled={false}
+            showsVerticalScrollIndicator={false}
+            data={wishlistItems}
+            keyExtractor={(item: WishlistItem) => item.item_id}
+            renderItem={({ item }) => (
+              <VStack>
+                <ItemCard
+                  key={item.item_id}
+                  id={item.item_id}
+                  type="product"
+                  title={item.name}
+                  description={item.description}
+                  price={item.daily_value.toFixed(2).replace('.', ',')}
+                  imagesPaths={baseURL + item.item_image_path}
+                  hasRemoveButton
+                  onRemove={() => handleDeleteUniqueItemFromWishlist(currentUserId, item.item_id)}
+                />
+              </VStack>
+            )}
+            ItemSeparatorComponent={() => <VStack height={16} />}
+            contentContainerStyle={{ paddingBottom: 16 }}
+          />
+        </ScrollView>
+      )}
 
-      <Box bg="$backgroundLight50" p={16} hardShadow="5">
-        <Button title="Remover todos" buttonVariant="danger-outline" onPress={() => handleOpenModal("deleteAllItemsFromWishlist")} />
-      </Box>
+      {wishlistItems.length > 0 && (
+        <Box bg="$backgroundLight50" p={16} hardShadow="5">
+          <Button title="Remover todos" buttonVariant="danger-outline" onPress={() => handleOpenModal("deleteAllItemsFromWishlist")} />
+        </Box>
+      )}
     </View>
-  )
+  );
 }

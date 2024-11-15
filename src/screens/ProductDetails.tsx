@@ -3,7 +3,7 @@ import { ProductImagesCarousel } from "@components/ProductImagesCarousel";
 import { ScreenHeader } from "@components/ScreenHeader";
 import { Tag } from "@components/Tag";
 import { HStack, Text, VStack, View } from "@gluestack-ui/themed";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { FlatList, ScrollView } from "react-native";
 import accordionData, { DetailsAccordion } from "@components/DetailsAccordion";
 import { ProductContainerReviews } from "@components/ProductContainerReviews";
@@ -14,110 +14,82 @@ import { Loading } from "@components/Loading";
 import { listRentals } from "../api/listRentals";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { AppNavigatorRoutesProps } from "@routes/app.routes";
+import { postWishlistItem } from "../api/postWishlistItem";
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { getStatusDescription } from "@utils/getStatusDescription";
+import { listWishlistItems } from "../api/listWishlistItems";
+import { deleteWishlistItem } from "../api/deleteWishlistItem";
+
+interface WishlistItem {
+  item_id: string;
+}
 
 export function ProductDetails() {
   const [scrollEnabled, setScrollEnabled] = useState(true);
-  const [productDetails, setProductDetails] = useState<IGetItem>();
   const [rentalTimes, setRentalTimes] = useState<string[]>([]);
   const [productRentals, setProductRentals] = useState<any[]>([]);
   const [filteredRentals, setFilteredRentals] = useState<any[]>([]);
   const [currentUserId, setCurrentUserId] = useState<string>("");
-  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const navigation = useNavigation<AppNavigatorRoutesProps>();
+  const queryClient = useQueryClient();
 
   const route = useRoute();
   const { id } = route.params as { id: string };
 
-  const fetchProductDetails = useCallback(async () => {
-    try {
-      console.log(`Buscando detalhes do produto ${id}...`);
-      const item = await GetItem(id);
-      console.log(`Detalhes do produto ${id} recebidos:`, item);
-      setProductDetails(item);
-
-      const times: string[] = [];
-      if (item.min_days) {
-        times.push(item.min_days.toString() + ' dias');
-      }
-      if (item.max_days) {
-        times.push(item.max_days.toString() + ' dias');
-      }
-
-      setRentalTimes(times);
-    } catch (error) {
-      console.error('Erro ao buscar detalhes do produto:', error);
+  const fetchProductDetails = async () => {
+    const item = await GetItem(id);
+    const times: string[] = [];
+    if (item.min_days) {
+      times.push(item.min_days.toString() + ' dias');
     }
-  }, [id]);
-
-  const fetchRentals = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      console.log(`Buscando aluguéis do produto ${id} e do usuário ${currentUserId}...`);
-
-      if (currentUserId) {
-        const rentals = await listRentals(currentUserId);
-
-        if (rentals && Array.isArray(rentals.items)) {
-          console.log(`Aluguéis do produto ${id} e do usuário ${currentUserId} recebidos:`, rentals.items);
-          setProductRentals(rentals.items);
-
-          const filteredRentals = rentals.items.filter((rental: { item: string; }) => rental.item === id);
-          console.log(`Aluguéis do produto ${id} recebidos:`, filteredRentals);
-
-          setFilteredRentals(filteredRentals);
-        } else {
-          console.warn("Os dados recebidos não estão no formato esperado:", rentals);
-        }
-      } else {
-        console.warn("currentUserId não está definido.");
-      }
-    } catch (error) {
-      console.error('Erro ao buscar aluguéis do produto:', error);
-    } finally {
-      setIsLoading(false);
+    if (item.max_days) {
+      times.push(item.max_days.toString() + ' dias');
     }
-  }, [id, currentUserId]);
-
-  function handleUserToDashboard() {
-    navigation.navigate('dashboard');
-  }
-
-  function handleUserToCalendar() {
-    if (productDetails?.user_id) {
-      navigation.navigate('calendar', {
-        itemId: id,
-        lessorId: productDetails.user_id,
-        lesseeId: currentUserId,
-        minDays: productDetails.min_days,
-        maxDays: productDetails.max_days,
-        filteredRentals: filteredRentals,
-      });
-    }
-  }
-
-  const getStatusDescription = (status: string) => {
-    switch (status) {
-      case "PENDING":
-        return "Pendente";
-      case "ACCEPTED":
-        return "Aceita";
-      case "REFUSED":
-        return "Recusada";
-      case "CANCELED":
-        return "Cancelada";
-      case "COMPLETED":
-        return "Concluída";
-      case "IN_PROGRESS":
-        return "Em andamento";
-      default:
-        return "Status desconhecido";
-    }
+    setRentalTimes(times);
+    return item;
   };
+
+  const fetchRentals = async () => {
+    if (productDetails?.user_id) {
+      const rentals = await listRentals(productDetails.user_id);
+      if (rentals && Array.isArray(rentals.items)) {
+        setProductRentals(rentals.items);
+        const filteredRentals = rentals.items.filter((rental: { item: string; }) => rental.item === id);
+        setFilteredRentals(filteredRentals);
+        return rentals.items;
+      }
+    }
+    return []; // Retorna um array vazio se não houver dados
+  };
+
+  const { data: productDetails, isLoading: isProductLoading } = useQuery({
+    queryKey: ['productDetails', id],
+    queryFn: fetchProductDetails
+  });
+
+  const { data: rentalsData, isLoading: isRentalsLoading, refetch: refetchRentals } = useQuery({
+    queryKey: ['rentals', productDetails?.user_id],
+    queryFn: fetchRentals,
+    enabled: !!productDetails?.user_id,
+  });
+
+  const { data: wishlistItems, refetch: refetchWishlistItems } = useQuery({
+    queryKey: ['wishlist', currentUserId],
+    queryFn: () => listWishlistItems(currentUserId),
+    enabled: !!currentUserId,
+  });
+
+  useEffect(() => {
+    if (rentalsData) {
+      setProductRentals(rentalsData);
+      const filtered = rentalsData.filter((rental: { item: string; }) => rental.item === id);
+      setFilteredRentals(filtered);
+    }
+  }, [rentalsData]);
 
   useFocusEffect(
     useCallback(() => {
-      setIsLoading(true);
       const fetchCurrentUser = async () => {
         try {
           const currentUser = await AsyncStorage.getItem("currentUser");
@@ -136,23 +108,59 @@ export function ProductDetails() {
         }
       };
 
-      const loadData = async () => {
-        await fetchCurrentUser();
-        console.log('O CURRENT USER ID', currentUserId);
-        await fetchProductDetails();
-
-        if (currentUserId) {
-          await fetchRentals();
-        }
-      };
-
-      loadData();
-    }, [fetchProductDetails, fetchRentals, currentUserId])
+      fetchCurrentUser().then(() => {
+        refetchRentals();
+      });
+    }, [refetchRentals])
   );
 
-  if (!productDetails) {
+  function handleUserToDashboard() {
+    navigation.navigate('dashboard');
+  }
+
+  function handleUserToCalendar() {
+    if (productDetails?.user_id) {
+      navigation.navigate('calendar', {
+        itemId: id,
+        lessorId: productDetails.user_id,
+        lesseeId: currentUserId,
+        minDays: productDetails.min_days,
+        maxDays: productDetails.max_days,
+        filteredRentals: filteredRentals,
+      });
+    }
+  }
+
+  function handleUserToRentalHistory() {
+    navigation.navigate('rentalHistory', {
+      id: currentUserId,
+    });
+  }
+
+  async function handleItemToWishlist() {
+    await postWishlistItem(currentUserId, id);
+    queryClient.invalidateQueries({ queryKey: ['wishlist', currentUserId] });
+    refetchWishlistItems();
+  }
+
+  async function handleDeleteUniqueItemFromWishlist(userId: string, itemId: string) {
+    try {
+      await deleteWishlistItem(userId, itemId);
+      queryClient.invalidateQueries({ queryKey: ['wishlist', currentUserId] });
+      refetchWishlistItems();
+    } catch (error) {
+      console.error("Erro ao excluir o item da lista de desejos:", error);
+    }
+  }
+
+  if (isProductLoading || !productDetails) {
     return <Loading />;
   }
+
+  console.log('filteredRentals', filteredRentals);
+  const userRentals = filteredRentals.filter(rental => rental.lessee === currentUserId);
+  console.log('userRentals', userRentals);
+  console.log('currentUserId', currentUserId);
 
   return (
     <View flex={1} margin={0} padding={0}>
@@ -172,30 +180,19 @@ export function ProductDetails() {
             {productDetails.description}
           </Text>
 
-          <Text fontFamily="$body" mt={8} px={16} color="$textDark800">
-            Available in Graphite, Gold, Silver, and Sierra Blue.
-          </Text>
-
           <VStack mt={16} px={16}>
             <VStack>
               <HStack>
-                <Text fontFamily="$body" fontSize={"$lg"} color="$textDark800">
-                  De <Text fontFamily="$body" fontSize={"$lg"} textDecorationLine="line-through">
-                    R$ {productDetails.daily_value.toFixed(2).replace('.', ',')}
-                  </Text>
-                </Text>
-              </HStack>
-              <HStack>
                 <Text fontFamily="$body" fontSize={"$lg"} color="$textDark800" alignItems="center">
-                  Por <Text fontFamily="$heading" fontSize={"$2xl"} color="$teal600">
+                  <Text fontFamily="$heading" fontSize={"$2xl"} color="$teal600">
                     R$ {productDetails.daily_value.toFixed(2).replace('.', ',')}
-                  </Text>
+                  </Text> / dia
                 </Text>
               </HStack>
             </VStack>
           </VStack>
 
-          <VStack mt={16} px={16}>
+          <VStack mt={24} px={16}>
             <Text fontFamily="$heading" fontSize={"$lg"} color="$textDark800">
               Tempo para aluguel
             </Text>
@@ -206,35 +203,36 @@ export function ProductDetails() {
                 horizontal
                 showsHorizontalScrollIndicator={false}
                 renderItem={({ item, index }) => (
-                  <>
-                    <VStack>
-                      {index === 0 && (
-                        <Tag
-                          name={'Mínimo ' + item}
-                        />
-                      )}
+                  <VStack>
+                    {index === 0 && (
+                      <Tag
+                        name={'Mínimo ' + item}
+                      />
+                    )}
 
-                      {index === 1 && (
-                        <Tag
-                          name={'Máximo ' + item}
-                        />
-                      )}
-
-                    </VStack>
-                  </>
+                    {index === 1 && (
+                      <Tag
+                        name={'Máximo ' + item}
+                      />
+                    )}
+                  </VStack>
                 )}
                 ItemSeparatorComponent={() => <HStack width={12} />}
               />
             </HStack>
           </VStack>
 
-          <DetailsAccordion type="productDetailsScreen" items={accordionData.productDetailsScreen} />
+          <VStack mt={24}>
+            <DetailsAccordion type="productDetailsScreen" items={accordionData.productDetailsScreen} />
+          </VStack>
 
-          <ProductContainerReviews itemId={id} raterId={currentUserId} isItemOwner={
-            currentUserId === productDetails.user_id
-          } perPage={3} />
-
+          <VStack mt={24}>
+            <ProductContainerReviews itemId={id} raterId={currentUserId} isItemOwner={
+              currentUserId === productDetails.user_id
+            } perPage={3} />
+          </VStack>
         </VStack>
+
       </ScrollView>
       <VStack
         px={16}
@@ -244,7 +242,7 @@ export function ProductDetails() {
         bg="$white"
         hardShadow="5"
       >
-        {isLoading ? (
+        {isRentalsLoading ? (
           <Button title="Carregando" buttonVariant="solid" disabled />
         ) : (
           <>
@@ -252,16 +250,47 @@ export function ProductDetails() {
               <Button title="Gerenciar Produto" buttonVariant="solid" onPress={handleUserToDashboard} />
             ) : (
               <>
-                {filteredRentals.length > 0 ? (
+                {userRentals.length > 0 ? (
                   <>
                     <Button
-                      title={`Locação ${getStatusDescription(filteredRentals[0].status)}`}
+                      title="Ver no histórico de aluguéis"
                       buttonVariant="outline"
+                      onPress={handleUserToRentalHistory}
                     />
+                    {
+                      wishlistItems?.find((item: WishlistItem) => item.item_id === id) ? (
+                        <Button
+                          title="Remover da lista de desejos"
+                          buttonVariant="danger-outline"
+                          onPress={() => handleDeleteUniqueItemFromWishlist(currentUserId, id)}
+                        />
+                      ) : (
+                        <Button
+                          title="Adicionar à lista de desejos"
+                          buttonVariant="secondary"
+                          onPress={handleItemToWishlist}
+                        />
+                      )
+                    }
                     <Button title="Selecionar data de aluguel" buttonVariant="solid" onPress={handleUserToCalendar} />
                   </>
                 ) : (
                   <>
+                    {
+                      wishlistItems?.find((item: WishlistItem) => item.item_id === id) ? (
+                        <Button
+                          title="Remover da lista de desejos"
+                          buttonVariant="danger-outline"
+                          onPress={() => handleDeleteUniqueItemFromWishlist(currentUserId, id)}
+                        />
+                      ) : (
+                        <Button
+                          title="Adicionar à lista de desejos"
+                          buttonVariant="secondary"
+                          onPress={handleItemToWishlist}
+                        />
+                      )
+                    }
                     <Button title="Selecionar data de aluguel" buttonVariant="solid" onPress={handleUserToCalendar} />
                   </>
                 )}

@@ -18,6 +18,7 @@ import {
   ChevronRight,
   User,
   MapPin,
+  Handshake,
   LockKeyhole,
   CircleDollarSign,
   CircleHelp,
@@ -49,6 +50,8 @@ export function Profile() {
         return navigation.navigate("notifications");
       case "privacy":
         return navigation.navigate("privacy");
+      case "rentalHistory":
+        return navigation.navigate("rentalHistory", { id: user?.items?.[0]?.id });
       case "leasing":
         return navigation.navigate("leasing");
       case "help":
@@ -153,7 +156,7 @@ export function Profile() {
         </TouchableOpacity>
       </VStack>
 
-      <VStack mt={16} px={16}>
+      <VStack mt={16} mb={16} px={16}>
         <Box mt={16} bg="$white" width="$full" rounded={"$md"}>
           <Pressable
             $active-backgroundColor="$backgroundLight100"
@@ -169,38 +172,7 @@ export function Profile() {
               <ChevronRight size={24} color={tokens.colors.textDark800} />
             </HStack>
           </Pressable>
-          <Divider />
 
-          <Pressable
-            $active-backgroundColor="$backgroundLight100"
-            onPress={() => handleUserRedirect("addAddress")}
-          >
-            <HStack justifyContent="space-between" p={16} alignItems="center">
-              <HStack alignItems="center" gap={16}>
-                <MapPin size={24} color={tokens.colors.textDark800} />
-                <Text color="$textDark800" fontSize="$md" fontFamily="$body">
-                  Endereços
-                </Text>
-              </HStack>
-              <ChevronRight size={24} color={tokens.colors.textDark800} />
-            </HStack>
-          </Pressable>
-          <Divider />
-
-          <Pressable
-            $active-backgroundColor="$backgroundLight100"
-            onPress={() => handleUserRedirect("notifications")}
-          >
-            <HStack justifyContent="space-between" p={16} alignItems="center">
-              <HStack alignItems="center" gap={16}>
-                <Bell size={24} color={tokens.colors.textDark800} />
-                <Text color="$textDark800" fontSize="$md" fontFamily="$body">
-                  Notificações
-                </Text>
-              </HStack>
-              <ChevronRight size={24} color={tokens.colors.textDark800} />
-            </HStack>
-          </Pressable>
           <Divider />
 
           <Pressable
@@ -212,6 +184,22 @@ export function Profile() {
                 <LockKeyhole size={24} color={tokens.colors.textDark800} />
                 <Text color="$textDark800" fontSize="$md" fontFamily="$body">
                   Política de privacidade
+                </Text>
+              </HStack>
+              <ChevronRight size={24} color={tokens.colors.textDark800} />
+            </HStack>
+          </Pressable>
+          <Divider />
+
+          <Pressable
+            $active-backgroundColor="$backgroundLight100"
+            onPress={() => handleUserRedirect("rentalHistory")}
+          >
+            <HStack justifyContent="space-between" p={16} alignItems="center">
+              <HStack alignItems="center" gap={16}>
+                <Handshake size={24} color={tokens.colors.textDark800} />
+                <Text color="$textDark800" fontSize="$md" fontFamily="$body">
+                  Meus aluguéis
                 </Text>
               </HStack>
               <ChevronRight size={24} color={tokens.colors.textDark800} />

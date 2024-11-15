@@ -12,7 +12,7 @@ export function About() {
     >
       <ScreenHeader title="Sobre a Loquei" backButton />
 
-      <VStack mt={16} gap="$3">
+      <VStack my={16} gap="$3">
         <Text px={16} fontSize="$xl" fontWeight="$bold" color="$black" fontFamily="$heading">
           Sobre a Loquei
         </Text>

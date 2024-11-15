@@ -25,6 +25,7 @@ import { Linking, ScrollView } from "react-native";
 import { acceptRental } from "../api/putAcceptRental";
 import { refuseRental } from "../api/putRefuseRental";
 import { useQuery } from "@tanstack/react-query";
+import { format } from "date-fns";
 
 interface IRentalDetails {
   created_at: string;
@@ -35,12 +36,12 @@ interface IRentalDetails {
   lessor: string;
   start_date: string;
   status:
-    | "PENDING"
-    | "ACCEPTED"
-    | "IN_PROGRESS"
-    | "COMPLETED"
-    | "CANCELLED"
-    | "REFUSED";
+  | "PENDING"
+  | "ACCEPTED"
+  | "IN_PROGRESS"
+  | "COMPLETED"
+  | "CANCELLED"
+  | "REFUSED";
   total_value: number;
   updated_at: string;
 }
@@ -224,7 +225,7 @@ export function OrderDetails() {
             Data
           </Text>
           <Text fontFamily="$body" fontSize="$md" color="$textDark800">
-            {rentalDetails.start_date}
+            {format(new Date(rentalDetails.start_date), 'dd/MM/yyyy')}
           </Text>
         </VStack>
         <Divider />
@@ -252,7 +253,7 @@ export function OrderDetails() {
           {itemDetails && (
             <ItemCard
               id={rentalDetails.item}
-              date={rentalDetails.start_date}
+              date={format(new Date(rentalDetails.start_date), 'dd/MM/yyyy')}
               imagesPaths={
                 itemDetails.images.links.length > 0
                   ? itemDetails.images.links

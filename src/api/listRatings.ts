@@ -37,10 +37,10 @@ export const listRatings = async (
 
     const ratingsWithUserNames = await Promise.all(
       ratings.map(async (rating: IPostRating) => {
-        const userName = await getUserById(rating.rater_id);
+        const user = await getUserById(rating.rater_id);
         return {
           ...rating,
-          userName,
+          user
         };
       })
     );

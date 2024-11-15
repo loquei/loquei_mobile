@@ -2,9 +2,8 @@ import { CalendarComponent } from '@components/Calendar';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { useState } from 'react';
 import { Button } from '@components/Button';
-import { View, VStack } from '@gluestack-ui/themed';
+import { VStack } from '@gluestack-ui/themed';
 import { postRental } from '../api/postRental';
-import { Loading } from '@components/Loading';
 import { AppNavigatorRoutesProps } from '@routes/app.routes';
 import { ScreenHeader } from '@components/ScreenHeader';
 import { ScrollView } from 'react-native';
@@ -12,7 +11,14 @@ import { ScrollView } from 'react-native';
 export function Calendar() {
   const route = useRoute();
   const navigation = useNavigation<AppNavigatorRoutesProps>();
-  const { itemId, lessorId, lesseeId, minDays, maxDays, filteredRentals } = route.params as {};
+  const { itemId, lessorId, lesseeId, minDays, maxDays, filteredRentals } = route.params as {
+    itemId: string;
+    lessorId: string;
+    lesseeId: string;
+    minDays: number;
+    maxDays: number;
+    filteredRentals: any[];
+  };
 
   const [isLoading, setIsLoading] = useState(false);
   const [startDate, setStartDate] = useState<Date | null>(null);
@@ -33,9 +39,9 @@ export function Calendar() {
       console.log('Data de fim:', endDate);
 
       console.log('DADOS DO ALUGUEL', itemId, lessorId, lesseeId, startDate, endDate);
-      // await postRental(lessorId, lesseeId, itemId, startDate, endDate);
+      await postRental(lessorId, lesseeId, itemId, startDate, endDate);
 
-      // navigation.navigate('productDetails', { id: itemId });
+      navigation.navigate('productDetails', { id: itemId });
     } catch (error) {
       console.error('Erro ao criar aluguel:', error);
     } finally {

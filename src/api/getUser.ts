@@ -56,7 +56,7 @@ export const getUserById = async (userId: string) => {
         throw new Error(`Erro: sem resposta`);
       }
 
-      return response.data.personal_name;
+      return response.data;
 
     } catch (error) {
       console.error("Erro ao buscar usuario:", error);

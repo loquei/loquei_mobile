@@ -1,7 +1,7 @@
 import { gluestackUIConfig } from "@gluestack-ui/config";
 import { Pressable, Progress } from "@gluestack-ui/themed";
 import { ProgressFilledTrack } from "@gluestack-ui/themed";
-import { HStack, Text, Spinner } from "@gluestack-ui/themed"; // Adicionando Spinner para o loading
+import { HStack, Text } from "@gluestack-ui/themed"; // Adicionando Spinner para o loading
 import { VStack } from "@gluestack-ui/themed";
 import { Star, StarHalf } from "lucide-react-native";
 import { Button } from "./Button";
@@ -9,12 +9,12 @@ import { FlatList } from "react-native";
 import { View } from "@gluestack-ui/themed";
 import { Divider } from "@gluestack-ui/themed";
 import { useModal } from "@contexts/ModalContext";
-import { useEffect, useState } from "react";
 import { listRatings } from "../api/listRatings";
 import { Loading } from "./Loading";
 import { useNavigation } from "@react-navigation/native";
 import { AppNavigatorRoutesProps } from "@routes/app.routes";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+
 interface ProductReviewsProps {
   itemId: string;
   raterId: string;
@@ -26,7 +26,17 @@ interface ProductReviewsProps {
 interface Rating {
   id: string;
   rater_id: string;
-  userName: string;
+  user: {
+    id: string;
+    user_name: string;
+    personal_name: string;
+    email: string;
+    phone: string;
+    document: string;
+    birth: string;
+    created_at: string;
+    updated_at: string;
+  };
   description: string;
   score: number;
   item_id: string;
@@ -54,10 +64,7 @@ export function ProductContainerReviews({ itemId, raterId, isItemOwner, isAllRat
       type: 'rating',
       onConfirm,
       onClose: async () => {
-        await queryClient.invalidateQueries('ratings', {
-          refetchActive: true,
-          refetchInactive: true,
-        });
+        await queryClient.invalidateQueries({ queryKey: ['ratings'] });
       },
     });
   };
@@ -73,6 +80,22 @@ export function ProductContainerReviews({ itemId, raterId, isItemOwner, isAllRat
 
   const filteredRatings = ratings.filter((rating: Rating) => rating.item_id === itemId);
 
+  const averageScore = filteredRatings.length
+    ? parseFloat((filteredRatings.reduce((sum, rating) => sum + rating.score, 0) / filteredRatings.length).toFixed(1))
+    : 0;
+
+  const totalRatings = filteredRatings.length;
+
+  const fullStars = Math.floor(averageScore);
+  const halfStar = averageScore % 1 >= 0.5 ? 1 : 0;
+  const emptyStars = 5 - fullStars - halfStar;
+
+  const getRatingCount = (score: number) => {
+    return filteredRatings.filter((rating) => Math.floor(rating.score) === score).length;
+  };
+
+  console.log('filteredRatings', filteredRatings);
+
   return (
     <VStack mt={16} px={16}>
       <HStack justifyContent="space-between" alignItems="center">
@@ -80,7 +103,7 @@ export function ProductContainerReviews({ itemId, raterId, isItemOwner, isAllRat
           Avaliações
         </Text>
         {!isAllRatingsScreen && (
-          <Pressable onPress={() => navigation.navigate("productReviews")}>
+          <Pressable onPress={() => navigation.navigate("productReviews", { itemId, raterId, isItemOwner })}>
             <Text fontFamily="$body" fontSize="$md" color="$teal600">
               Ver todas
             </Text>
@@ -92,40 +115,33 @@ export function ProductContainerReviews({ itemId, raterId, isItemOwner, isAllRat
         <HStack gap={32}>
           <VStack>
             <Text fontFamily="$heading" fontSize={"$3xl"} color="$textDark800">
-              4.5
+              {averageScore}
             </Text>
             <VStack>
               <HStack>
-                <Star size={20} fill={tokens.colors.yellow500} />
-                <Star size={20} fill={tokens.colors.yellow500} />
-                <Star size={20} fill={tokens.colors.yellow500} />
-                <Star size={20} fill={tokens.colors.yellow500} />
-                <StarHalf size={20} fill={tokens.colors.yellow500} />
+                {[...Array(fullStars)].map((_, index) => (
+                  <Star key={`full-${index}`} size={20} fill={tokens.colors.yellow500} />
+                ))}
+                {halfStar > 0 && <StarHalf size={20} fill={tokens.colors.yellow500} />}
+                {[...Array(emptyStars)].map((_, index) => (
+                  <Star key={`empty-${index}`} size={20} fill={tokens.colors.secondary100} />
+                ))}
               </HStack>
               <Text fontFamily="$body" fontSize={"$sm"} color="$textLight600">
-                (14 avaliações)
+                ({totalRatings} avaliações)
               </Text>
             </VStack>
           </VStack>
 
           <VStack flex={1}>
-            {[
-              { leftText: '5', progressValue: 80, rightText: '10' },
-              { leftText: '4', progressValue: 60, rightText: '3' },
-              { leftText: '3', progressValue: 40, rightText: '1' },
-              { leftText: '2', progressValue: 20, rightText: '0' },
-              { leftText: '1', progressValue: 10, rightText: '0' },
-            ].map(({ leftText, progressValue, rightText }, index) => (
-              <HStack alignItems="center" gap={8} key={index}>
+            {[5, 4, 3, 2, 1].map((score) => (
+              <HStack alignItems="center" gap={8} key={score}>
                 <Text fontFamily="$body" fontSize="$lg" color="$textDark800" width={24} textAlign="center">
-                  {leftText}
+                  {score}
                 </Text>
-                <Progress value={progressValue} size="sm" flex={1}>
+                <Progress value={(getRatingCount(score) / totalRatings) * 100} size="sm" flex={1}>
                   <ProgressFilledTrack bg="$textDark800" />
                 </Progress>
-                <Text fontFamily="$body" fontSize="$lg" color="$textDark800" width={24} textAlign="center">
-                  {rightText}
-                </Text>
               </HStack>
             ))}
           </VStack>
@@ -150,7 +166,7 @@ export function ProductContainerReviews({ itemId, raterId, isItemOwner, isAllRat
                   <View borderRadius={999} bg="$secondary300" w={45} h={45} />
                   <VStack flex={1}>
                     <Text fontFamily="$mono" fontSize="$lg" color="$textDark800" numberOfLines={1} ellipsizeMode="tail">
-                      {item.userName}
+                      {item.user.personal_name}
                     </Text>
                     <HStack justifyContent="space-between" alignItems="center" gap={10}>
                       <HStack>
@@ -177,8 +193,8 @@ export function ProductContainerReviews({ itemId, raterId, isItemOwner, isAllRat
             ItemSeparatorComponent={() => <Divider mt={16} />}
           />
         ) : (
-          <Text fontFamily="$body" fontSize="$lg" color="$textLight600" mt={16} textAlign="center">
-            Nenhuma avaliação disponível
+          <Text fontFamily="$body" fontSize="$md" color="$textLight600" mt={16} textAlign="center">
+            Este produto ainda não possui avaliações.
           </Text>
         )}
       </VStack>

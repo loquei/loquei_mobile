@@ -24,6 +24,7 @@ import { Calendar } from "@screens/Calendar";
 import { Privacy } from "@screens/Privacy";
 import { Help } from "@screens/Help";
 import { About } from "@screens/About";
+import { RentalHistory } from "@screens/RentalHistory";
 
 export type AppSecondaryRoutes = {
   productDetails: { id: string };
@@ -45,7 +46,11 @@ export type AppSecondaryRoutes = {
     }>,
   };
 
-  productReviews: undefined;
+  productReviews: {
+    itemId: string;
+    raterId: string;
+    isItemOwner: boolean;
+  };
   searchCategory: undefined;
   searchResults: { searchTerm: string };
   leasing: undefined;
@@ -56,6 +61,7 @@ export type AppSecondaryRoutes = {
   addProductStep2: undefined;
   allOrders: undefined;
   orderDetails: { id: string };
+  rentalHistory: { id?: string };
   account: undefined;
   addAddress: undefined;
   notifications: undefined;
@@ -84,7 +90,9 @@ export function AppRoutes() {
         ({ params }) => params.id
       } />
 
-      <Screen name="productReviews" component={ProductReviews} />
+      <Screen name="productReviews" component={ProductReviews}
+        getId={({ params }) => params.itemId}
+      />
 
       <Screen name="calendar" component={Calendar} />
 
@@ -109,6 +117,10 @@ export function AppRoutes() {
       <Screen name="allOrders" component={AllOrders} />
 
       <Screen name="orderDetails" component={OrderDetails} getId={
+        ({ params }) => params.id
+      } />
+
+      <Screen name="rentalHistory" component={RentalHistory} getId={
         ({ params }) => params.id
       } />
 

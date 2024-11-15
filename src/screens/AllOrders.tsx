@@ -9,6 +9,7 @@ import { listRentals } from "../api/listRentals";
 import { useFocusEffect } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Loading } from "@components/Loading";
+import { getStatusDescription } from "@utils/getStatusDescription";
 
 interface IRental {
   id: string;
@@ -82,12 +83,10 @@ export function AllOrders() {
     }, [fetchRentals, currentUserId])
   );
 
-  // Renderizar Loading se estiver carregando
   if (isLoading) {
     return <Loading />;
   }
 
-  // Mensagem genérica se não houver locações
   if (filterRentals.length === 0) {
     return (
       <VStack flex={1}>
@@ -151,25 +150,6 @@ export function AllOrders() {
           data={filterRentals}
           keyExtractor={(item) => item.id}
           renderItem={({ item, index }) => {
-            const getStatusDescription = (status: string) => {
-              switch (status) {
-                case "PENDING":
-                  return "Pendente";
-                case "ACCEPTED":
-                  return "Aceita";
-                case "REFUSED":
-                  return "Recusada";
-                case "CANCELED":
-                  return "Cancelada";
-                case "COMPLETED":
-                  return "Concluída";
-                case "IN_PROGRESS":
-                  return "Em andamento";
-                default:
-                  return "Status desconhecido";
-              }
-            };
-
             return (
               <VStack>
                 <ItemCard

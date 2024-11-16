@@ -1,4 +1,4 @@
-import { HStack, VStack, Text, Center } from "@gluestack-ui/themed";
+import { VStack, Text, Center } from "@gluestack-ui/themed";
 import {
   useFocusEffect,
   useNavigation,

@@ -22,9 +22,9 @@ import { useCallback, useState } from "react";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { ListCategories } from "../api/listCategory";
 import { ICategories } from "../@types/TCategories";
+
 export function AddProductStep1() {
   const progressValue = 0;
-
   const navigation = useNavigation<AppNavigatorRoutesProps>();
   type CreateItemSchema = y.InferType<typeof PostItemSchema>;
   const [categories, setCategories] = useState<ICategories[]>([]);

@@ -2,21 +2,20 @@ import { CategoryCard } from "@components/CategoryCard";
 import { SearchInput } from "@components/SearchInput";
 import { HStack, Text, VStack } from "@gluestack-ui/themed";
 import { SectionList, SectionListData } from "react-native";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { AppNavigatorRoutesProps } from "@routes/app.routes";
-
-interface CategoryItem {
-  id: string;
-  title: string;
-}
+import { useQuery } from "@tanstack/react-query";
+import { ICategories } from "../@types/TCategories";
+import { ListCategories } from "../api/listCategory";
 
 interface SectionData {
   title: string;
-  data: CategoryItem[][];
+  data: ICategories[][];
 }
 
 export function Search() {
+  const [categories, setCategories] = useState<ICategories[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const navigation = useNavigation<AppNavigatorRoutesProps>();
 
@@ -28,34 +27,38 @@ export function Search() {
     navigation.navigate("searchResults", { searchTerm: searchQuery });
   };
 
-  const renderCategoryRow = (data: { item: CategoryItem[] }) => {
+  const renderCategoryRow = (data: { item: ICategories[] }) => {
     const items = data.item;
+    // fazer o grid para deixar com duas cols
     return (
       <HStack justifyContent="space-between" py={2} gap={8}>
         {items.map((item) => (
-          <CategoryCard key={item.id} name={item.title} icon={item.title} />
+          <CategoryCard
+            key={item.id}
+            name={item.name}
+            icon={item.name}
+            id={item.id}
+          />
         ))}
       </HStack>
     );
   };
 
+  const { data: ListCategory } = useQuery({
+    queryKey: ["categories"],
+    queryFn: ListCategories,
+  });
+
+  useEffect(() => {
+    if (ListCategory) {
+      setCategories(ListCategory);
+    }
+  }, []);
+
   const sectionedData: SectionData[] = [
     {
       title: "Categorias",
-      data: [
-        [
-          { id: "1", title: "Eletrônicos" },
-          { id: "2", title: "Roupas" },
-        ],
-        [
-          { id: "3", title: "Móveis" },
-          { id: "4", title: "Eletrônicos" },
-        ],
-        [
-          { id: "5", title: "Roupas" },
-          { id: "6", title: "Móveis" },
-        ],
-      ],
+      data: [categories],
     },
   ];
 
@@ -68,7 +71,12 @@ export function Search() {
         keyExtractor={(item, index) => index.toString()}
         renderItem={renderCategoryRow}
         renderSectionHeader={({ section }) => (
-          <Text py={8} fontFamily="$heading" fontSize="$lg" color="$textDark800">
+          <Text
+            py={8}
+            fontFamily="$heading"
+            fontSize="$lg"
+            color="$textDark800"
+          >
             {section.title}
           </Text>
         )}

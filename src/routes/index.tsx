@@ -7,7 +7,8 @@ import { Box } from "@gluestack-ui/themed";
 import { useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-import { ModalProvider } from '@contexts/ModalContext';
+import { ModalProvider } from "@contexts/ModalContext";
+import { CategoryIdProvider } from "@contexts/CategoryIdContext";
 
 export function Routes() {
   const theme = DefaultTheme;
@@ -27,11 +28,13 @@ export function Routes() {
 
   return (
     <Box flex={1} bg="$backgroundLight50" bgColor="$backgroundLight50">
-      <ModalProvider>
-        <NavigationContainer theme={theme}>
-          {isUserAuthenticated ? <AppRoutes /> : <AuthRoutes />}
-        </NavigationContainer>
-      </ModalProvider>
+      <CategoryIdProvider>
+        <ModalProvider>
+          <NavigationContainer theme={theme}>
+            {isUserAuthenticated ? <AppRoutes /> : <AuthRoutes />}
+          </NavigationContainer>
+        </ModalProvider>
+      </CategoryIdProvider>
     </Box>
   );
 }

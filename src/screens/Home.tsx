@@ -15,16 +15,13 @@ import { getUser } from "../api/getUser";
 import { useQuery } from "@tanstack/react-query";
 import { Loading } from "@components/Loading";
 import { baseURL } from "../constants/authentications";
+import { ListCategories } from "../api/listCategory";
+import { ICategories } from "../@types/TCategories";
 
 export function Home() {
   const [itemData, setItemData] = useState<IGetItem[]>([]);
   const navigation = useNavigation<AppNavigatorRoutesProps>();
-  const [categories, setCategories] = useState([
-    "Eletrônicos",
-    "Festa",
-    "Ferramentas",
-    "Carros",
-  ]);
+  const [categories, setCategories] = useState<ICategories[]>([]);
   const [categorySelected, setCategorySelected] = useState("");
   const [isUserAuthenticated, setIsUserAuthenticated] = useState(false);
   const [currentUser, setCurrentUser] = useState<any>();
@@ -33,10 +30,15 @@ export function Home() {
     queryKey: ["items"],
     queryFn: ListItems,
   });
+  const { data: ListCategory } = useQuery({
+    queryKey: ["categories"],
+    queryFn: ListCategories,
+  });
 
   useEffect(() => {
-    if (data) {
+    if (data && ListCategory) {
       setItemData(data);
+      setCategories(ListCategory);
     }
   }, [data]);
 
@@ -114,12 +116,14 @@ export function Home() {
 
         <FlatList
           data={categories}
-          keyExtractor={(item) => item}
+          keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
             <Tag
-              name={item}
-              isActive={categorySelected.toLowerCase() === item.toLowerCase()}
-              onPress={() => setCategorySelected(item)}
+              name={item.name}
+              isActive={
+                categorySelected.toLowerCase() === item.name.toLocaleLowerCase()
+              }
+              onPress={() => setCategorySelected(item.id)}
             />
           )}
           horizontal
@@ -210,16 +214,12 @@ export function Home() {
           sections={[
             {
               title: "Explore",
-              data: [
-                { id: "1", title: "Eletrônicos" },
-                { id: "2", title: "Roupas" },
-                { id: "3", title: "Móveis" },
-              ],
+              data: categories,
             },
           ]}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
-            <CategoryCard name={item.title} icon={item.title} />
+            <CategoryCard name={item.name} icon={item.name} id={item.id} />
           )}
           renderSectionHeader={({ section }) => (
             <Text

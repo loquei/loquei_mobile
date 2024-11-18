@@ -56,6 +56,8 @@ export function SignIn() {
       } else {
         setErrorMessage("Erro ao enviar o email. Tente novamente mais tarde.");
         console.log(errorMessage);
+
+        showToast();
       }
 
     } catch (error: any) {

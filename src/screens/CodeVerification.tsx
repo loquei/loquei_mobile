@@ -18,11 +18,19 @@ import { SendCodeSchema } from "../schemas/SendCodeSchema";
 import { postCode } from "../api/postCode";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as y from "yup";
-import { ListUsers } from "../api/listUsers";
+import Toast from 'react-native-toast-message';
 
 export function CodeVerification() {
   type SendCodeSchema = y.InferType<typeof SendCodeSchema>;
   const authNavigation = useNavigation<AuthNavigatorRoutesProps>();
+
+  const showToast = (message: string) => {
+    Toast.show({
+      type: 'error',
+      text1: 'Erro',
+      text2: message,
+    });
+  };
 
   function handleNavitageToHome() {
     authNavigation.navigate("primaryRoutes");
@@ -48,58 +56,42 @@ export function CodeVerification() {
     try {
       const email = await getEmail();
       if (email) {
-        await postCode({
-          code,
-          email,
-        });
-        await AsyncStorage.setItem("currentUserEmail", email);
-        handleNavitageToHome();
+        const response = await postCode({ email, code });
+        console.log(response);
+        if (typeof response !== 'string' && response.status === 200) {
+          await AsyncStorage.setItem("currentUserEmail", email);
+          handleNavitageToHome();
+        } else {
+          const errorMsg = "Código inválido ou expirado. Tente novamente.";
+          showToast(errorMsg);
+        }
       }
     } catch (e: any) {
+      const errorMsg = "Ocorreu um erro ao tentar verificar o código. Tente novamente.";
+      showToast(errorMsg);
       console.log(e);
     }
-
-    // await ListUsers();
-
   };
 
   return (
-    <ScrollView
-      contentContainerStyle={{ flexGrow: 1 }}
-      showsVerticalScrollIndicator={false}
-    >
+    <ScrollView contentContainerStyle={{ flexGrow: 1 }} showsVerticalScrollIndicator={false}>
       <ScreenHeader title="Verificação" backButton />
+      <Toast />
       <VStack flex={1} px={16} py={40}>
         <Center flex={1}>
-          <Image
-            source={mobileCode}
-            alt="Código de verificação"
-            width={128}
-            height={128}
-          />
+          <Image source={mobileCode} alt="Código de verificação" width={128} height={128} />
           <VStack mt={40}>
             <Center>
-              <Text fontFamily="$heading" fontSize="$2xl" color="$textDark800">
-                Código de verificação
-              </Text>
-              <Text
-                fontFamily="$body"
-                fontSize="$md"
-                color="$textDark800"
-                mt={12}
-              >
-                Por favor, insira o código de verificação de 6 dígitos que foi
-                enviado para o seu endereço de e-mail registrado.
+              <Text fontFamily="$heading" fontSize="$2xl" color="$textDark800">Código de verificação</Text>
+              <Text fontFamily="$body" fontSize="$md" color="$textDark800" mt={12}>
+                Por favor, insira o código de verificação de 6 dígitos que foi enviado para o seu endereço de e-mail registrado.
               </Text>
             </Center>
           </VStack>
 
           <VStack mt={48} w="$full">
             <VStack gap={8}>
-              <Text fontFamily="$body" fontSize="$md" color="$textDark800">
-                Código de verificação
-              </Text>
-
+              <Text fontFamily="$body" fontSize="$md" color="$textDark800">Código de verificação</Text>
               <Controller
                 control={control}
                 name="code"
@@ -110,6 +102,7 @@ export function CodeVerification() {
                     onChangeText={onChange}
                     value={value}
                     onBlur={onBlur}
+                    maxLength={6}
                     errorMessage={errors.code?.message}
                   />
                 )}
@@ -119,12 +112,7 @@ export function CodeVerification() {
             <Button title="Verificar" onPress={handleSubmit(handleSendCode)} />
 
             <HStack mt={12}>
-              <Text
-                fontFamily="$body"
-                fontSize="$md"
-                color="$textDark800"
-                textDecorationLine="underline"
-              >
+              <Text fontFamily="$body" fontSize="$md" color="$textDark800" textDecorationLine="underline">
                 Reenviar código
               </Text>
             </HStack>

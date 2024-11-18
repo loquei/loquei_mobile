@@ -13,6 +13,7 @@ import { postEmail } from "../api/postEmail";
 import { createUser } from "../api/createUser";
 import * as y from "yup";
 import { cpfMask, phoneMask, dateMask } from "../utils/masks";
+import Toast from 'react-native-toast-message';
 
 export function SignUp() {
   type CreateAccountSchema = y.InferType<typeof CreateAccountSchema>;
@@ -25,6 +26,14 @@ export function SignUp() {
   function handleNavigateToCodeVerification() {
     authNavigation.navigate("codeVerification");
   }
+
+  const showToast = (message: string) => {
+    Toast.show({
+      type: 'error',
+      text1: 'Erro',
+      text2: message
+    });
+  };
 
   const { control, handleSubmit, formState: { errors } } = useForm<CreateAccountSchema>({
     resolver: yupResolver(CreateAccountSchema),
@@ -49,7 +58,7 @@ export function SignUp() {
 
       const BirthIso = formatDateToISO(data.birth);
 
-      await createUser({
+      const response = await createUser({
         personal_name,
         username,
         email,
@@ -58,204 +67,232 @@ export function SignUp() {
         birth: BirthIso,
       });
 
-      await AsyncStorage.setItem("userEmail", email);
+      if (response.success) {
+        await AsyncStorage.setItem("userEmail", email);
 
-      await postEmail({ email });
-      handleNavigateToCodeVerification();
-    } catch (error) {
-      console.error("Erro ao criar conta ou enviar e-mail:", error);
+        await postEmail({ email });
+
+        handleNavigateToCodeVerification();
+      } else {
+        if (response.errors) {
+          response.errors.forEach((err: { message: string }) => {
+            if (err.message.includes("Username already exists")) {
+              showToast("Este nome de usuário já está cadastrado.");
+            } else if (err.message.includes("Email already exists")) {
+              showToast("Este e-mail já está cadastrado.");
+            } else if (err.message.includes("Document already exists")) {
+              showToast("Este documento já está cadastrado.");
+            } else if (err.message.includes("Phone already exists")) {
+              showToast("Este telefone já está cadastrado.");
+            } else {
+              showToast("Ocorreu um erro ao criar a conta. Tente novamente.");
+            }
+          });
+        } else if (response.message) {
+          showToast(response.message);
+        }
+      }
+    } catch (error: any) {
+      showToast("Ocorreu um erro ao criar a conta. Tente novamente.");
+      console.log("Erro ao criar a conta:", error);
     }
   };
 
 
   return (
-    <ScrollView
-      contentContainerStyle={{ flexGrow: 1 }}
-      showsVerticalScrollIndicator={false}
-    >
-      <ScreenHeader title="Cadastro" backButton />
-      <VStack flex={1} px={16} py={40}>
-        <Center flex={1}>
-          <VStack>
-            <Center>
-              <Image source={logoImage} alt="Loquei" width={54} height={54} />
-              <Text
-                fontFamily="$heading"
-                fontSize="$2xl"
-                color="$textDark800"
-                mt={40}
-              >
-                Entre em sua conta
-              </Text>
+    <>
+      <ScrollView
+        contentContainerStyle={{ flexGrow: 1 }}
+        showsVerticalScrollIndicator={false}
+      >
+        <ScreenHeader title="Cadastro" backButton />
+
+        <VStack flex={1} px={16} py={40}>
+          <Center flex={1}>
+            <VStack>
+              <Center>
+                <Image source={logoImage} alt="Loquei" width={54} height={54} />
+                <Text
+                  fontFamily="$heading"
+                  fontSize="$2xl"
+                  color="$textDark800"
+                  mt={40}
+                >
+                  Entre em sua conta
+                </Text>
+                <Text
+                  fontFamily="$body"
+                  fontSize="$md"
+                  color="$textDark800"
+                  textAlign="center"
+                  mt={12}
+                >
+                  A maneira mais simples e rápida de alugar qualquer coisa. Entre
+                  com sua conta e descubra um mundo de facilidades.
+                </Text>
+              </Center>
+            </VStack>
+
+            <VStack mt={48} w="$full">
+              <VStack gap={8}>
+                <Text fontFamily="$body" fontSize="$md" color="$textDark800">
+                  Nome
+                </Text>
+
+                <Controller
+                  control={control}
+                  name="personal_name"
+                  render={({ field: { onChange, onBlur, value } }) => (
+                    <>
+                      <Input
+                        placeholder="João da Silva"
+                        type="text"
+                        value={value}
+                        onBlur={onBlur}
+                        onChangeText={onChange}
+                        errorMessage={errors.personal_name?.message}
+                      />
+                    </>
+                  )}
+                />
+              </VStack>
+
+              <VStack gap={8}>
+                <Text fontFamily="$body" fontSize="$md" color="$textDark800">
+                  Nome de usuário
+                </Text>
+
+                <Controller
+                  control={control}
+                  name="username"
+                  render={({ field: { onChange, onBlur, value } }) => (
+                    <>
+                      <Input
+                        placeholder="joao_silva"
+                        type="text"
+                        value={value}
+                        onBlur={onBlur}
+                        onChangeText={onChange}
+                        errorMessage={errors.username?.message}
+                      />
+                    </>
+                  )}
+                />
+              </VStack>
+
+              <VStack gap={8}>
+                <Text fontFamily="$body" fontSize="$md" color="$textDark800">
+                  Email
+                </Text>
+
+                <Controller
+                  control={control}
+                  name="email"
+                  render={({ field: { onChange, onBlur, value } }) => (
+                    <>
+                      <Input
+                        placeholder="ex: seuemail@gmail.com"
+                        keyboardType="email-address"
+                        value={value}
+                        onBlur={onBlur}
+                        onChangeText={onChange}
+                        errorMessage={errors.email?.message}
+                      />
+                    </>
+                  )}
+                />
+              </VStack>
+
+              <VStack gap={8}>
+                <Text fontFamily="$body" fontSize="$md" color="$textDark800">
+                  CPF
+                </Text>
+                <Controller
+                  control={control}
+                  name="document"
+                  render={({ field: { onChange, onBlur, value } }) => (
+                    <>
+                      <Input
+                        placeholder="999.999.999-99"
+                        keyboardType="number-pad"
+                        value={value}
+                        onBlur={onBlur}
+                        onChangeText={(text) => onChange(cpfMask(text))}
+                        errorMessage={errors.document?.message}
+                      />
+                    </>
+                  )}
+                />
+              </VStack>
+
+              <VStack gap={8}>
+                <Text fontFamily="$body" fontSize="$md" color="$textDark800">
+                  Data de nascimento
+                </Text>
+                <Controller
+                  control={control}
+                  name="birth"
+                  render={({ field: { onChange, onBlur, value } }) => (
+                    <>
+                      <Input
+                        placeholder="DD/MM/AAAA"
+                        keyboardType="number-pad"
+                        value={value}
+                        onBlur={onBlur}
+                        onChangeText={(text) => onChange(dateMask(text))}
+                        errorMessage={errors.birth?.message}
+                      />
+                    </>
+                  )}
+                />
+              </VStack>
+
+              <VStack gap={8}>
+                <Text fontFamily="$body" fontSize="$md" color="$textDark800">
+                  Telefone
+                </Text>
+                <Controller
+                  control={control}
+                  name="phone"
+                  render={({ field: { onChange, onBlur, value } }) => (
+                    <>
+                      <Input
+                        placeholder="11999999999"
+                        keyboardType="phone-pad"
+                        maxLength={11}
+                        value={value}
+                        onBlur={onBlur}
+                        onChangeText={(text) => onChange(text)}
+                        errorMessage={errors.phone?.message}
+                      />
+                    </>
+                  )}
+                />
+              </VStack>
+
+              <Button
+                title="Entrar"
+                onPress={handleSubmit(handleCreateAccount)}
+              />
+
               <Text
                 fontFamily="$body"
                 fontSize="$md"
                 color="$textDark800"
                 textAlign="center"
-                mt={12}
+                mt={30}
               >
-                A maneira mais simples e rápida de alugar qualquer coisa. Entre
-                com sua conta e descubra um mundo de facilidades.
+                Já tem uma conta?{" "}
+                <Text color="$teal600" onPress={handleNavigateToSignIn}>
+                  Entre agora
+                </Text>
               </Text>
-            </Center>
-          </VStack>
-
-          <VStack mt={48} w="$full">
-            <VStack gap={8}>
-              <Text fontFamily="$body" fontSize="$md" color="$textDark800">
-                Nome
-              </Text>
-
-              <Controller
-                control={control}
-                name="personal_name"
-                render={({ field: { onChange, onBlur, value } }) => (
-                  <>
-                    <Input
-                      placeholder="João da Silva"
-                      type="text"
-                      value={value}
-                      onBlur={onBlur}
-                      onChangeText={onChange}
-                      errorMessage={errors.personal_name?.message}
-                    />
-                  </>
-                )}
-              />
             </VStack>
+          </Center>
+        </VStack>
 
-            <VStack gap={8}>
-              <Text fontFamily="$body" fontSize="$md" color="$textDark800">
-                Nome de usuário
-              </Text>
-
-              <Controller
-                control={control}
-                name="username"
-                render={({ field: { onChange, onBlur, value } }) => (
-                  <>
-                    <Input
-                      placeholder="joao_silva"
-                      type="text"
-                      value={value}
-                      onBlur={onBlur}
-                      onChangeText={onChange}
-                      errorMessage={errors.username?.message}
-                    />
-                  </>
-                )}
-              />
-            </VStack>
-
-            <VStack gap={8}>
-              <Text fontFamily="$body" fontSize="$md" color="$textDark800">
-                Email
-              </Text>
-
-              <Controller
-                control={control}
-                name="email"
-                render={({ field: { onChange, onBlur, value } }) => (
-                  <>
-                    <Input
-                      placeholder="ex: seuemail@gmail.com"
-                      keyboardType="email-address"
-                      value={value}
-                      onBlur={onBlur}
-                      onChangeText={onChange}
-                      errorMessage={errors.email?.message}
-                    />
-                  </>
-                )}
-              />
-            </VStack>
-
-            <VStack gap={8}>
-              <Text fontFamily="$body" fontSize="$md" color="$textDark800">
-                CPF
-              </Text>
-              <Controller
-                control={control}
-                name="document"
-                render={({ field: { onChange, onBlur, value } }) => (
-                  <>
-                    <Input
-                      placeholder="999.999.999-99"
-                      keyboardType="number-pad"
-                      value={value}
-                      onBlur={onBlur}
-                      onChangeText={(text) => onChange(cpfMask(text))}
-                      errorMessage={errors.document?.message}
-                    />
-                  </>
-                )}
-              />
-            </VStack>
-
-            <VStack gap={8}>
-              <Text fontFamily="$body" fontSize="$md" color="$textDark800">
-                Data de nascimento
-              </Text>
-              <Controller
-                control={control}
-                name="birth"
-                render={({ field: { onChange, onBlur, value } }) => (
-                  <>
-                    <Input
-                      placeholder="DD/MM/AAAA"
-                      keyboardType="number-pad"
-                      value={value}
-                      onBlur={onBlur}
-                      onChangeText={(text) => onChange(dateMask(text))}
-                      errorMessage={errors.birth?.message}
-                    />
-                  </>
-                )}
-              />
-            </VStack>
-
-            <VStack gap={8}>
-              <Text fontFamily="$body" fontSize="$md" color="$textDark800">
-                Telefone
-              </Text>
-              <Controller
-                control={control}
-                name="phone"
-                render={({ field: { onChange, onBlur, value } }) => (
-                  <>
-                    <Input
-                      placeholder="(99) 99999-9999"
-                      keyboardType="phone-pad"
-                      value={value}
-                      onBlur={onBlur}
-                      onChangeText={(text) => onChange(text)}
-                      errorMessage={errors.phone?.message}
-                    />
-                  </>
-                )}
-              />
-            </VStack>
-
-            <Button
-              title="Entrar"
-              onPress={handleSubmit(handleCreateAccount)}
-            />
-
-            <Text
-              fontFamily="$body"
-              fontSize="$md"
-              color="$textDark800"
-              textAlign="center"
-              mt={30}
-            >
-              Já tem uma conta?{" "}
-              <Text color="$teal600" onPress={handleNavigateToSignIn}>
-                Entre agora
-              </Text>
-            </Text>
-          </VStack>
-        </Center>
-      </VStack>
-    </ScrollView>
+      </ScrollView>
+      <Toast />
+    </>
   );
 }

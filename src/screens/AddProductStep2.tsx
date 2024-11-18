@@ -20,8 +20,8 @@ import Toast from "react-native-toast-message";
 import { postItem } from "../api/postItem";
 import { postItemImage } from "../api/postImage";
 
-const MAX_IMAGE_SIZE_MB = 5; // Limite de tamanho de imagem
-const MAX_IMAGES = 3; // Número máximo de imagens permitidas
+const MAX_IMAGE_SIZE_MB = 5;
+const MAX_IMAGES = 3;
 
 export function AddProductStep2() {
   const progressValue = 50;
@@ -48,7 +48,6 @@ export function AddProductStep2() {
     }, [])
   );
 
-  // Função para selecionar e validar imagens
   async function handleSelectImage() {
     try {
       const photoSelected = await ImagePicker.launchImageLibraryAsync({
@@ -95,7 +94,7 @@ export function AddProductStep2() {
 
   async function handleCreateProduct() {
     try {
-      setLoading(true); // Inicia o carregamento
+      setLoading(true);
 
       await postItem({ ...step1Data });
 
@@ -113,7 +112,7 @@ export function AddProductStep2() {
       console.error("Erro ao salvar produto:", error);
       showToast("error", "Erro", "Não foi possível criar o produto.");
     } finally {
-      setLoading(false); // Finaliza o carregamento
+      setLoading(false);
     }
   }
 

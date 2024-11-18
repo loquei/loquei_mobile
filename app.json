@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "loquei_mobile",
-    "slug": "loquei_mobile",
+    "slug": "loqueimobile",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -38,7 +38,7 @@
     ],
     "extra": {
       "eas": {
-        "projectId": "889978d7-bd4f-4485-a8f6-80a6acd05120"
+        "projectId": "b8c917dc-aff4-47bc-95e8-2e1a56fcd122"
       }
     }
   }

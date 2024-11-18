@@ -14,9 +14,9 @@
     "@gluestack-ui/config": "^1.1.19",
     "@gluestack-ui/themed": "^1.1.34",
     "@hookform/resolvers": "^3.9.0",
-    "@react-native-async-storage/async-storage": "^2.0.0",
+    "@react-native-async-storage/async-storage": "1.23.1",
     "@react-native-community/cli-platform-android": "^14.0.1",
-    "@react-native-community/datetimepicker": "^8.2.0",
+    "@react-native-community/datetimepicker": "8.0.1",
     "@react-native-community/netinfo": "11.3.1",
     "@react-navigation/bottom-tabs": "^6.6.1",
     "@react-navigation/native": "^6.1.18",
@@ -25,7 +25,7 @@
     "axios": "^1.7.7",
     "date-fns": "^4.1.0",
     "date-fns-tz": "^3.2.0",
-    "expo": "~51.0.31",
+    "expo": "~51.0.39",
     "expo-file-system": "~17.0.1",
     "expo-font": "~12.0.9",
     "expo-image-picker": "~15.0.7",
@@ -47,7 +47,9 @@
     "react-native-svg": "15.2.0",
     "react-native-toast-message": "^2.2.1",
     "recyclerlistview": "^4.2.1",
-    "yup": "^1.4.0"
+    "yup": "^1.4.0",
+    "expo-dev-client": "^4.0.29",
+    "@expo/config-plugins": "^8.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

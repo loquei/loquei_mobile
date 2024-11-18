@@ -28,6 +28,7 @@ export interface IGetItem {
   daily_value: number;
   max_days: number;
   min_days: number;
+  score?: number;
   user_id: string;
   updated_at: string;
 }

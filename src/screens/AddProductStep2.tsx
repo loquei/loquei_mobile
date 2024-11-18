@@ -16,9 +16,12 @@ import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from "expo-file-system";
 import { useState, useCallback } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import Toast from "react-native-toast-message";
 import { postItem } from "../api/postItem";
-import Toast from 'react-native-toast-message';
 import { postItemImage } from "../api/postImage";
+
+const MAX_IMAGE_SIZE_MB = 5; // Limite de tamanho de imagem
+const MAX_IMAGES = 3; // Número máximo de imagens permitidas
 
 export function AddProductStep2() {
   const progressValue = 50;
@@ -27,33 +30,26 @@ export function AddProductStep2() {
 
   const [selectedImages, setSelectedImages] = useState<string[]>([]);
   const [step1Data, setStep1Data] = useState<any>({});
+  const [loading, setLoading] = useState(false);
 
-  const showToast = () => {
-    Toast.show({
-      type: 'error',
-      text1: 'Limites de imagens excedido',
-      text2: 'Você pode adicionar até 3 imagens por produto.',
-    });
-  }
+  const bytesToMB = (bytes: number) => bytes / 1048576;
+
+  const showToast = (type: "success" | "error", title: string, message: string) => {
+    Toast.show({ type, text1: title, text2: message });
+  };
 
   useFocusEffect(
     useCallback(() => {
       const checkData = async () => {
         const data = await AsyncStorage.getItem("productDataStep1");
-        if (data) {
-          setStep1Data(JSON.parse(data));
-        }
+        if (data) setStep1Data(JSON.parse(data));
       };
       checkData();
     }, [])
   );
 
-  async function handleItemPhotoSelect() {
-    if (selectedImages.length >= 3) {
-      showToast();
-      return;
-    }
-
+  // Função para selecionar e validar imagens
+  async function handleSelectImage() {
     try {
       const photoSelected = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -62,47 +58,63 @@ export function AddProductStep2() {
         allowsEditing: true,
       });
 
-      if (photoSelected.canceled) {
-        return;
-      }
+      if (photoSelected.canceled) return;
 
       const photoUri = photoSelected.assets[0].uri;
 
-      if (photoUri) {
-        const photoInfo = (await FileSystem.getInfoAsync(photoUri)) as {
-          size: number;
-        };
+      console.log("Imagem selecionada:", photoSelected);
 
-        if (photoInfo.size && photoInfo.size / 1024 / 1024 > 5) {
-          alert(
-            "A imagem selecionada é muito grande, selecione uma imagem de até 5MB"
-          );
-          return;
-        }
+      const photoInfo = await FileSystem.getInfoAsync(photoUri) as {
+        size: number;
+        uri: string;
+        modificationTime: number;
+        exists: boolean;
+        isDirectory: boolean;
+      };
 
-        if (selectedImages.length < 3) {
-          setSelectedImages([...selectedImages, photoSelected.assets[0].uri]);
-          return;
-        }
+      const photoSizeMB = bytesToMB(photoInfo.size);
+      console.log("Tamanho da imagem:", photoSizeMB);
+
+      if (photoSizeMB > MAX_IMAGE_SIZE_MB) {
+        showToast("error", "Imagem muito grande", `A imagem deve ter no máximo ${MAX_IMAGE_SIZE_MB}MB.`);
+        return;
       }
+
+      if (selectedImages.length >= MAX_IMAGES) {
+        showToast("error", "Limite de imagens", `Você pode adicionar até ${MAX_IMAGES} imagens.`);
+        return;
+      }
+
+      setSelectedImages([...selectedImages, photoUri]);
+      showToast("success", "Imagem adicionada", "A imagem foi adicionada com sucesso.");
     } catch (error) {
-      console.log(error);
+      console.error("Erro ao selecionar imagem:", error);
+      showToast("error", "Erro", "Não foi possível selecionar a imagem.");
     }
   }
 
   async function handleCreateProduct() {
     try {
+      setLoading(true); // Inicia o carregamento
+
       await postItem({ ...step1Data });
 
-      await postItemImage({ imagePaths: selectedImages });
+      try {
+        await postItemImage({ imagePaths: selectedImages });
+      } catch (error) {
+        console.error("Erro ao enviar imagens:", error);
+        showToast("error", "Erro", "Não foi possível enviar as imagens.");
+      }
 
       await AsyncStorage.removeItem("productDataStep1");
-
+      showToast("success", "Produto criado", "Seu produto foi criado com sucesso!");
       navigation.navigate("dashboard");
     } catch (error) {
-      console.error("Error saving data:", error);
+      console.error("Erro ao salvar produto:", error);
+      showToast("error", "Erro", "Não foi possível criar o produto.");
+    } finally {
+      setLoading(false); // Finaliza o carregamento
     }
-
   }
 
   return (
@@ -119,7 +131,6 @@ export function AddProductStep2() {
             <Text fontFamily="$body" fontSize="$sm" mt={8}>
               Etapa 2 de 2: Upload de imagens do produto
             </Text>
-
             <Text fontFamily="$heading" fontSize="$sm" mt={8} ml="auto">
               {progressValue}%
             </Text>
@@ -157,15 +168,14 @@ export function AddProductStep2() {
             <Button
               title="Adicionar imagem"
               buttonVariant="outline"
-              onPress={handleItemPhotoSelect}
+              onPress={handleSelectImage}
             />
           </Box>
 
           <VStack flexWrap="wrap" mt={4} gap={2}>
             <Text fontFamily="$mono" fontSize="$md" color="$textDark800">
-              Imagens selecionadas: {selectedImages.length} de 3
+              Imagens selecionadas: {selectedImages.length} de {MAX_IMAGES}
             </Text>
-
             <HStack mt={8} gap={8}>
               {selectedImages.map((image, index) => (
                 <Image
@@ -179,16 +189,16 @@ export function AddProductStep2() {
               ))}
             </HStack>
           </VStack>
-
         </VStack>
 
         <VStack flex={1} />
         <Button
-          title="Confirmar"
+          title={loading ? "Enviando..." : "Confirmar"}
           alignSelf="flex-end"
           mb={16}
-          isDisabled={selectedImages.length === 0}
+          isDisabled={selectedImages.length === 0 || loading}
           onPress={handleCreateProduct}
+          isLoading={loading}
         />
       </VStack>
       <Toast />

@@ -5,7 +5,6 @@ import { Select } from "@components/Select";
 import { Textarea } from "@components/Textarea";
 import {
   HStack,
-  onChange,
   Progress,
   ProgressFilledTrack,
 } from "@gluestack-ui/themed";
@@ -16,12 +15,13 @@ import { ScrollView } from "react-native";
 import { useForm, Controller } from "react-hook-form";
 import * as y from "yup";
 import { PostItemSchema } from "../schemas/CreateItemSchema";
-import { postItem } from "../api/postItem";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useCallback, useState } from "react";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { ListCategories } from "../api/listCategory";
 import { ICategories } from "../@types/TCategories";
+import { TextInputMask } from "react-native-masked-text";
+
 export function AddProductStep1() {
   const progressValue = 0;
 
@@ -81,16 +81,20 @@ export function AddProductStep1() {
   const [MaxDays, MinDays] = watch(["max_days", "min_days"]);
 
   console.log("Selected", selectedCategory);
+  console.log(errors.min_days?.message);
+  console.log(errors.max_days?.message);
 
   const handleNextStep = async (data: CreateItemSchema) => {
     const newData = {
       ...data,
       user_id: userId,
-      categories: selectedCategory && [selectedCategory],
+      categories: selectedCategory ? [selectedCategory] : [],
+      daily_value: parseFloat(data.daily_value.toString().replace(/[^\d.-]/g, "")),
     };
 
     try {
       await AsyncStorage.setItem("productDataStep1", JSON.stringify(newData));
+      console.log("productDataStep1", newData);
       navigation.navigate("addProductStep2");
     } catch (error) {
       console.error("Error saving data:", error);
@@ -105,6 +109,7 @@ export function AddProductStep1() {
   const handleChangeCategoryValueId = (id: string) => {
     setSelectedCategory(id);
   };
+
   return (
     <VStack flex={1}>
       <ScreenHeader title="Adicionar Produto" backButton />
@@ -177,12 +182,24 @@ export function AddProductStep1() {
             Categoria
           </Text>
 
-          <Select
-            placeholder="Selecione a categoria"
-            options={filteredCategories}
-            handleChangeCategoryValueId={handleChangeCategoryValueId}
-            errorMessage={errors.categories?.message}
+          <Controller
+            name="categories"
+            control={control}
+            render={({ field: { value, onChange } }) => (
+              <Select
+                placeholder="Selecione a categoria"
+                options={filteredCategories}
+                value={value?.[0] || ""}
+                handleChangeCategoryValueId={(id) => {
+                  const newValue = [id];
+                  onChange(newValue);
+                  handleChangeCategoryValueId(id);
+                }}
+                errorMessage={errors.categories?.message}
+              />
+            )}
           />
+
         </VStack>
 
         <VStack mt={16} gap={8} flex={1}>
@@ -193,18 +210,13 @@ export function AddProductStep1() {
             <Controller
               name="min_days"
               control={control}
-              rules={{
-                validate: (value: number) =>
-                  (value < MaxDays && value > 0) ||
-                  "O minimo de valor deve ser maior que a quantidade maxima de dias ",
-              }}
               render={({ field: { value, onBlur, onChange } }) => (
                 <Input
                   placeholder="mínimo"
                   keyboardType="numeric"
                   value={value?.toString()}
                   onBlur={onBlur}
-                  onChangeText={onChange}
+                  onChangeText={(text) => onChange(text.replace(/[^0-9]/g, ""))}
                   errorMessage={errors.min_days?.message}
                 />
               )}
@@ -212,18 +224,13 @@ export function AddProductStep1() {
             <Controller
               name="max_days"
               control={control}
-              rules={{
-                validate: (value: number) =>
-                  value > MinDays ||
-                  "O maximo de valor deve ser maior que a quantidade minima de dias ",
-              }}
               render={({ field: { value, onBlur, onChange } }) => (
                 <Input
                   placeholder="máximo"
                   keyboardType="numeric"
                   value={value?.toString()}
                   onBlur={onBlur}
-                  onChangeText={onChange}
+                  onChangeText={(text) => onChange(text.replace(/[^0-9]/g, ""))}
                   errorMessage={errors.max_days?.message}
                 />
               )}
@@ -237,16 +244,31 @@ export function AddProductStep1() {
               name="daily_value"
               control={control}
               render={({ field: { value, onBlur, onChange } }) => (
-                <Input
-                  placeholder="Digite o valor da diária"
-                  keyboardType="numeric"
-                  value={value.toString()}
+                <TextInputMask
+                  type={'money'}
+                  options={{
+                    precision: 2,
+                    separator: '.',
+                    delimiter: ',',
+                    unit: 'R$',
+                    suffixUnit: ''
+                  }}
+                  value={value?.toString()}
                   onBlur={onBlur}
-                  onChangeText={onChange}
-                  errorMessage={errors.daily_value?.message}
+                  onChangeText={(text) => {
+                    // Removendo qualquer formatação antes de passar para a validação
+                    const cleanValue = text.replace(/[^\d.-]/g, "");
+                    onChange(cleanValue);  // Passando o valor limpo
+                  }}
+                  customTextInput={Input}
+                  customTextInputProps={{
+                    placeholder: "Digite o valor da diária",
+                    errorMessage: errors.daily_value?.message,
+                  }}
                 />
               )}
             />
+
           </VStack>
         </VStack>
         <Button

@@ -2,6 +2,7 @@ import { api } from "./axios/axiosConfig";
 import { IPostImage } from "../@types/TItem";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as FileSystem from "expo-file-system";
+import * as ImageManipulator from 'expo-image-manipulator';
 
 export const postItemImage = async (data: IPostImage) => {
   try {
@@ -46,12 +47,23 @@ export const postItemImage = async (data: IPostImage) => {
           return `Arquivo de imagem ${fileUri} não encontrado.`;
         }
 
-        const fileName = fileUri.split('/').pop(); // Nome do arquivo da imagem  
+        const fileName = fileUri.split('/').pop();
         const fileType = fileUri.substring(fileUri.lastIndexOf(".") + 1); // Tipo do arquivo (jpg, png, etc.)  
+
+        const compressImage = async (uri: string) => {
+          const compressedImage = await ImageManipulator.manipulateAsync(
+            uri,
+            [{ resize: { width: 1000 } }],
+            { compress: 0.7, format: ImageManipulator.SaveFormat.JPEG } // Compacta a imagem para 70%
+          );
+          return compressedImage.uri;
+        };
+
+        const compressedUri = await compressImage(fileUri);
 
         const formData = new FormData();
         formData.append("file", {
-          uri: fileUri,
+          uri: compressedUri,
           name: fileName,
           type: `image/${fileType}`,
         });

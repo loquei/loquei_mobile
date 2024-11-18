@@ -7,7 +7,7 @@ import { HStack, VStack, Text, Pressable, Center } from "@gluestack-ui/themed";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { AppNavigatorRoutesProps } from "@routes/app.routes";
 import { useCallback, useEffect, useState } from "react";
-import { FlatList, ScrollView, SectionList } from "react-native";
+import { BackHandler, FlatList, ScrollView, SectionList } from "react-native";
 import { ListItems } from "../api/listItems";
 import { IGetItem } from "../@types/TItem";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -15,10 +15,13 @@ import { getUser } from "../api/getUser";
 import { useQuery } from "@tanstack/react-query";
 import { Loading } from "@components/Loading";
 import { baseURL } from "../constants/authentications";
+import { Button } from "@components/Button";
+import { AppSecondaryNavigatorRoutesProps } from "@routes/app.secondary.routes";
 
 export function Home() {
   const [itemData, setItemData] = useState<IGetItem[]>([]);
   const navigation = useNavigation<AppNavigatorRoutesProps>();
+  const secondaryNavigation = useNavigation<AppSecondaryNavigatorRoutesProps>();
   const [categories, setCategories] = useState([
     "Eletrônicos",
     "Festa",
@@ -76,18 +79,33 @@ export function Home() {
   if (error) {
     return (
       <VStack flex={1}>
-        <ScreenHeader title="São Paulo, SP" iconButton />
-        <Center>
+        <ScreenHeader title="Loquei" iconButton />
+        <Center flex={1} px={16}>
           <Text fontFamily="$heading" fontSize="$lg" color="$textDark800">
             Erro ao carregar os dados
           </Text>
-          <Text fontFamily="$body" fontSize="$md" color="$textDark800">
-            Tente novamente mais tarde
-          </Text>
+
+          <Button title="Tentar novamente" onPress={() => refetch()} mt={16} />
         </Center>
       </VStack>
     );
   }
+
+  useEffect(() => {
+    const backAction = () => {
+      const currentRoute = secondaryNavigation.getState().routes[navigation.getState().index].name;
+      console.log("currentRoute", currentRoute);
+      if (currentRoute === "home") {
+        BackHandler.exitApp();
+        return true;
+      }
+      return false;
+    };
+
+    const backHandler = BackHandler.addEventListener("hardwareBackPress", backAction);
+
+    return () => backHandler.remove();
+  }, [navigation, secondaryNavigation]);
 
   return (
     <ScrollView
@@ -138,8 +156,8 @@ export function Home() {
                   data: itemData.map((item) => ({
                     id: item.id,
                     title: item.name,
-                    rating: 5,
-                    ratingCount: 5,
+                    rating: item.score,
+                    ratingCount: item.score,
                     price: item.daily_value.toFixed(2).replace(".", ","),
                     discountPrice: item.daily_value
                       .toFixed(2)

@@ -21,7 +21,7 @@ type Props = ComponentProps<typeof SelectTrigger> & {
   isInvalid?: boolean;
   isReadOnly?: boolean;
   placeholder?: string;
-  value?: string;
+  value: string;
   options?: { id: string; name: string }[];
   handleChangeCategoryValueId: (id: string) => void;
 };

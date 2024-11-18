@@ -105,35 +105,6 @@ export function AllOrders() {
       <ScreenHeader title="Pedidos" backButton />
 
       <ScrollView contentContainerStyle={{ flexGrow: 1 }} showsVerticalScrollIndicator={false} nestedScrollEnabled={true} style={{ paddingHorizontal: 16 }}>
-        <HStack justifyContent="space-between" alignItems="center" p={16} mt={16} bg="$white" rounded={"$md"}>
-          <TouchableOpacity>
-            <VStack alignItems="center" gap={4}>
-              <ListFilter size={24} color={tokens.colors.textDark800} />
-              <Text fontFamily="$body" fontSize="$sm" color="$textDark800">
-                Filtrar
-              </Text>
-            </VStack>
-          </TouchableOpacity>
-
-          <TouchableOpacity>
-            <VStack alignItems="center" gap={4}>
-              <RotateCw size={24} color={tokens.colors.textDark800} />
-              <Text fontFamily="$body" fontSize="$sm" color="$textDark800">
-                Atualizar
-              </Text>
-            </VStack>
-          </TouchableOpacity>
-
-          <TouchableOpacity>
-            <VStack alignItems="center" gap={4}>
-              <ArrowDownUp size={24} color={tokens.colors.textDark800} />
-              <Text fontFamily="$body" fontSize="$sm" color="$textDark800">
-                Ordenar
-              </Text>
-            </VStack>
-          </TouchableOpacity>
-        </HStack>
-
         <VStack p={16} mt={16} bg="$white" rounded={"$md"} alignItems="center">
           <Text fontFamily="$mono" fontSize="$md" color="$textDark800">
             Total de locações

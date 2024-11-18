@@ -7,7 +7,7 @@ import { useModal } from "@contexts/ModalContext";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { listWishlistItems } from "../api/listWishlistItems";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Loading } from "@components/Loading";
 import { AppSecondaryNavigatorRoutesProps } from "@routes/app.secondary.routes";
@@ -25,21 +25,49 @@ interface WishlistItem {
 export function Wishlist() {
   const { showModal, getActionMessage } = useModal();
   const navigation = useNavigation<AppSecondaryNavigatorRoutesProps>();
+
   const [currentUserId, setCurrentUserId] = useState<string>("");
   const queryClient = useQueryClient();
 
   const fetchWishlistItems = async () => {
-    const currentUser = await AsyncStorage.getItem("currentUser");
-    if (currentUser) {
-      const parsedCurrentUser = JSON.parse(currentUser);
-      return listWishlistItems(parsedCurrentUser.items[0].id);
+    if (currentUserId) {
+      try {
+        const items = await listWishlistItems(currentUserId);
+        return items || [];
+      } catch (error) {
+        console.error("Erro ao buscar itens da lista de desejos:", error);
+        return [];
+      }
     }
     return [];
   };
 
+  useFocusEffect(
+    useCallback(() => {
+      const loadCurrentUserAndWishlist = async () => {
+        try {
+          const currentUser = await AsyncStorage.getItem("currentUser");
+          if (currentUser) {
+            const parsedUser = JSON.parse(currentUser);
+            if (parsedUser && parsedUser.items[0]?.id) {
+              setCurrentUserId(parsedUser.items[0].id);
+            }
+          }
+        } catch (error) {
+          console.error("Erro ao buscar o usuário atual:", error);
+        }
+        await fetchWishlistItems();
+      };
+
+      loadCurrentUserAndWishlist();
+      refetch();
+    }, [currentUserId])
+  );
+
   const { data: wishlistItems = [], isLoading, error, refetch } = useQuery({
-    queryKey: ["wishlistItems"],
+    queryKey: ["wishlistItems", currentUserId],
     queryFn: fetchWishlistItems,
+    enabled: !!currentUserId,
     staleTime: 1000 * 60 * 5, // 5 minutos
   });
 
@@ -56,34 +84,10 @@ export function Wishlist() {
     navigation.navigate("home");
   };
 
-  useFocusEffect(
-    useCallback(() => {
-      const fetchCurrentUser = async () => {
-        try {
-          const currentUser = await AsyncStorage.getItem("currentUser");
-          if (currentUser) {
-            const parsedUser = JSON.parse(currentUser);
-            if (parsedUser && parsedUser.items[0].id) {
-              setCurrentUserId(parsedUser.items[0].id);
-            } else {
-              console.warn("Formato inesperado em currentUser:", currentUser);
-            }
-          } else {
-            console.warn("Nenhum usuário atual encontrado no AsyncStorage.");
-          }
-        } catch (error) {
-          console.error("Error fetching current user:", error);
-        }
-      };
-
-      fetchCurrentUser();
-    }, [])
-  );
-
   const handleDeleteUniqueItemFromWishlist = async (userId: string, itemId: string) => {
     try {
       await deleteWishlistItem(userId, itemId);
-      queryClient.invalidateQueries({ queryKey: ["wishlistItems"] });
+      queryClient.invalidateQueries({ queryKey: ["wishlistItems", currentUserId] });
     } catch (error) {
       console.error("Erro ao excluir o item da lista de desejos:", error);
     }
@@ -94,7 +98,7 @@ export function Wishlist() {
       for (const item of wishlistItems) {
         await deleteWishlistItem(currentUserId, item.item_id);
       }
-      queryClient.invalidateQueries({ queryKey: ["wishlistItems"] });
+      queryClient.invalidateQueries({ queryKey: ["wishlistItems", currentUserId] });
     } catch (error) {
       console.error("Erro ao excluir todos os itens da lista de desejos:", error);
     }

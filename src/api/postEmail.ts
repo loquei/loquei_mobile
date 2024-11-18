@@ -11,7 +11,11 @@ export const postEmail = async (email: Temail) => {
     console.log("Response:", response);
     console.log("Temp Token:", response.data.token);
 
-    await AsyncStorage.setItem("tempAuthToken", response.data.token);
+    await AsyncStorage.setItem("tempAuth", JSON.stringify({
+      email: email.email,
+      token: response.data.token,
+    }));
+
     return response.status;
   } catch (error: any) {
     return error.response.status;

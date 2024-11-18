@@ -51,7 +51,8 @@
     "react-native-svg": "15.2.0",
     "react-native-toast-message": "^2.2.1",
     "recyclerlistview": "^4.2.1",
-    "yup": "^1.4.0"
+    "yup": "^1.4.0",
+    "expo-build-properties": "~0.12.5"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

@@ -9,6 +9,9 @@
       "distribution": "internal"
     },
     "preview": {
+      "env": {
+        "EXPO_PUBLIC_API_URL": "https://loquei-balerion-project-778be9e88a13.herokuapp.com/api"
+      },
       "android": {
         "buildType": "apk"
       }

@@ -1,1 +1,1 @@
-export const baseURL = process.env.EXPO_BASE_URL
+export const baseURL = process.env.EXPO_PUBLIC_API_URL

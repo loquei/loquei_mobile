@@ -65,11 +65,29 @@ export function Home() {
         }
       };
 
+      const backAction = () => {
+        const state = secondaryNavigation.getState();
+        const currentRoute = state.routes[state.index].name;
+        console.log("currentRoute", currentRoute);
+
+        if (currentRoute === "home") {
+          BackHandler.exitApp();
+          return true;
+        }
+        return false;
+      };
+
+      const backHandler = BackHandler.addEventListener(
+        "hardwareBackPress",
+        backAction
+      );
+
       checkAuthentication();
       fetchCurrentUser();
-
       refetch();
-    }, [refetch])
+
+      return () => backHandler.remove();
+    }, [refetch, secondaryNavigation])
   );
 
   if (isLoading) {
@@ -90,22 +108,6 @@ export function Home() {
       </VStack>
     );
   }
-
-  useEffect(() => {
-    const backAction = () => {
-      const currentRoute = secondaryNavigation.getState().routes[navigation.getState().index].name;
-      console.log("currentRoute", currentRoute);
-      if (currentRoute === "home") {
-        BackHandler.exitApp();
-        return true;
-      }
-      return false;
-    };
-
-    const backHandler = BackHandler.addEventListener("hardwareBackPress", backAction);
-
-    return () => backHandler.remove();
-  }, [navigation, secondaryNavigation]);
 
   return (
     <ScrollView
@@ -216,10 +218,10 @@ export function Home() {
             fontFamily="$heading"
             fontSize="$lg"
             color="$textDark800"
-            px={16}
-            mt={16}
+            textAlign="center"
+            my={16}
           >
-            Carregando...
+            Nenhum produto encontrado.
           </Text>
         )}
 

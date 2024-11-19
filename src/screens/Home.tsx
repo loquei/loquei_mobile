@@ -17,8 +17,9 @@ import { Loading } from "@components/Loading";
 import { baseURL } from "../constants/authentications";
 import { ListCategories } from "../api/listCategory";
 import { ICategories } from "../@types/TCategories";
-
+import { useCategoryId } from "@contexts/CategoryIdContext";
 export function Home() {
+  const { setCategoryId } = useCategoryId();
   const [itemData, setItemData] = useState<IGetItem[]>([]);
   const navigation = useNavigation<AppNavigatorRoutesProps>();
   const [categories, setCategories] = useState<ICategories[]>([]);
@@ -123,13 +124,21 @@ export function Home() {
               isActive={
                 categorySelected.toLowerCase() === item.name.toLocaleLowerCase()
               }
-              onPress={() => setCategorySelected(item.id)}
+              onPress={() => {
+                setCategoryId({ id: item.id, name: item.name });
+                navigation.navigate("searchCategory");
+              }}
             />
           )}
           horizontal
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={{ paddingHorizontal: 16 }}
-          style={{ marginTop: 16, marginBottom: 8, maxHeight: 44, minHeight: 44 }}
+          style={{
+            marginTop: 16,
+            marginBottom: 8,
+            maxHeight: 44,
+            minHeight: 44,
+          }}
         />
 
         {itemData ? (
@@ -178,7 +187,7 @@ export function Home() {
                       >
                         <ProductCard
                           imagePath={
-                            item.images && item.images?.links.length > 0
+                            item.images && item.images.links?.length > 0
                               ? baseURL + item.images.links[0]
                               : ""
                           }

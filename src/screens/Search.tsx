@@ -29,16 +29,10 @@ export function Search() {
 
   const renderCategoryRow = (data: { item: ICategories[] }) => {
     const items = data.item;
-    // fazer o grid para deixar com duas cols
     return (
       <HStack justifyContent="space-between" py={2} gap={8}>
         {items.map((item) => (
-          <CategoryCard
-            key={item.id}
-            name={item.name}
-            icon={item.name}
-            id={item.id}
-          />
+          <CategoryCard id={item.id} name={item.name} icon={item.name} />
         ))}
       </HStack>
     );
@@ -54,7 +48,6 @@ export function Search() {
       setCategories(ListCategory);
     }
   }, []);
-
   const sectionedData: SectionData[] = [
     {
       title: "Categorias",

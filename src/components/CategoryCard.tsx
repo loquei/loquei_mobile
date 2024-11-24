@@ -29,7 +29,7 @@ export function CategoryCard({ name, icon, id }: CategoryCardProps) {
 
   return (
     <Pressable
-      w={"$1/2"}
+      flex={1}
       px={16}
       py={24}
       bg="$white"

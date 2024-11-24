@@ -32,7 +32,12 @@ export function Search() {
     return (
       <HStack justifyContent="space-between" py={2} gap={8}>
         {items.map((item) => (
-          <CategoryCard id={item.id} name={item.name} icon={item.name} />
+          <CategoryCard
+            key={item.id}
+            id={item.id}
+            name={item.name}
+            icon={item.name}
+          />
         ))}
       </HStack>
     );
@@ -47,11 +52,14 @@ export function Search() {
     if (ListCategory) {
       setCategories(ListCategory);
     }
-  }, []);
+  }, [ListCategory]);
+  console.log("Categorias", categories);
   const sectionedData: SectionData[] = [
     {
       title: "Categorias",
-      data: [categories],
+      data: Array.from({ length: Math.ceil(categories.length / 2) }, (_, i) =>
+        categories.slice(i * 2, i * 2 + 2)
+      ),
     },
   ];
 

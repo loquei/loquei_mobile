@@ -17,6 +17,8 @@ import { Loading } from "@components/Loading";
 import { baseURL } from "../constants/authentications";
 import { Button } from "@components/Button";
 import { AppSecondaryNavigatorRoutesProps } from "@routes/app.secondary.routes";
+import { ListCategories } from "../api/listCategory";
+import { ICategories } from "../@types/TCategories";
 import { ListRecentlyViewedItems } from "../api/listRecentlyViewedItems";
 
 export function Home() {
@@ -24,12 +26,7 @@ export function Home() {
   const [recentlyViewedData, setRecentlyViewedData] = useState<IGetItem[]>([]);
   const navigation = useNavigation<AppNavigatorRoutesProps>();
   const secondaryNavigation = useNavigation<AppSecondaryNavigatorRoutesProps>();
-  const [categories, setCategories] = useState([
-    "Eletrônicos",
-    "Festa",
-    "Ferramentas",
-    "Carros",
-  ]);
+  const [categories, setCategories] = useState<ICategories[]>([]);
   const [categorySelected, setCategorySelected] = useState("");
   const [isUserAuthenticated, setIsUserAuthenticated] = useState(false);
   const [currentUser, setCurrentUser] = useState<any>();
@@ -44,6 +41,11 @@ export function Home() {
     queryFn: ListItems,
   });
 
+  const { data: listCategory } = useQuery({
+    queryKey: ["categories"],
+    queryFn: ListCategories,
+  });
+
   const {
     data: recentlyViewedItems,
     isLoading: isLoadingRecentlyViewed,
@@ -55,20 +57,12 @@ export function Home() {
   });
 
   useEffect(() => {
-    if (mainItems) {
+    if (mainItems && recentlyViewedItems && listCategory) {
       setItemData(mainItems);
-    }
-
-    if (recentlyViewedItems) {
-      // const sortedRecentlyViewedData = recentlyViewedData.sort((a, b) => {
-      //   const dateA = new Date(a.updated_at); // Converte a data para um objeto Date
-      //   const dateB = new Date(b.updated_at); // Converte a data para um objeto Date
-      //   return dateB.getTime() - dateA.getTime(); // Ordena de forma decrescente (mais recente primeiro)
-      // });
       setRecentlyViewedData(recentlyViewedItems);
+      setCategories(listCategory);
     }
-
-  }, [mainItems, recentlyViewedItems]);
+  }, [mainItems, recentlyViewedItems, listCategory]);
 
   useFocusEffect(
     useCallback(() => {
@@ -137,8 +131,6 @@ export function Home() {
     );
   }
 
-  console.log("ITENS VISTOS RECENTEMENTE", recentlyViewedItems);
-
   return (
     <ScrollView
       contentContainerStyle={{ flexGrow: 1 }}
@@ -163,18 +155,28 @@ export function Home() {
 
         <FlatList
           data={categories}
-          keyExtractor={(item) => item}
+          keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
             <Tag
-              name={item}
-              isActive={categorySelected.toLowerCase() === item.toLowerCase()}
-              onPress={() => setCategorySelected(item)}
+              name={item.name}
+              isActive={
+                categorySelected.toLowerCase() === item.name.toLocaleLowerCase()
+              }
+              onPress={() => {
+                setCategorySelected(item.id);
+                navigation.navigate("searchCategory");
+              }}
             />
           )}
           horizontal
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={{ paddingHorizontal: 16 }}
-          style={{ marginTop: 16, marginBottom: 8, maxHeight: 44, minHeight: 44 }}
+          style={{
+            marginTop: 16,
+            marginBottom: 8,
+            maxHeight: 44,
+            minHeight: 44,
+          }}
         />
 
         {itemData ? (
@@ -338,16 +340,12 @@ export function Home() {
           sections={[
             {
               title: "Explore",
-              data: [
-                { id: "1", title: "Eletrônicos" },
-                { id: "2", title: "Roupas" },
-                { id: "3", title: "Móveis" },
-              ],
+              data: categories,
             },
           ]}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
-            <CategoryCard name={item.title} icon={item.title} />
+            <CategoryCard name={item.name} icon={item.name} id={item.id} />
           )}
           renderSectionHeader={({ section }) => (
             <Text

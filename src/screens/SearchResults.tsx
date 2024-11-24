@@ -1,4 +1,4 @@
-import { HStack, VStack, Text, Center } from "@gluestack-ui/themed";
+import { VStack, Text, Center } from "@gluestack-ui/themed";
 import {
   useFocusEffect,
   useNavigation,
@@ -72,8 +72,8 @@ export function SearchResults() {
               discountPrice={(item.daily_value * 0.9)
                 .toFixed(2)
                 .replace(".", ",")}
-              rating={4.5}
-              ratingCount={24}
+              rating={item.score}
+              ratingCount={item.score}
             />
           </Pressable>
         )}

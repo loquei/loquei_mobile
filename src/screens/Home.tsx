@@ -17,9 +17,11 @@ import { Loading } from "@components/Loading";
 import { baseURL } from "../constants/authentications";
 import { Button } from "@components/Button";
 import { AppSecondaryNavigatorRoutesProps } from "@routes/app.secondary.routes";
+import { ListRecentlyViewedItems } from "../api/listRecentlyViewedItems";
 
 export function Home() {
   const [itemData, setItemData] = useState<IGetItem[]>([]);
+  const [recentlyViewedData, setRecentlyViewedData] = useState<IGetItem[]>([]);
   const navigation = useNavigation<AppNavigatorRoutesProps>();
   const secondaryNavigation = useNavigation<AppSecondaryNavigatorRoutesProps>();
   const [categories, setCategories] = useState([
@@ -32,16 +34,41 @@ export function Home() {
   const [isUserAuthenticated, setIsUserAuthenticated] = useState(false);
   const [currentUser, setCurrentUser] = useState<any>();
 
-  const { data, isLoading, error, refetch } = useQuery({
-    queryKey: ["items"],
+  const {
+    data: mainItems,
+    isLoading: isLoadingMainItems,
+    error: errorMainItems,
+    refetch: refetchMainItems,
+  } = useQuery({
+    queryKey: ["mainItems"],
     queryFn: ListItems,
   });
 
+  const {
+    data: recentlyViewedItems,
+    isLoading: isLoadingRecentlyViewed,
+    error: errorRecentlyViewed,
+    refetch: refetchRecentlyViewed,
+  } = useQuery({
+    queryKey: ["recentlyViewedItems"],
+    queryFn: ListRecentlyViewedItems,
+  });
+
   useEffect(() => {
-    if (data) {
-      setItemData(data);
+    if (mainItems) {
+      setItemData(mainItems);
     }
-  }, [data]);
+
+    if (recentlyViewedItems) {
+      // const sortedRecentlyViewedData = recentlyViewedData.sort((a, b) => {
+      //   const dateA = new Date(a.updated_at); // Converte a data para um objeto Date
+      //   const dateB = new Date(b.updated_at); // Converte a data para um objeto Date
+      //   return dateB.getTime() - dateA.getTime(); // Ordena de forma decrescente (mais recente primeiro)
+      // });
+      setRecentlyViewedData(recentlyViewedItems);
+    }
+
+  }, [mainItems, recentlyViewedItems]);
 
   useFocusEffect(
     useCallback(() => {
@@ -84,30 +111,33 @@ export function Home() {
 
       checkAuthentication();
       fetchCurrentUser();
-      refetch();
+      refetchMainItems();
+      refetchRecentlyViewed();
 
       return () => backHandler.remove();
-    }, [refetch, secondaryNavigation])
+    }, [refetchMainItems, refetchRecentlyViewed, secondaryNavigation])
   );
 
-  if (isLoading) {
+  if (isLoadingMainItems || isLoadingRecentlyViewed) {
     return <Loading />;
   }
 
-  if (error) {
+  if (errorMainItems || errorRecentlyViewed) {
     return (
       <VStack flex={1}>
-        <ScreenHeader title="Loquei" iconButton />
+        <ScreenHeader title="Loquei" />
         <Center flex={1} px={16}>
           <Text fontFamily="$heading" fontSize="$lg" color="$textDark800">
             Erro ao carregar os dados
           </Text>
 
-          <Button title="Tentar novamente" onPress={() => refetch()} mt={16} />
+          <Button title="Tentar novamente" onPress={() => refetchMainItems()} />
         </Center>
       </VStack>
     );
   }
+
+  console.log("ITENS VISTOS RECENTEMENTE", recentlyViewedItems);
 
   return (
     <ScrollView
@@ -116,7 +146,7 @@ export function Home() {
       nestedScrollEnabled={true}
     >
       <VStack>
-        <ScreenHeader title="Loquei" iconButton />
+        <ScreenHeader brandTitle="Loquei" />
 
         {isUserAuthenticated && (
           <Text
@@ -124,7 +154,6 @@ export function Home() {
             fontSize="$lg"
             color="$textDark800"
             px={16}
-            mt={16}
           >
             {currentUser
               ? `Olá, ${currentUser.items[0].personal_name}`
@@ -224,6 +253,85 @@ export function Home() {
             Nenhum produto encontrado.
           </Text>
         )}
+
+        {recentlyViewedData ? (
+          recentlyViewedData.length > 0 ? (
+            <SectionList
+              scrollEnabled={false}
+              sections={[
+                {
+                  title: "Vistos recentemente",
+                  data: recentlyViewedData.map((item) => ({
+                    id: item.id,
+                    title: item.name,
+                    rating: item.score,
+                    ratingCount: item.score,
+                    price: item.daily_value.toFixed(2).replace(".", ","),
+                    discountPrice: item.daily_value
+                      .toFixed(2)
+                      .replace(".", ","),
+                    images: item.images,
+                  })),
+                },
+              ]}
+              style={{ marginTop: 16 }}
+              keyExtractor={(item) => item.id}
+              renderItem={({ item }) => null}
+              renderSectionHeader={({ section }) => (
+                <VStack>
+                  <Text
+                    px={16}
+                    py={8}
+                    fontFamily="$heading"
+                    fontSize="$lg"
+                    color="$textDark800"
+                  >
+                    {section.title}
+                  </Text>
+                  <FlatList
+                    data={section.data || []}
+                    keyExtractor={(item) => item.id}
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    renderItem={({ item }) => (
+                      <Pressable
+                        onPress={() =>
+                          navigation.navigate("productDetails", { id: item.id })
+                        }
+                      >
+                        <ProductCard
+                          imagePath={
+                            item.images && item.images?.links.length > 0
+                              ? baseURL + item.images.links[0]
+                              : ""
+                          }
+                          title={item.title}
+                          price={item.price}
+                          discountPrice={item.discountPrice}
+                          rating={item.rating}
+                          ratingCount={item.ratingCount}
+                        />
+                      </Pressable>
+                    )}
+                    contentContainerStyle={{ paddingHorizontal: 16 }}
+                    ItemSeparatorComponent={() => <HStack width={12} />}
+                  />
+                </VStack>
+              )}
+            />
+          ) : null
+        ) : (
+          <Text
+            fontFamily="$heading"
+            fontSize="$lg"
+            color="$textDark800"
+            textAlign="center"
+            my={16}
+          >
+            Nenhum produto visualizado recentemente.
+          </Text>
+        )
+        }
 
         <SectionList
           scrollEnabled={false}

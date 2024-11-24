@@ -10,6 +10,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Loading } from "@components/Loading";
 import { getStatusDescription } from "@utils/getStatusDescription";
+import { format } from "date-fns";
 
 interface IRental {
   id: string;
@@ -128,7 +129,7 @@ export function AllOrders() {
                   type="order"
                   title={`Locação #${index + 1}`}
                   description={getStatusDescription(item.status)}
-                  date={item.start_date}
+                  date={format(new Date(item.start_date), "dd/MM/yyyy")}
                   price={item.total_value.toString()}
                   imagesPaths="https://icons.veryicon.com/png/o/system/linear-chh/order-27.png"
                 />

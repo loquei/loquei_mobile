@@ -396,7 +396,7 @@ export const gluestackUIConfig = createConfig({
       backgroundDark900: '#262626',
       backgroundDark950: '#171717',
       backgroundLight0: '#FCFCFC',
-      backgroundLight50: '#F5F5F5',
+      backgroundLight50: '#F8F8FB',
       backgroundLight100: '#F1F1F1',
       backgroundLight200: '#DBDBDB',
       backgroundLight300: '#D4D4D4',

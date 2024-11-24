@@ -256,9 +256,8 @@ export function AddProductStep1() {
                   value={value?.toString()}
                   onBlur={onBlur}
                   onChangeText={(text) => {
-                    // Removendo qualquer formatação antes de passar para a validação
                     const cleanValue = text.replace(/[^\d.-]/g, "");
-                    onChange(cleanValue);  // Passando o valor limpo
+                    onChange(cleanValue);
                   }}
                   customTextInput={Input}
                   customTextInputProps={{

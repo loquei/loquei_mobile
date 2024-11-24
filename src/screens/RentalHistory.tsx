@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 import { FlatList } from "react-native";
-import { View } from "@gluestack-ui/themed";
+import { Center, Text, View } from "@gluestack-ui/themed";
 import { useFocusEffect } from "@react-navigation/native";
 import { ScreenHeader } from "@components/ScreenHeader";
 import { Loading } from "@components/Loading";
@@ -9,6 +9,7 @@ import { GetItem } from "../api/getItem";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useQuery, useQueries } from '@tanstack/react-query';
 import { RentalItemCard } from "@components/RentalItemCard";
+import { VStack } from "@gluestack-ui/themed";
 
 interface Rental {
   id: string;
@@ -100,7 +101,17 @@ export function RentalHistory() {
           );
         }}
         showsVerticalScrollIndicator={false}
+        ListEmptyComponent={
+          <View flex={1} justifyContent="center" alignItems="center" px={16}>
+            <Text fontFamily="$heading" fontSize="$lg" color="$textDark800" textAlign="center">
+              Você ainda não alugou nenhum produto.
+            </Text>
+          </View>
+        }
+        contentContainerStyle={{ flexGrow: 1 }}
       />
     </View>
+
+
   );
 }

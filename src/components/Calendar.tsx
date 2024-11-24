@@ -8,6 +8,8 @@ import { Button as StyledButton } from '@components/Button';
 import { format } from 'date-fns-tz';
 import { ptBR as ptBRLocale } from 'date-fns/locale';
 import Toast from 'react-native-toast-message';
+import CalendarLegend from "./CalendarLegend";
+import { ScrollView } from "react-native";
 
 LocaleConfig.locales["pt-br"] = ptBR;
 LocaleConfig.defaultLocale = "pt-br";
@@ -192,109 +194,117 @@ export function CalendarComponent({ minDays, maxDays, rentalDates, onSelectDate,
   }
 
   return (
-    <Box flex={1} backgroundColor={tokens.colors.backgroundLight50}>
-      <Calendar
-        renderArrow={(direction: "right" | "left") => (
-          <Feather size={24} color={tokens.colors.textLight600} name={`chevron-${direction}`} />
-        )}
-        headerStyle={{
-          borderBottomWidth: 0.5,
-          borderBottomColor: tokens.colors.secondary100,
-        }}
-        theme={{
-          textMonthFontSize: 18,
-          monthTextColor: tokens.colors.textDark800,
-          selectedDayBackgroundColor: tokens.colors.teal600,
-          selectedDayTextColor: tokens.colors.white,
-          arrowColor: tokens.colors.textLight600,
-          calendarBackground: tokens.colors.backgroundLight50,
-          textDayStyle: { color: tokens.colors.textDark800 },
-          textDisabledColor: tokens.colors.secondary100,
-        }}
-        minDate={todayString}
-        disableMonthNavigation={true}
-        hideExtraDays
-        onDayPress={handleDayPress}
-        markedDates={getMarkedDates()}
-        dayComponent={({ date, state }: { date: DateData; state: DayState }) => (
-          <Button
-            variant="solid"
-            onPress={() => handleDayPress(date)}
-            px={2}
-            py={1}
-            style={[
-              {
-                width: 35,
-                height: 35,
-                alignItems: "center",
-                justifyContent: "center",
-                borderRadius: 7,
-                backgroundColor:
-                  date.dateString === startDate?.dateString || date.dateString === endDate?.dateString
-                    ? tokens.colors.teal600
-                    : startDate && endDate && new Date(date.dateString) > new Date(startDate.dateString) && new Date(date.dateString) < new Date(endDate.dateString)
-                      ? tokens.colors.green100
-                      : (isDateDisabled(date.dateString) || (date.dateString === todayString && isDateDisabled(todayString)))
-                        ? tokens.colors.red300
-                        : tokens.colors.secondary100
-              },
-              state === "disabled" ? { opacity: 0.3 } : {},
-            ]}
-          >
-            <Text
+    <ScrollView
+      contentContainerStyle={{ flexGrow: 1 }}
+      showsVerticalScrollIndicator={false}
+      nestedScrollEnabled={true}
+    >
+      <Box flex={1} backgroundColor={tokens.colors.backgroundLight50}>
+        <Calendar
+          renderArrow={(direction: "right" | "left") => (
+            <Feather size={24} color={tokens.colors.textLight600} name={`chevron-${direction}`} />
+          )}
+          headerStyle={{
+            borderBottomWidth: 0.5,
+            borderBottomColor: tokens.colors.secondary100,
+          }}
+          theme={{
+            textMonthFontSize: 18,
+            monthTextColor: tokens.colors.textDark800,
+            selectedDayBackgroundColor: tokens.colors.teal600,
+            selectedDayTextColor: tokens.colors.white,
+            arrowColor: tokens.colors.textLight600,
+            calendarBackground: tokens.colors.backgroundLight50,
+            textDayStyle: { color: tokens.colors.textDark800 },
+            textDisabledColor: tokens.colors.secondary100,
+          }}
+          minDate={todayString}
+          disableMonthNavigation={true}
+          hideExtraDays
+          onDayPress={handleDayPress}
+          markedDates={getMarkedDates()}
+          dayComponent={({ date, state }: { date: DateData; state: DayState }) => (
+            <Button
+              variant="solid"
+              onPress={() => handleDayPress(date)}
+              px={2}
+              py={1}
               style={[
-                { color: tokens.colors.textDark800, fontWeight: "bold" },
-                state === "disabled" ? { color: tokens.colors.textDark800 } : {},
-                date.dateString === todayString && isDateDisabled(todayString)
-                  ? { color: tokens.colors.textDark800 }
-                  : date.dateString === todayString
-                    ? { color: tokens.colors.teal600 }
-                    : {},
-                (date.dateString === startDate?.dateString || date.dateString === endDate?.dateString) && { color: tokens.colors.white },
+                {
+                  width: 35,
+                  height: 35,
+                  alignItems: "center",
+                  justifyContent: "center",
+                  borderRadius: 7,
+                  backgroundColor:
+                    date.dateString === startDate?.dateString || date.dateString === endDate?.dateString
+                      ? tokens.colors.teal600
+                      : startDate && endDate && new Date(date.dateString) > new Date(startDate.dateString) && new Date(date.dateString) < new Date(endDate.dateString)
+                        ? tokens.colors.green100
+                        : (isDateDisabled(date.dateString) || (date.dateString === todayString && isDateDisabled(todayString)))
+                          ? tokens.colors.red300
+                          : tokens.colors.white,
+
+                },
+                state === "disabled" ? { opacity: 0.3, backgroundColor: tokens.colors.secondary200 } : {},
               ]}
             >
-              {date.day}
+              <Text
+                style={[
+                  { color: tokens.colors.textDark800, fontWeight: "bold" },
+                  state === "disabled" ? { color: tokens.colors.textDark800 } : {},
+                  date.dateString === todayString && isDateDisabled(todayString)
+                    ? { color: tokens.colors.textDark800 }
+                    : date.dateString === todayString
+                      ? { color: tokens.colors.teal600 }
+                      : {},
+                  (date.dateString === startDate?.dateString || date.dateString === endDate?.dateString) && { color: tokens.colors.white },
+                ]}
+              >
+                {date.day}
+              </Text>
+            </Button>
+          )}
+        />
+
+        <CalendarLegend />
+
+        <Box px={16} mt={16}>
+          {!startDate && !endDate && (
+            <Text fontFamily="$body" fontSize="$md" color="$textDark800" mt={2} textAlign="center">
+              Selecione um intervalo de datas para alugar o produto.
             </Text>
-          </Button>
-        )}
-      />
+          )}
 
-      <Toast />
+          {startDate && (
+            <Text fontFamily="$heading" fontSize="$md" color="$textDark800">
+              Data de início: {format(new Date(startDate.dateString), 'dd/MM/yyyy', { locale: ptBRLocale })}
+            </Text>
+          )}
 
-      <Box px={16} mt={16}>
-        {!startDate && !endDate && (
-          <Text fontFamily="$body" fontSize="$md" color="$textDark800" mt={2} textAlign="center">
-            Selecione um intervalo de datas para alugar o produto.
-          </Text>
-        )}
+          {endDate && (
+            <Text fontFamily="$heading" fontSize="$md" color="$textDark800" mt={2}>
+              Data de término: {format(new Date(endDate.dateString), 'dd/MM/yyyy', { locale: ptBRLocale })}
+            </Text>
+          )}
+        </Box>
 
-        {startDate && (
-          <Text fontFamily="$heading" fontSize="$md" color="$textDark800">
-            Data de início: {format(new Date(startDate.dateString), 'dd/MM/yyyy', { locale: ptBRLocale })}
-          </Text>
-        )}
+        {
+          (startDate || endDate) && (
+            <Box flex={1} px={16}>
+              <VStack flex={1} />
+              <StyledButton
+                title="Limpar seleção"
+                onPress={clearSelection}
+                buttonVariant="danger-outline"
+                alignSelf="flex-end"
+              />
+            </Box>
+          )
+        }
 
-        {endDate && (
-          <Text fontFamily="$heading" fontSize="$md" color="$textDark800" mt={2}>
-            Data de término: {format(new Date(endDate.dateString), 'dd/MM/yyyy', { locale: ptBRLocale })}
-          </Text>
-        )}
+        <Toast position="top" topOffset={0} />
       </Box>
-
-      {
-        (startDate || endDate) && (
-          <Box flex={1} px={16}>
-            <VStack flex={1} />
-            <StyledButton
-              title="Limpar seleção"
-              onPress={clearSelection}
-              buttonVariant="danger-outline"
-              alignSelf="flex-end"
-            />
-          </Box>
-        )
-      }
-
-    </Box>
+    </ScrollView>
   );
 }

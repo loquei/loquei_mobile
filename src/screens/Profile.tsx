@@ -32,8 +32,8 @@ import { useCallback, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export function Profile() {
-  const [userPhoto, setUserPhoto] = useState(
-    "https://img.freepik.com/free-photo/how-may-i-help-you-smiling-young-modern-guy-with-beard-waiting-looking-hopeful-assisting-standing-white-background_176420-49644.jpg?t=st=1724706288~exp=1724709888~hmac=87b19bdaedc452696bd6888e87642e5ebc9ec98d2d982f5ec3f25b98bd819ebb&w=1380"
+  const [userPhoto, setUserPhoto] = useState(""
+    // "https://img.freepik.com/free-photo/how-may-i-help-you-smiling-young-modern-guy-with-beard-waiting-looking-hopeful-assisting-standing-white-background_176420-49644.jpg?t=st=1724706288~exp=1724709888~hmac=87b19bdaedc452696bd6888e87642e5ebc9ec98d2d982f5ec3f25b98bd819ebb&w=1380"
   );
   const [user, setUser] = useState<any>({});
 
@@ -133,7 +133,7 @@ export function Profile() {
 
       <VStack justifyContent="center" alignItems="center" px={16} mt={16}>
         <Image
-          source={{ uri: userPhoto }}
+          source={""}
           width={96}
           height={96}
           rounded={"$full"}
@@ -151,7 +151,7 @@ export function Profile() {
         </Heading>
         <TouchableOpacity onPress={handleUserPhotoSelect}>
           <Text color="$teal600" fontSize="$sm" fontFamily="$heading">
-            Trocar foto
+            Adicionar foto
           </Text>
         </TouchableOpacity>
       </VStack>

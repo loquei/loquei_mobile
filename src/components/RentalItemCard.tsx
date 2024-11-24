@@ -4,6 +4,7 @@ import { getStatusDescription } from "@utils/getStatusDescription";
 import { useNavigation } from "@react-navigation/native";
 import { AppNavigatorRoutesProps } from "@routes/app.routes";
 import { HStack, Text, VStack, View } from "@gluestack-ui/themed";
+import { gluestackUIConfig } from "../../config/gluestack-ui.config";
 
 interface RentalItemCardProps {
   id: string;
@@ -16,6 +17,7 @@ interface RentalItemCardProps {
 
 export function RentalItemCard({ id, title, status, startDate, endDate, totalValue }: RentalItemCardProps) {
   const navigation = useNavigation<AppNavigatorRoutesProps>();
+  const { tokens } = gluestackUIConfig;
 
   function handleNavigateToProductDetails() {
     navigation.navigate("productDetails", { id });
@@ -23,7 +25,13 @@ export function RentalItemCard({ id, title, status, startDate, endDate, totalVal
 
   return (
     <View px={16} mt={16}>
-      <TouchableOpacity onPress={handleNavigateToProductDetails}>
+      <TouchableOpacity onPress={handleNavigateToProductDetails} style={
+        {
+          borderColor: tokens.colors.secondary100,
+          borderWidth: 1,
+          borderRadius: tokens.radii.md,
+        }
+      }>
         <HStack alignItems="center" bg="$white" p={16} rounded={"$md"} mb={4}>
           <VStack flex={1} px={16}>
             <Text fontFamily="$heading" fontSize="$md" color="$textDark800" numberOfLines={1}>

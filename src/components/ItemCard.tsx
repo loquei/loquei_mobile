@@ -49,7 +49,13 @@ export function ItemCard({
   }
 
   return (
-    <TouchableOpacity onPress={handleNavigateToProductDetails}>
+    <TouchableOpacity onPress={handleNavigateToProductDetails} style={
+      {
+        borderColor: tokens.colors.secondary100,
+        borderWidth: 1,
+        borderRadius: tokens.radii.md,
+      }
+    }>
       <HStack alignItems="center" bg="$white" p={16} rounded={"$md"}>
         <Image
           source={

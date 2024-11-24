@@ -1,5 +1,5 @@
 import { Center, HStack, VStack, Image, Text } from "@gluestack-ui/themed";
-import onBoardingImage from '@assets/onBoarding.jpg';
+import onBoardingImage from '@assets/loqueiHeroImage.png';
 import { Button } from "@components/Button";
 
 import { useNavigation } from '@react-navigation/native'
@@ -19,7 +19,7 @@ export function Leasing() {
   return (
     <VStack flex={1} px={16} py={40}>
       <Center flex={1}>
-        <Image source={onBoardingImage} alt="Onboarding" width={256} height={256} />
+        <Image source={onBoardingImage} alt="Onboarding" width={300} height={300} />
 
         <Text fontSize="$2xl" fontFamily="$heading" color="$textDark800" mt={24} width={310} textAlign="center">Comece a locar na plataforma</Text>
         <Text fontFamily="$body" fontSize="$md" color="$textDark800" mt={12} textAlign="center">Controle suas locações direto pelo aplicativo de forma descomplicada.</Text>

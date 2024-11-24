@@ -27,7 +27,7 @@ export function ProductCard({
   const emptyStars = 5 - fullStars - halfStar;
 
   return (
-    <VStack flex={1} w={160} bg="$white" rounded="$2xl">
+    <VStack flex={1} w={160} bg="$white" rounded="$2xl" borderColor="$secondary100" borderWidth={1}>
       <Image
         source={imagePath ? { uri: imagePath } : eletronicsImage}
         alt={title}

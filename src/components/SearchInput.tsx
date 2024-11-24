@@ -33,18 +33,6 @@ export function SearchInput({ onChangeText, onSearch }: SearchInputProps) {
       }}
       height={48}
     >
-      <InputSlot
-        bg="$white"
-        rounded="$full"
-        justifyContent="center"
-      >
-        <InputIcon>
-          <SearchIcon
-            size={16}
-            color={tokens.colors.textDark800}
-          />
-        </InputIcon>
-      </InputSlot>
       <InputField
         placeholder="Buscar"
         bg="$white"
@@ -67,7 +55,7 @@ export function SearchInput({ onChangeText, onSearch }: SearchInputProps) {
         justifyContent="center"
       >
         <InputIcon>
-          <Mic
+          <SearchIcon
             size={16}
             color={tokens.colors.textDark800}
           />

@@ -17,17 +17,14 @@ import { Loading } from "@components/Loading";
 import { baseURL } from "../constants/authentications";
 import { Button } from "@components/Button";
 import { AppSecondaryNavigatorRoutesProps } from "@routes/app.secondary.routes";
+import { ListCategories } from "../api/listCategory";
+import { ICategories } from "../@types/TCategories";
 
 export function Home() {
   const [itemData, setItemData] = useState<IGetItem[]>([]);
   const navigation = useNavigation<AppNavigatorRoutesProps>();
   const secondaryNavigation = useNavigation<AppSecondaryNavigatorRoutesProps>();
-  const [categories, setCategories] = useState([
-    "Eletrônicos",
-    "Festa",
-    "Ferramentas",
-    "Carros",
-  ]);
+  const [categories, setCategories] = useState<ICategories[]>([]);
   const [categorySelected, setCategorySelected] = useState("");
   const [isUserAuthenticated, setIsUserAuthenticated] = useState(false);
   const [currentUser, setCurrentUser] = useState<any>();
@@ -37,11 +34,17 @@ export function Home() {
     queryFn: ListItems,
   });
 
+  const { data: listCategory } = useQuery({
+    queryKey: ["categories"],
+    queryFn: ListCategories,
+  });
+
   useEffect(() => {
-    if (data) {
+    if (data && listCategory) {
       setItemData(data);
+      setCategories(listCategory);
     }
-  }, [data]);
+  }, [data, listCategory]);
 
   useFocusEffect(
     useCallback(() => {
@@ -134,18 +137,28 @@ export function Home() {
 
         <FlatList
           data={categories}
-          keyExtractor={(item) => item}
+          keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
             <Tag
-              name={item}
-              isActive={categorySelected.toLowerCase() === item.toLowerCase()}
-              onPress={() => setCategorySelected(item)}
+              name={item.name}
+              isActive={
+                categorySelected.toLowerCase() === item.name.toLocaleLowerCase()
+              }
+              onPress={() => {
+                setCategorySelected(item.id);
+                navigation.navigate("searchCategory");
+              }}
             />
           )}
           horizontal
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={{ paddingHorizontal: 16 }}
-          style={{ marginTop: 16, marginBottom: 8, maxHeight: 44, minHeight: 44 }}
+          style={{
+            marginTop: 16,
+            marginBottom: 8,
+            maxHeight: 44,
+            minHeight: 44,
+          }}
         />
 
         {itemData ? (
@@ -230,16 +243,12 @@ export function Home() {
           sections={[
             {
               title: "Explore",
-              data: [
-                { id: "1", title: "Eletrônicos" },
-                { id: "2", title: "Roupas" },
-                { id: "3", title: "Móveis" },
-              ],
+              data: categories,
             },
           ]}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
-            <CategoryCard name={item.title} icon={item.title} />
+            <CategoryCard name={item.name} icon={item.name} id={item.id} />
           )}
           renderSectionHeader={({ section }) => (
             <Text

@@ -92,3 +92,73 @@ export const postItemImage = async (data: IPostImage) => {
     return error?.message || "Erro desconhecido.";
   }
 };
+
+export const postUserImage = async (userId: string, image: { imagePaths: string[] }) => {
+  const token = await AsyncStorage.getItem("AuthToken");
+
+  if (!token) {
+    console.error("Erro: Token de autenticação não encontrado.");
+    throw new Error("Token de autenticação não encontrado.");
+  }
+
+  console.log("Token de autenticação encontrado:", token);
+
+  const headers = {
+    'Content-Type': 'multipart/form-data',
+    'Authorization': `Bearer ${token}`,
+  };
+
+  try {
+    for (let i = 0; i < image.imagePaths.length; i++) {
+      const imagePath = image.imagePaths[i];
+      const fileName = imagePath.split('/').pop();
+
+      if (!fileName) {
+        console.error(`Erro: Nome do arquivo ${i + 1} não encontrado.`);
+        throw new Error(`Nome do arquivo ${i + 1} não encontrado.`);
+      }
+
+      const fileType = fileName.split('.').pop();
+
+      const compressedUri = await ImageManipulator.manipulateAsync(
+        imagePath,
+        [{ resize: { width: 800 } }],
+        { compress: 0.7, format: ImageManipulator.SaveFormat.JPEG } // Compacta a imagem
+      ).then(res => res.uri);
+
+      const formData = new FormData();
+      formData.append("file", {
+        uri: compressedUri,
+        name: fileName,
+        type: `image/${fileType}`,
+      });
+
+      console.log(`Enviando imagem ${i + 1} de ${image.imagePaths.length} para o usuário com ID: ${userId}`);
+
+      try {
+        const response = await api.post(`/users/images/${userId}`, formData, { headers });
+
+        if (response.status === 201 || response.status === 200) {
+          console.log(`Imagem ${i + 1} enviada com sucesso.`);
+        } else {
+          console.error(`Erro ao enviar a imagem ${i + 1}: Status ${response.status}`);
+          throw new Error(`Erro ao enviar a imagem ${i + 1}. Status: ${response.status}`);
+        }
+      } catch (imgError: any) {
+        if (imgError.response?.status === 422) {
+          console.error("Erro 422: A nova foto precisa ser diferente da atual.");
+          throw new Error("A nova foto precisa ser diferente da atual.");
+        } else {
+          console.error(`Erro ao processar a imagem ${i + 1}:`, imgError?.message || imgError);
+          throw new Error(`Erro ao processar a imagem ${i + 1}: ${imgError?.message || 'Erro desconhecido'}`);
+        }
+      }
+    }
+
+    await AsyncStorage.removeItem('createdProduct');
+    console.log("Dados do produto removidos do AsyncStorage.");
+  } catch (error: any) {
+    console.error("Erro ao enviar imagens do produto:", error?.message || error);
+    throw new Error(error?.message || "Erro desconhecido.");
+  }
+};

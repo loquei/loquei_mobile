@@ -30,11 +30,13 @@ import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from "expo-file-system";
 import { useCallback, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { postUserImage } from "../api/postImage";
+import { getUserPhoto } from "../api/getUserPhoto";
+import { deleteUserPhoto } from "../api/deleteUserPhoto";
+import Toast from 'react-native-toast-message';
 
 export function Profile() {
-  const [userPhoto, setUserPhoto] = useState(""
-    // "https://img.freepik.com/free-photo/how-may-i-help-you-smiling-young-modern-guy-with-beard-waiting-looking-hopeful-assisting-standing-white-background_176420-49644.jpg?t=st=1724706288~exp=1724709888~hmac=87b19bdaedc452696bd6888e87642e5ebc9ec98d2d982f5ec3f25b98bd819ebb&w=1380"
-  );
+  const [userPhoto, setUserPhoto] = useState("");
   const [user, setUser] = useState<any>({});
 
   const { tokens } = gluestackUIConfig;
@@ -78,50 +80,83 @@ export function Profile() {
 
       const photoUri = photoSelected.assets[0].uri;
 
-      if (photoUri) {
-        const photoInfo = (await FileSystem.getInfoAsync(photoUri)) as {
-          size: number;
-        };
-
-        if (photoInfo.size && photoInfo.size / 1024 / 1024 > 5) {
-          alert(
-            "A imagem selecionada é muito grande, selecione uma imagem de até 5MB"
-          );
-          return;
-        }
-
-        setUserPhoto(photoSelected.assets[0].uri);
+      if (photoUri === user?.items?.[0]?.profileImage) {
+        Toast.show({
+          type: 'error',
+          text1: 'Erro!',
+          text2: 'A nova foto precisa ser diferente da atual.',
+        });
+        return;
       }
-    } catch (error) {
-      console.log(error);
+
+      await postUserImage(user?.items?.[0]?.id, { imagePaths: [photoUri] });
+
+      setUserPhoto(photoUri);
+      Toast.show({
+        type: 'success',
+        text1: 'Sucesso!',
+        text2: 'Sua foto de perfil foi atualizada.',
+      });
+    } catch (error: any) {
+      if (error.message === "A nova foto precisa ser diferente da atual.") {
+        Toast.show({
+          type: 'error',
+          text1: 'Erro!',
+          text2: 'A nova foto precisa ser diferente da atual.',
+        });
+      } else {
+        Toast.show({
+          type: 'error',
+          text1: 'Erro inesperado',
+          text2: 'Não foi possível atualizar a foto. Tente novamente mais tarde.',
+        });
+      }
     }
+  }
+
+  async function handleUserPhotoRemove() {
+    await deleteUserPhoto(user?.items?.[0]?.id);
+    setUserPhoto("");
   }
 
   useFocusEffect(
     useCallback(() => {
-      const fetchCurrentUser = async () => {
+      const fetchData = async () => {
         try {
           const currentUser = await AsyncStorage.getItem("currentUser");
           if (currentUser) {
             const parsedUser = JSON.parse(currentUser);
-            if (parsedUser && parsedUser.items) {
+            if (parsedUser?.items?.[0]?.id) {
               setUser(parsedUser);
-              console.log("SEU PERFIL", parsedUser);
-            } else {
-              console.warn("Formato inesperado em currentUser:", currentUser);
+
+              const userPhoto = await getUserPhoto(parsedUser.items[0].id);
+              if (userPhoto) {
+                console.log("ID DO USUARIO QUE TEM FOTO:", parsedUser.items[0].id);
+                setUserPhoto(
+                  `https://loquei-balerion-project-778be9e88a13.herokuapp.com/api/users/images/view/${parsedUser.items[0].id}`
+                );
+              } else {
+                setUserPhoto("");
+              }
             }
           } else {
             console.warn("Nenhum usuário atual encontrado no AsyncStorage.");
           }
         } catch (error) {
-          console.error("Error fetching current user:", error);
+          console.error("Erro ao buscar dados do usuário:", error);
         }
       };
 
-      fetchCurrentUser();
+      fetchData();
     }, [])
   );
 
+  const userInitials = user?.items?.[0]?.personal_name
+    ? `${user.items[0].personal_name.split(" ")[0][0]}${user.items[0].personal_name.split(" ").length > 1
+      ? user.items[0].personal_name.split(" ").slice(-1)[0][0]
+      : ""
+    }`
+    : "";
 
   return (
     <ScrollView
@@ -132,15 +167,39 @@ export function Profile() {
       <ScreenHeader title="Perfil" backButton />
 
       <VStack justifyContent="center" alignItems="center" px={16} mt={16}>
-        <Image
-          source={""}
-          width={96}
-          height={96}
-          rounded={"$full"}
-          borderWidth={1}
-          borderColor="$secondary200"
-          alt=""
-        />
+        {
+          userPhoto ? (
+            <Image
+              source={
+                userPhoto
+                  ? { uri: userPhoto }
+                  : ""
+              }
+              width={96}
+              height={96}
+              rounded={"$full"}
+              borderWidth={1}
+              borderColor="$secondary200"
+              alt=""
+            />
+          ) : (
+            <View
+              width={96}
+              height={96}
+              rounded={"$full"}
+              borderWidth={1}
+              borderColor="$secondary200"
+              justifyContent="center"
+              alignItems="center"
+              bg="$secondary100"
+            >
+              <Text color="$textDark800" fontSize="$xl" fontFamily="$heading">
+                {userInitials}
+              </Text>
+
+            </View>
+          )
+        }
         <Heading
           color="$textDark800"
           fontSize="$xl"
@@ -149,11 +208,21 @@ export function Profile() {
         >
           {user?.items?.[0]?.personal_name}
         </Heading>
-        <TouchableOpacity onPress={handleUserPhotoSelect}>
-          <Text color="$teal600" fontSize="$sm" fontFamily="$heading">
-            Adicionar foto
-          </Text>
-        </TouchableOpacity>
+        {
+          userPhoto ? (
+            <TouchableOpacity onPress={handleUserPhotoRemove}>
+              <Text color="$red600" fontSize="$sm" fontFamily="$heading">
+                Remover foto
+              </Text>
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity onPress={handleUserPhotoSelect}>
+              <Text color="$teal600" fontSize="$sm" fontFamily="$heading">
+                Adicionar foto
+              </Text>
+            </TouchableOpacity>
+          )
+        }
       </VStack>
 
       <VStack mt={16} mb={16} px={16}>
@@ -255,6 +324,7 @@ export function Profile() {
           </Pressable>
         </Box>
       </VStack>
+      <Toast />
     </ScrollView>
   );
 }

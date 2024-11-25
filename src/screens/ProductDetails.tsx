@@ -159,6 +159,10 @@ export function ProductDetails() {
 
   console.log('filteredRentals', filteredRentals);
   const userRentals = filteredRentals.filter(rental => rental.lessee === currentUserId);
+  const userRentalsStatus = userRentals.map(rental => rental.status);
+  const hasSomeRentalTerminated = userRentalsStatus.includes('TERMINATED');
+  console.log('HAS TERMINATED', hasSomeRentalTerminated);
+
   console.log('userRentals', userRentals);
   console.log('currentUserId', currentUserId);
 
@@ -229,7 +233,7 @@ export function ProductDetails() {
           <VStack mt={24}>
             <ProductContainerReviews itemId={id} raterId={currentUserId} isItemOwner={
               currentUserId === productDetails.user_id
-            } perPage={3} />
+            } perPage={3} hasSomeRentalTerminated={hasSomeRentalTerminated} />
           </VStack>
         </VStack>
 

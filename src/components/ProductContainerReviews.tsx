@@ -1,11 +1,11 @@
 import { gluestackUIConfig } from "@gluestack-ui/config";
 import { Pressable, Progress } from "@gluestack-ui/themed";
 import { ProgressFilledTrack } from "@gluestack-ui/themed";
-import { HStack, Text } from "@gluestack-ui/themed"; // Adicionando Spinner para o loading
+import { HStack, Text } from "@gluestack-ui/themed";
 import { VStack } from "@gluestack-ui/themed";
 import { Star, StarHalf } from "lucide-react-native";
 import { Button } from "./Button";
-import { FlatList } from "react-native";
+import { FlatList, Image } from "react-native";
 import { View } from "@gluestack-ui/themed";
 import { Divider } from "@gluestack-ui/themed";
 import { useModal } from "@contexts/ModalContext";
@@ -14,12 +14,15 @@ import { Loading } from "./Loading";
 import { useNavigation } from "@react-navigation/native";
 import { AppNavigatorRoutesProps } from "@routes/app.routes";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useCallback, useEffect, useState } from "react";
+import { getUserPhoto } from "../api/getUserPhoto";
 
 interface ProductReviewsProps {
   itemId: string;
   raterId: string;
   isItemOwner: boolean;
   isAllRatingsScreen?: boolean;
+  hasSomeRentalTerminated?: boolean;
   perPage?: number;
 }
 
@@ -43,11 +46,12 @@ interface Rating {
   updated_at: string;
 }
 
-export function ProductContainerReviews({ itemId, raterId, isItemOwner, isAllRatingsScreen, perPage }: ProductReviewsProps) {
+export function ProductContainerReviews({ itemId, raterId, isItemOwner, isAllRatingsScreen, hasSomeRentalTerminated, perPage }: ProductReviewsProps) {
   const { tokens } = gluestackUIConfig;
   const { showModal, getActionMessage } = useModal();
   const navigation = useNavigation<AppNavigatorRoutesProps>();
   const queryClient = useQueryClient();
+  const [userPhotos, setUserPhotos] = useState<{ [key: string]: string }>({});
 
   const handleOpenRatingModal = () => {
     handleOpenModal("rating");
@@ -74,6 +78,24 @@ export function ProductContainerReviews({ itemId, raterId, isItemOwner, isAllRat
     queryFn: () => listRatings({ perPage, dir: 'desc', sort: 'updatedAt' }),
   });
 
+  const fetchUserPhotos = useCallback(async () => {
+    const photos: { [key: string]: string } = {};
+    for (const rating of ratings) {
+      const userPhoto = await getUserPhoto(rating.user.id);
+      if (userPhoto) {
+        photos[rating.user.id] = `https://loquei-balerion-project-778be9e88a13.herokuapp.com/api/users/images/view/${rating.user.id}`;
+      }
+    }
+    setUserPhotos(photos);
+  }, [ratings]); // A função será recriada sempre que ratings mudar
+
+  useEffect(() => {
+    // Chama o fetchUserPhotos quando ratings mudar, mas apenas uma vez
+    if (ratings.length > 0) {
+      fetchUserPhotos();
+    }
+  }, [ratings, fetchUserPhotos]); // Dependência de fetchUserPhotos
+
   if (error) {
     console.error('Erro ao buscar avaliações:', error);
   }
@@ -95,6 +117,8 @@ export function ProductContainerReviews({ itemId, raterId, isItemOwner, isAllRat
   };
 
   console.log('filteredRatings', filteredRatings);
+
+  const userInitials = filteredRatings[0]?.user?.personal_name ? `${filteredRatings[0].user.personal_name.split(" ")[0][0]}${filteredRatings[0].user.personal_name.split(" ").length > 1 ? filteredRatings[0].user.personal_name.split(" ").slice(-1)[0][0] : ""}` : "";
 
   return (
     <VStack mt={16} px={16}>
@@ -147,9 +171,13 @@ export function ProductContainerReviews({ itemId, raterId, isItemOwner, isAllRat
           </VStack>
         </HStack>
 
-        {!isItemOwner && (
-          <Button title="Enviar avaliação" mt={16} buttonVariant="secondary" onPress={handleOpenRatingModal} />
-        )}
+        {!isItemOwner && hasSomeRentalTerminated &&
+          // verifica se os status dos pedidos tem algum TERMINATED e se o usuário logado é o dono do item
+          // se for, exibe o botão de avaliação
+
+          (
+            <Button title="Enviar avaliação" mt={16} buttonVariant="secondary" onPress={handleOpenRatingModal} />
+          )}
 
         {isLoading ? (
           <HStack mt={16} justifyContent="center">
@@ -163,7 +191,21 @@ export function ProductContainerReviews({ itemId, raterId, isItemOwner, isAllRat
             renderItem={({ item }) => (
               <VStack mt={16}>
                 <HStack gap={8} width="100%" alignItems="center">
-                  <View borderRadius={999} bg="$secondary300" w={45} h={45} />
+                  <View borderRadius={999} bg="$secondary200" w={45} h={45} justifyContent="center" alignContent="center">
+                    {userPhotos[item.user.id] ? (
+                      <Image
+                        source={{ uri: userPhotos[item.user.id] }}
+                        width={45}
+                        height={45}
+                        borderRadius={999}
+                        alt=""
+                      />
+                    ) : (
+                      <Text fontFamily="$heading" fontSize="$sm" color="$textDark800" textAlign="center" lineHeight={45}>
+                        {userInitials}
+                      </Text>
+                    )}
+                  </View>
                   <VStack flex={1}>
                     <Text fontFamily="$mono" fontSize="$lg" color="$textDark800" numberOfLines={1} ellipsizeMode="tail">
                       {item.user.personal_name}

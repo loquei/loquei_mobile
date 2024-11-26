@@ -54,8 +54,8 @@ export function Profile() {
         return navigation.navigate("privacy");
       case "rentalHistory":
         return navigation.navigate("rentalHistory", { id: user?.items?.[0]?.id });
-      case "leasing":
-        return navigation.navigate("leasing");
+      case "dashboard":
+        return navigation.navigate("dashboard");
       case "help":
         return navigation.navigate("help");
       case "about":
@@ -278,7 +278,7 @@ export function Profile() {
 
           <Pressable
             $active-backgroundColor="$backgroundLight100"
-            onPress={() => handleUserRedirect("leasing")}
+            onPress={() => handleUserRedirect("dashboard")}
           >
             <HStack justifyContent="space-between" p={16} alignItems="center">
               <HStack alignItems="center" gap={16}>

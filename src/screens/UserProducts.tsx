@@ -38,8 +38,6 @@ export function UserProducts() {
         nestedScrollEnabled={true}
         contentContainerStyle={{ paddingHorizontal: 16, marginTop: 16 }}
       >
-        <SearchInput />
-
         <Button
           title="Adicionar produto"
           mt={16}
@@ -60,11 +58,12 @@ export function UserProducts() {
             renderItem={({ item }) => (
               <VStack>
                 <ItemCard
+                  key={item.id}
                   id={item.id}
                   type="product"
                   title={item.name}
                   description={item.description}
-                  price={item.daily_value.toString()}
+                  price={item.daily_value.toFixed(2).replace(".", ",")}
                   imagesPaths={item.images.links}
                   hasRemoveButton
                   hasEditButton

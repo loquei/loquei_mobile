@@ -36,12 +36,12 @@ interface IRentalDetails {
   lessor: string;
   start_date: string;
   status:
-  | "PENDING"
-  | "ACCEPTED"
-  | "IN_PROGRESS"
-  | "COMPLETED"
-  | "CANCELLED"
-  | "REFUSED";
+    | "PENDING"
+    | "ACCEPTED"
+    | "IN_PROGRESS"
+    | "COMPLETED"
+    | "CANCELLED"
+    | "REFUSED";
   total_value: number;
   updated_at: string;
 }
@@ -225,7 +225,7 @@ export function OrderDetails() {
             Data
           </Text>
           <Text fontFamily="$body" fontSize="$md" color="$textDark800">
-            {format(new Date(rentalDetails.start_date), 'dd/MM/yyyy')}
+            {format(new Date(rentalDetails.start_date), "dd/MM/yyyy")}
           </Text>
         </VStack>
         <Divider />
@@ -253,7 +253,7 @@ export function OrderDetails() {
           {itemDetails && (
             <ItemCard
               id={rentalDetails.item}
-              date={format(new Date(rentalDetails.start_date), 'dd/MM/yyyy')}
+              date={format(new Date(rentalDetails.start_date), "dd/MM/yyyy")}
               imagesPaths={
                 itemDetails.images.links.length > 0
                   ? itemDetails.images.links
@@ -264,7 +264,7 @@ export function OrderDetails() {
               description={itemDetails.description}
               price={
                 rentalDetails.total_value
-                  ? rentalDetails.total_value.toString()
+                  ? rentalDetails.total_value.toFixed(2).replace(".", ",")
                   : "0"
               }
             />
@@ -299,6 +299,8 @@ export function OrderDetails() {
             </Text>
 
             <HStack
+              borderWidth={1}
+              borderColor={"$secondary100"}
               bg="$white"
               p={16}
               rounded={"$md"}
@@ -306,14 +308,6 @@ export function OrderDetails() {
               justifyContent="space-between"
             >
               <HStack alignItems="center" gap={16}>
-                <View
-                  width={48}
-                  height={48}
-                  bg="$backgroundLight100"
-                  rounded={"$full"}
-                  justifyContent="center"
-                  alignItems="center"
-                />
                 <Text fontFamily="$body" fontSize="$md" color="$textDark800">
                   {lesseeDetails?.personal_name}
                 </Text>

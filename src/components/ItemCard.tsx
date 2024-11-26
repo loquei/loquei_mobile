@@ -4,9 +4,8 @@ import { TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { AppNavigatorRoutesProps } from "@routes/app.routes";
 
-import { Trash2, Pencil } from "lucide-react-native";
+import { Pencil } from "lucide-react-native";
 import { gluestackUIConfig } from "../../config/gluestack-ui.config";
-import { DeleteItems } from "../api/deleteItem";
 import { baseURL } from "../constants/authentications";
 
 interface ItemCardProps {
@@ -32,38 +31,39 @@ export function ItemCard({
   imagesPaths,
   hasRemoveButton,
   hasEditButton,
-  onRemove
+  onRemove,
 }: ItemCardProps) {
   const navigation = useNavigation<AppNavigatorRoutesProps>();
   const { tokens } = gluestackUIConfig;
 
   function handleNavigateToProductDetails() {
-    console.log('Redirecting to product details', id)
+    console.log("Redirecting to product details", id);
     type === "product" || type === "wishlistItem"
       ? navigation.navigate("productDetails", { id })
       : navigation.navigate("orderDetails", { id });
   }
 
   function handleNavigateToEditProduct() {
-    navigation.navigate("editProduct");
+    navigation.navigate("editProduct", { id });
   }
 
   return (
-    <TouchableOpacity onPress={handleNavigateToProductDetails} style={
-      {
+    <TouchableOpacity
+      onPress={handleNavigateToProductDetails}
+      style={{
         borderColor: tokens.colors.secondary100,
         borderWidth: 1,
         borderRadius: tokens.radii.md,
-      }
-    }>
+      }}
+    >
       <HStack alignItems="center" bg="$white" p={16} rounded={"$md"}>
         <Image
           source={
             typeof imagesPaths === "string"
               ? { uri: imagesPaths }
               : imagesPaths.length > 0
-                ? { uri: baseURL + imagesPaths[0] }
-                : ItemCardImage
+              ? { uri: baseURL + imagesPaths[0] }
+              : ItemCardImage
           }
           width={110}
           height={110}
@@ -102,11 +102,6 @@ export function ItemCard({
           </Text>
 
           <HStack gap={12} alignSelf="flex-end">
-            {hasRemoveButton && (
-              <TouchableOpacity onPress={onRemove}>
-                <Trash2 size={24} color={tokens.colors.red500} />
-              </TouchableOpacity>
-            )}
             {hasEditButton && (
               <TouchableOpacity onPress={handleNavigateToEditProduct}>
                 <Pencil size={24} color={tokens.colors.warning500} />

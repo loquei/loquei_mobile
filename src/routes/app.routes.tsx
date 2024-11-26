@@ -19,7 +19,7 @@ import { Address } from "@screens/Address";
 import { Notifications } from "@screens/Notifications";
 import { AddAddress } from "@screens/AddAddress";
 import { AppSecondaryRoutes } from "./app.secondary.routes";
-import { UseAuthRoutes } from './useRoutes';
+import { UseAuthRoutes } from "./useRoutes";
 import { Calendar } from "@screens/Calendar";
 import { Privacy } from "@screens/Privacy";
 import { Help } from "@screens/Help";
@@ -29,11 +29,11 @@ import { RentalHistory } from "@screens/RentalHistory";
 export type AppSecondaryRoutes = {
   productDetails: { id: string };
   calendar: {
-    itemId: string,
-    lessorId: string,
-    lesseeId: string,
-    minDays: number,
-    maxDays: number,
+    itemId: string;
+    lessorId: string;
+    lesseeId: string;
+    minDays: number;
+    maxDays: number;
     filteredRentals: Array<{
       id: string;
       item: string;
@@ -43,7 +43,7 @@ export type AppSecondaryRoutes = {
       end_date: string;
       status: string;
       total_value: number;
-    }>,
+    }>;
   };
 
   productReviews: {
@@ -56,7 +56,7 @@ export type AppSecondaryRoutes = {
   leasing: undefined;
   dashboard: undefined;
   userProducts: undefined;
-  editProduct: undefined;
+  editProduct: { id: string };
   addProductStep1: undefined;
   addProductStep2: undefined;
   allOrders: undefined;
@@ -86,11 +86,15 @@ export function AppRoutes() {
       }}
       initialRouteName="secondaryRoutes"
     >
-      <Screen name="productDetails" component={ProductDetails} getId={
-        ({ params }) => params.id
-      } />
+      <Screen
+        name="productDetails"
+        component={ProductDetails}
+        getId={({ params }) => params.id}
+      />
 
-      <Screen name="productReviews" component={ProductReviews}
+      <Screen
+        name="productReviews"
+        component={ProductReviews}
         getId={({ params }) => params.itemId}
       />
 
@@ -98,17 +102,22 @@ export function AppRoutes() {
 
       <Screen name="searchCategory" component={SearchCategory} />
 
-      <Screen name="searchResults" component={SearchResults} getId={
-        ({ params }) => params.searchTerm
-      } />
+      <Screen
+        name="searchResults"
+        component={SearchResults}
+        getId={({ params }) => params.searchTerm}
+      />
 
       <Screen name="leasing" component={Leasing} />
 
       <Screen name="dashboard" component={Dashboard} />
 
       <Screen name="userProducts" component={UserProducts} />
-
-      <Screen name="editProduct" component={EditProduct} />
+      <Screen
+        name="editProduct"
+        component={EditProduct}
+        getId={({ params }) => params.id}
+      />
 
       <Screen name="addProductStep1" component={AddProductStep1} />
 
@@ -116,13 +125,17 @@ export function AppRoutes() {
 
       <Screen name="allOrders" component={AllOrders} />
 
-      <Screen name="orderDetails" component={OrderDetails} getId={
-        ({ params }) => params.id
-      } />
+      <Screen
+        name="orderDetails"
+        component={OrderDetails}
+        getId={({ params }) => params.id}
+      />
 
-      <Screen name="rentalHistory" component={RentalHistory} getId={
-        ({ params }) => params.id
-      } />
+      <Screen
+        name="rentalHistory"
+        component={RentalHistory}
+        getId={({ params }) => params.id}
+      />
 
       <Screen name="account" component={Account} />
 
@@ -141,7 +154,6 @@ export function AppRoutes() {
       <Screen name="secondaryRoutes" component={AppSecondaryRoutes} />
 
       <Screen name="authRoutes" component={UseAuthRoutes().AuthRoutes} />
-
     </Navigator>
   );
 }

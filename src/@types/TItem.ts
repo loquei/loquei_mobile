@@ -31,5 +31,6 @@ export interface IGetItem {
   score?: number;
   user_id: string;
   updated_at: string;
+  categories_ids: string[];
 }
 

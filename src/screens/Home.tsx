@@ -74,13 +74,17 @@ export function Home() {
         const authToken = await AsyncStorage.getItem("AuthToken");
         console.log("authToken", authToken);
         setIsUserAuthenticated(!!authToken);
+
+        if (!authToken) {
+          authNavigation.navigate("onBoarding");
+        }
       };
 
       const fetchCurrentUser = async () => {
         try {
           const currentUser = await getUser();
           if (currentUser.status >= 400 && currentUser.status <= 499) {
-            authNavigation.navigate("signUp");
+            authNavigation.navigate("onBoarding");
           }
           setCurrentUser(currentUser);
           await AsyncStorage.setItem(
@@ -90,6 +94,7 @@ export function Home() {
           console.log("currentUser", currentUser);
         } catch (error) {
           console.error("Error fetching current user:", error);
+          authNavigation.navigate("onBoarding");
         }
       };
 

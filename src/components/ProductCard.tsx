@@ -34,6 +34,7 @@ export function ProductCard({
         w={160}
         h={120}
         style={{ borderTopLeftRadius: 16, borderTopRightRadius: 16 }}
+        resizeMode="contain"
       />
 
       <VStack flex={1} p={12} justifyContent="space-between">

@@ -32,7 +32,7 @@ export function RentalItemCard({ id, title, status, startDate, endDate, totalVal
           borderRadius: tokens.radii.md,
         }
       }>
-        <HStack alignItems="center" bg="$white" p={16} rounded={"$md"} mb={4}>
+        <HStack alignItems="center" bg="$white" p={16} rounded={"$md"}>
           <VStack flex={1} px={16}>
             <Text fontFamily="$heading" fontSize="$md" color="$textDark800" numberOfLines={1}>
               {title}

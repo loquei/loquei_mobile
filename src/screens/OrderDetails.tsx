@@ -36,12 +36,12 @@ interface IRentalDetails {
   lessor: string;
   start_date: string;
   status:
-    | "PENDING"
-    | "ACCEPTED"
-    | "IN_PROGRESS"
-    | "COMPLETED"
-    | "CANCELLED"
-    | "REFUSED";
+  | "PENDING"
+  | "ACCEPTED"
+  | "IN_PROGRESS"
+  | "COMPLETED"
+  | "CANCELLED"
+  | "REFUSED";
   total_value: number;
   updated_at: string;
 }
@@ -308,7 +308,7 @@ export function OrderDetails() {
               justifyContent="space-between"
             >
               <HStack alignItems="center" gap={16}>
-                <Text fontFamily="$body" fontSize="$md" color="$textDark800">
+                <Text fontFamily="$mono" fontSize="$md" color="$textDark800">
                   {lesseeDetails?.personal_name}
                 </Text>
               </HStack>

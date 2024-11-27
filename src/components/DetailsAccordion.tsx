@@ -16,15 +16,15 @@ const accordionData = {
   productDetailsScreen: [
     {
       title: 'Especificações',
-      content: 'Este produto vem com garantia limitada de 1 ano e até 90 dias de suporte técnico gratuito.',
+      content: 'Entre em contato com o locador para obter mais informações sobre as especificações do produto.',
     },
     {
       title: 'Garantia',
-      content: 'O produto inclui uma garantia limitada que cobre defeitos de fabricação. Para mais detalhes, consulte os termos completos da garantia.',
+      content: 'Entre em contato com o locador para obter informações sobre a garantia do produto. A garantia varia de acordo com o tipo de produto.',
     },
     {
       title: 'Entrega',
-      content: 'O tempo estimado de entrega é de 3 a 5 dias úteis. O envio é gratuito para todas as regiões.',
+      content: 'O locador é responsável pela entrega do produto. Certifique-se de combinar o local e horário de entrega com antecedência para evitar atrasos.',
     }
   ],
   helpScreen: [

@@ -110,12 +110,6 @@ export function CodeVerification() {
             </VStack>
 
             <Button title="Verificar" onPress={handleSubmit(handleSendCode)} />
-
-            <HStack mt={12}>
-              <Text fontFamily="$body" fontSize="$md" color="$textDark800" textDecorationLine="underline">
-                Reenviar código
-              </Text>
-            </HStack>
           </VStack>
         </Center>
       </VStack>

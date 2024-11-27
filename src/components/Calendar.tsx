@@ -5,7 +5,7 @@ import { ptBR } from "@utils/localeCalendar";
 import { Box, Text, Button, VStack } from "@gluestack-ui/themed";
 import { gluestackUIConfig } from '../../config/gluestack-ui.config';
 import { Button as StyledButton } from '@components/Button';
-import { format } from 'date-fns-tz';
+import { format, parseISO } from 'date-fns';
 import { ptBR as ptBRLocale } from 'date-fns/locale';
 import Toast from 'react-native-toast-message';
 import CalendarLegend from "./CalendarLegend";
@@ -193,6 +193,9 @@ export function CalendarComponent({ minDays, maxDays, rentalDates, onSelectDate,
     });
   }
 
+  console.log('startDate', startDate);
+  console.log('endDate', endDate);
+
   return (
     <ScrollView
       contentContainerStyle={{ flexGrow: 1 }}
@@ -278,13 +281,13 @@ export function CalendarComponent({ minDays, maxDays, rentalDates, onSelectDate,
 
           {startDate && (
             <Text fontFamily="$heading" fontSize="$md" color="$textDark800">
-              Data de início: {format(new Date(startDate.dateString), 'dd/MM/yyyy', { locale: ptBRLocale })}
+              Data de início: {format(parseISO(startDate.dateString), 'dd/MM/yyyy')}
             </Text>
           )}
 
           {endDate && (
             <Text fontFamily="$heading" fontSize="$md" color="$textDark800" mt={2}>
-              Data de término: {format(new Date(endDate.dateString), 'dd/MM/yyyy', { locale: ptBRLocale })}
+              Data de término: {format(parseISO(endDate.dateString), 'dd/MM/yyyy')}
             </Text>
           )}
         </Box>

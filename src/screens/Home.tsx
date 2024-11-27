@@ -77,7 +77,7 @@ export function Home() {
       const fetchCurrentUser = async () => {
         try {
           const currentUser = await getUser();
-          if (currentUser.status >= 400 || currentUser.status <= 499) {
+          if (currentUser.status >= 400 && currentUser.status <= 499) {
             authNavigation.navigate("signUp");
           }
           setCurrentUser(currentUser);

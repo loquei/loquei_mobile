@@ -56,13 +56,20 @@ export function SignUp() {
         return `${year}-${month}-${day}`;
       };
 
+      const personalNameWithoutWhiteSpace = personal_name.trim();
+      const userNameWithoutWhiteSpace = username.trim();
+      const emailWithoutWhiteSpace = email.trim();
+      const phoneWithoutWhiteSpace = phone.trim();
+
       const BirthIso = formatDateToISO(data.birth);
 
+      console.log("Datos a enviar", personalNameWithoutWhiteSpace, userNameWithoutWhiteSpace, emailWithoutWhiteSpace, phoneWithoutWhiteSpace, document, BirthIso);
+
       const response = await createUser({
-        personal_name,
-        username,
-        email,
-        phone,
+        personal_name: personalNameWithoutWhiteSpace,
+        username: userNameWithoutWhiteSpace,
+        email: emailWithoutWhiteSpace,
+        phone: phoneWithoutWhiteSpace,
         document,
         birth: BirthIso,
       });

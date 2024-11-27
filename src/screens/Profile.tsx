@@ -152,8 +152,8 @@ export function Profile() {
   );
 
   const userInitials = user?.items?.[0]?.personal_name
-    ? `${user.items[0].personal_name.split(" ")[0][0]}${user.items[0].personal_name.split(" ").length > 1
-      ? user.items[0].personal_name.split(" ").slice(-1)[0][0]
+    ? `${user.items[0].personal_name.trim().split(" ")[0][0]}${user.items[0].personal_name.trim().split(" ").length > 1
+      ? user.items[0].personal_name.trim().split(" ").slice(-1)[0][0]
       : ""
     }`
     : "";

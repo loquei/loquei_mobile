@@ -130,7 +130,7 @@ export function AllOrders() {
                   title={`Locação #${index + 1}`}
                   description={getStatusDescription(item.status)}
                   date={format(new Date(item.start_date), "dd/MM/yyyy")}
-                  price={item.total_value.toString()}
+                  price={item.total_value.toFixed(2).replace(".", ",")}
                   imagesPaths="https://icons.veryicon.com/png/o/system/linear-chh/order-27.png"
                 />
               </VStack>

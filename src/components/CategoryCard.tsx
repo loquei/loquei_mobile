@@ -28,7 +28,7 @@ export function CategoryCard({
   icon,
   id,
   height,
-  orientation = "vertical", // Default orientation is vertical
+  orientation = "vertical",
 }: CategoryCardProps) {
   const { setCategoryId } = useCategoryId();
   const navigation = useNavigation<AppNavigatorRoutesProps>();

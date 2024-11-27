@@ -24,5 +24,6 @@ export const CreateAccountSchema = y.object({
   phone: y
     .string()
     .required("O telefone é obrigatório")
-    .min(11, "Digite um telefone válido"),
+    .min(11, "Digite um telefone válido")
+    .matches(/^\d{11}$/, "Digite um telefone válido"),
 });

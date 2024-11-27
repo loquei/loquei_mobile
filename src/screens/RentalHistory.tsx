@@ -13,6 +13,8 @@ import { VStack } from "@gluestack-ui/themed";
 
 interface Rental {
   id: string;
+  lessor: string;
+  lessee: string;
   item: string;
   status: string;
   start_date: string;
@@ -20,6 +22,7 @@ interface Rental {
 }
 
 type ItemData = {
+  id: string;
   name?: string;
 };
 
@@ -78,25 +81,25 @@ export function RentalHistory() {
     return <Loading />;
   }
 
-  const itemsData: ItemData[] = itemQueries.map(query => query.data as ItemData);
+  const itemsData = itemQueries.map(query => query.data);
+  const userRentals = rentalsData.filter((rental: Rental) => rental.lessee === currentUserId);
 
   return (
     <View flex={1} mb={16}>
       <ScreenHeader title="Histórico de Aluguéis" backButton />
       <FlatList
-        data={rentalsData}
+        data={userRentals}
         keyExtractor={(item) => item.id}
-        renderItem={({ item, index }) => {
-          const itemName = itemsData[index]?.name;
-
+        renderItem={({ item }) => {
+          const itemData = itemsData.find(data => data?.id === item.item);
           return (
             <RentalItemCard
               id={item.item}
-              title={itemName}
+              title={itemData?.name}
               status={item.status}
               startDate={item.start_date}
               endDate={item.end_date}
-              totalValue={item.total_value}
+              totalValue={item.total_value.toFixed(2).replace(".", ",")}
             />
           );
         }}

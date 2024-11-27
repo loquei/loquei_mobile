@@ -305,6 +305,7 @@ export function EditProduct() {
             icon={<Save size={24} color={tokens.colors.white} />}
             title="Salvar"
             onPress={handleSubmit(handleEditProduct)}
+            disabled={Object.keys(errors).length > 0 || isLoading}
             width="50%"
           />
         </HStack>

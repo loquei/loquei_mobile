@@ -16,6 +16,7 @@ interface ItemCardProps {
   price: string;
   date?: string;
   imagesPaths: string[] | string;
+  perDayString?: boolean;
   hasRemoveButton?: boolean;
   hasEditButton?: boolean;
   onRemove?: () => void;
@@ -29,6 +30,7 @@ export function ItemCard({
   price,
   date,
   imagesPaths,
+  perDayString,
   hasRemoveButton,
   hasEditButton,
   onRemove,
@@ -62,8 +64,8 @@ export function ItemCard({
             typeof imagesPaths === "string"
               ? { uri: imagesPaths }
               : imagesPaths.length > 0
-              ? { uri: baseURL + imagesPaths[0] }
-              : ItemCardImage
+                ? { uri: baseURL + imagesPaths[0] }
+                : ItemCardImage
           }
           width={110}
           height={110}
@@ -99,12 +101,30 @@ export function ItemCard({
 
           <Text fontFamily="$heading" fontSize="$md" color="$teal600">
             R$ {price}
+
+            {perDayString && (
+              <Text fontFamily="$body" fontSize="$sm" color="$textLight600">
+                {" "}
+                / dia
+              </Text>
+            )}
           </Text>
 
           <HStack gap={12} alignSelf="flex-end">
             {hasEditButton && (
               <TouchableOpacity onPress={handleNavigateToEditProduct}>
-                <Pencil size={24} color={tokens.colors.warning500} />
+                <HStack
+                  gap={4}
+                  alignItems="center"
+                  justifyContent="center"
+                  rounded="$md"
+                >
+                  <Text fontFamily="$mono" fontSize="$md" color="$warning500">
+                    Editar
+                  </Text>
+
+                  <Pencil size={24} color={tokens.colors.warning500} />
+                </HStack>
               </TouchableOpacity>
             )}
           </HStack>

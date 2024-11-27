@@ -37,7 +37,6 @@ export function ProductCard({
       />
 
       <VStack flex={1} p={12} justifyContent="space-between">
-        {/* Título */}
         <Text
           fontFamily="$mono"
           fontSize={"$sm"}
@@ -76,6 +75,15 @@ export function ProductCard({
           {price && (
             <Text fontFamily="$heading" fontSize="$md" color="$teal600">
               R${price}
+
+              <Text
+                fontFamily="$body"
+                fontSize="$sm"
+                color="$textLight600"
+              >
+                {" "}
+                / dia
+              </Text>
             </Text>
           )}
         </VStack>

@@ -20,6 +20,7 @@ import { AppSecondaryNavigatorRoutesProps } from "@routes/app.secondary.routes";
 import { ListCategories } from "../api/listCategory";
 import { ICategories } from "../@types/TCategories";
 import { ListRecentlyViewedItems } from "../api/listRecentlyViewedItems";
+import { useCategoryId } from "@contexts/CategoryIdContext";
 
 export function Home() {
   const [itemData, setItemData] = useState<IGetItem[]>([]);
@@ -28,6 +29,7 @@ export function Home() {
   const secondaryNavigation = useNavigation<AppSecondaryNavigatorRoutesProps>();
   const [categories, setCategories] = useState<ICategories[]>([]);
   const [categorySelected, setCategorySelected] = useState("");
+  const { setCategoryId } = useCategoryId();
   const [isUserAuthenticated, setIsUserAuthenticated] = useState(false);
   const [currentUser, setCurrentUser] = useState<any>();
 
@@ -163,7 +165,7 @@ export function Home() {
                 categorySelected.toLowerCase() === item.name.toLocaleLowerCase()
               }
               onPress={() => {
-                setCategorySelected(item.id);
+                setCategoryId({ name: item.name, id: item.id });
                 navigation.navigate("searchCategory");
               }}
             />

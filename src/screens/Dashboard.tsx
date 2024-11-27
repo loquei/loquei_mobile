@@ -235,6 +235,7 @@ export function Dashboard() {
                       description={item.description}
                       price={item.daily_value.toFixed(2).replace(".", ",")}
                       imagesPaths={item.images.links}
+                      perDayString
                     />
                   </VStack>
                 )}

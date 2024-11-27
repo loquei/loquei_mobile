@@ -118,7 +118,12 @@ export function ProductContainerReviews({ itemId, raterId, isItemOwner, isAllRat
 
   console.log('filteredRatings', filteredRatings);
 
-  const userInitials = filteredRatings[0]?.user?.personal_name ? `${filteredRatings[0].user.personal_name.split(" ")[0][0]}${filteredRatings[0].user.personal_name.split(" ").length > 1 ? filteredRatings[0].user.personal_name.split(" ").slice(-1)[0][0] : ""}` : "";
+  const userInitials = filteredRatings[0]?.user?.personal_name
+    ? `${filteredRatings[0].user.personal_name.trim().split(" ")[0][0]}${filteredRatings[0].user.personal_name.trim().split(" ").length > 1
+      ? filteredRatings[0].user.personal_name.trim().split(" ").slice(-1)[0][0]
+      : ""
+    }`
+    : "";
 
   return (
     <VStack mt={16} px={16}>

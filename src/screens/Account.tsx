@@ -15,13 +15,9 @@ export function Account() {
     navigation.navigate("authRoutes");
   };
 
-  const handleDeleteAccount = () => {
-    // Ação para deletar a conta do usuário
-  };
-
   const handleOpenModal = (action: "logout" | "deleteAccount") => {
     const actionMessage = getActionMessage(action);
-    const onConfirm = action === "logout" ? handleToOnBoarding : handleDeleteAccount;
+    const onConfirm = action === "logout" ? handleToOnBoarding : () => { };
 
     showModal({
       ...actionMessage,
@@ -50,16 +46,6 @@ export function Account() {
               buttonVariant="danger-outline"
               title="Sair da conta"
               onPress={() => handleOpenModal("logout")}
-            />
-          </VStack>
-
-          <VStack gap={8}>
-            <Text fontWeight="bold">Deletar conta</Text>
-            <Text>Uma vez deletada, não há como recuperar sua conta.</Text>
-            <Button
-              buttonVariant="danger"
-              title="Deletar conta"
-              onPress={() => handleOpenModal("deleteAccount")}
             />
           </VStack>
         </VStack>

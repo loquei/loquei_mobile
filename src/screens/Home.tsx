@@ -340,7 +340,7 @@ export function Home() {
           sections={[
             {
               title: "Explore",
-              data: categories,
+              data: categories.slice(0, 3),
             },
           ]}
           keyExtractor={(item) => item.id}
@@ -357,6 +357,23 @@ export function Home() {
               {section.title}
             </Text>
           )}
+          renderSectionFooter={() => (
+            <Pressable
+              onPress={() => secondaryNavigation.navigate("search")}
+              py={8}
+              px={16}
+            >
+              <Text
+                fontFamily="$body"
+                fontSize="$lg"
+                color="$teal600"
+                textAlign="center"
+              >
+                Ver todas
+              </Text>
+            </Pressable>
+          )}
+
           ItemSeparatorComponent={() => <HStack height={10} />}
           contentContainerStyle={{ paddingHorizontal: 16 }}
           style={{ marginTop: 16 }}

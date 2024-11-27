@@ -224,7 +224,7 @@ export function Dashboard() {
               <FlatList
                 scrollEnabled={false}
                 showsVerticalScrollIndicator={false}
-                data={itemData}
+                data={itemData.slice(0, 3)}
                 keyExtractor={(item) => item.id}
                 renderItem={({ item }) => (
                   <VStack>

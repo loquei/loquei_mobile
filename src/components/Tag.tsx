@@ -29,7 +29,7 @@ export function Tag({ name, isActive, ...props }: Props) {
       rounded="$full"
       justifyContent="center"
       alignItems="center"
-      borderColor={isActive ? '$teal600' : '$white'}
+      borderColor={isActive ? '$teal600' : '$secondary100'}
       borderWidth={1}
       gap={6}
       sx={{

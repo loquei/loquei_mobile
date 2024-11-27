@@ -37,6 +37,7 @@ export function Search() {
             id={item.id}
             name={item.name}
             icon={item.name}
+            height={120}
           />
         ))}
       </HStack>

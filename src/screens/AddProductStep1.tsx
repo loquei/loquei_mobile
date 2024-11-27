@@ -132,10 +132,6 @@ export function AddProductStep1() {
             <Text fontFamily="$body" fontSize="$sm" mt={8}>
               Etapa 1 de 2: Informações do Produto
             </Text>
-
-            <Text fontFamily="$heading" fontSize="$sm" mt={8} ml="auto">
-              {progressValue}%
-            </Text>
           </HStack>
         </VStack>
 

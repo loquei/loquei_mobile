@@ -20,6 +20,7 @@ import { AppSecondaryNavigatorRoutesProps } from "@routes/app.secondary.routes";
 import { ListCategories } from "../api/listCategory";
 import { ICategories } from "../@types/TCategories";
 import { ListRecentlyViewedItems } from "../api/listRecentlyViewedItems";
+import { AuthNavigatorRoutesProps } from "@routes/auth.routes";
 
 export function Home() {
   const [itemData, setItemData] = useState<IGetItem[]>([]);
@@ -30,6 +31,7 @@ export function Home() {
   const [categorySelected, setCategorySelected] = useState("");
   const [isUserAuthenticated, setIsUserAuthenticated] = useState(false);
   const [currentUser, setCurrentUser] = useState<any>();
+  const authNavigation = useNavigation<AuthNavigatorRoutesProps>();
 
   const {
     data: mainItems,
@@ -75,6 +77,9 @@ export function Home() {
       const fetchCurrentUser = async () => {
         try {
           const currentUser = await getUser();
+          if (currentUser.status >= 400 || currentUser.status <= 499) {
+            authNavigation.navigate("signUp");
+          }
           setCurrentUser(currentUser);
           await AsyncStorage.setItem(
             "currentUser",
@@ -332,8 +337,7 @@ export function Home() {
           >
             Nenhum produto visualizado recentemente.
           </Text>
-        )
-        }
+        )}
 
         <SectionList
           scrollEnabled={false}
@@ -373,7 +377,6 @@ export function Home() {
               </Text>
             </Pressable>
           )}
-
           ItemSeparatorComponent={() => <HStack height={10} />}
           contentContainerStyle={{ paddingHorizontal: 16 }}
           style={{ marginTop: 16 }}

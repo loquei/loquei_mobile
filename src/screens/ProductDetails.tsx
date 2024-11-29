@@ -126,7 +126,7 @@ export function ProductDetails() {
         lesseeId: currentUserId,
         minDays: productDetails.min_days,
         maxDays: productDetails.max_days,
-        filteredRentals: filteredRentals.filter(rental => rental.status !== 'REFUSED' && rental.status !== 'CANCELLED' && rental.status !== 'TERMINATED' && rental.status !== 'PENDING'),
+        filteredRentals: filteredRentals.filter(rental => rental.status !== 'REFUSED' && rental.status !== 'CANCELLED' && rental.status !== 'COMPLETED' && rental.status !== 'PENDING'),
       });
     }
   }
@@ -160,8 +160,8 @@ export function ProductDetails() {
   console.log('filteredRentals', filteredRentals);
   const userRentals = filteredRentals.filter(rental => rental.lessee === currentUserId);
   const userRentalsStatus = userRentals.map(rental => rental.status);
-  const hasSomeRentalTerminated = userRentalsStatus.includes('TERMINATED');
-  console.log('HAS TERMINATED', hasSomeRentalTerminated);
+  const hasSomeRentalCompleted = userRentalsStatus.includes('COMPLETED');
+  console.log('HAS COMPLETED', hasSomeRentalCompleted);
 
   console.log('userRentals', userRentals);
   console.log('currentUserId', currentUserId);
@@ -233,7 +233,7 @@ export function ProductDetails() {
           <VStack mt={24}>
             <ProductContainerReviews itemId={id} raterId={currentUserId} isItemOwner={
               currentUserId === productDetails.user_id
-            } perPage={3} hasSomeRentalTerminated={hasSomeRentalTerminated} />
+            } perPage={3} hasSomeRentalCompleted={hasSomeRentalCompleted} />
           </VStack>
         </VStack>
 

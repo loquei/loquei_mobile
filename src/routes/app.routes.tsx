@@ -50,6 +50,7 @@ export type AppSecondaryRoutes = {
     itemId: string;
     raterId: string;
     isItemOwner: boolean;
+    hasSomeRentalCompleted: boolean;
   };
   searchCategory: undefined;
   searchResults: { searchTerm: string };

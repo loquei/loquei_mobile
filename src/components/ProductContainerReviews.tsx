@@ -22,7 +22,7 @@ interface ProductReviewsProps {
   raterId: string;
   isItemOwner: boolean;
   isAllRatingsScreen?: boolean;
-  hasSomeRentalTerminated?: boolean;
+  hasSomeRentalCompleted: boolean;
   perPage?: number;
 }
 
@@ -46,7 +46,7 @@ interface Rating {
   updated_at: string;
 }
 
-export function ProductContainerReviews({ itemId, raterId, isItemOwner, isAllRatingsScreen, hasSomeRentalTerminated, perPage }: ProductReviewsProps) {
+export function ProductContainerReviews({ itemId, raterId, isItemOwner, isAllRatingsScreen, hasSomeRentalCompleted, perPage }: ProductReviewsProps) {
   const { tokens } = gluestackUIConfig;
   const { showModal, getActionMessage } = useModal();
   const navigation = useNavigation<AppNavigatorRoutesProps>();
@@ -132,7 +132,7 @@ export function ProductContainerReviews({ itemId, raterId, isItemOwner, isAllRat
           Avaliações
         </Text>
         {!isAllRatingsScreen && (
-          <Pressable onPress={() => navigation.navigate("productReviews", { itemId, raterId, isItemOwner })}>
+          <Pressable onPress={() => navigation.navigate("productReviews", { itemId, raterId, isItemOwner, hasSomeRentalCompleted })}>
             <Text fontFamily="$body" fontSize="$md" color="$teal600">
               Ver todas
             </Text>
@@ -176,8 +176,8 @@ export function ProductContainerReviews({ itemId, raterId, isItemOwner, isAllRat
           </VStack>
         </HStack>
 
-        {!isItemOwner && hasSomeRentalTerminated &&
-          // verifica se os status dos pedidos tem algum TERMINATED e se o usuário logado é o dono do item
+        {!isItemOwner && hasSomeRentalCompleted &&
+          // verifica se os status dos pedidos tem algum COMPLETED e se o usuário logado é o dono do item
           // se for, exibe o botão de avaliação
 
           (

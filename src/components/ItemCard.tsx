@@ -4,7 +4,7 @@ import { TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { AppNavigatorRoutesProps } from "@routes/app.routes";
 
-import { Pencil } from "lucide-react-native";
+import { Pencil, Trash, Trash2 } from "lucide-react-native";
 import { gluestackUIConfig } from "../../config/gluestack-ui.config";
 import { baseURL } from "../constants/authentications";
 
@@ -124,6 +124,19 @@ export function ItemCard({
                   </Text>
 
                   <Pencil size={24} color={tokens.colors.warning500} />
+                </HStack>
+              </TouchableOpacity>
+            )}
+
+            {hasRemoveButton && (
+              <TouchableOpacity onPress={onRemove}>
+                <HStack
+                  gap={4}
+                  alignItems="center"
+                  justifyContent="center"
+                  rounded="$md"
+                >
+                  <Trash2 size={24} color={tokens.colors.error500} />
                 </HStack>
               </TouchableOpacity>
             )}

@@ -71,14 +71,21 @@ export function Wishlist() {
     staleTime: 1000 * 60 * 5, // 5 minutos
   });
 
-  const handleOpenModal = (action: "deleteAllItemsFromWishlist") => {
+  const handleOpenModal = (
+    action: "deleteAllItemsFromWishlist" | "deleteUniqueItemFromWishlist",
+    itemId?: string
+  ) => {
     const actionMessage = getActionMessage(action);
-    const onConfirm = action === "deleteAllItemsFromWishlist" ? () => handleDeleteAllItemsFromWishlist(currentUserId) : () => { };
+    const onConfirm = action === "deleteAllItemsFromWishlist"
+      ? () => handleDeleteAllItemsFromWishlist(currentUserId)
+      : () => itemId && handleDeleteUniqueItemFromWishlist(currentUserId, itemId);
+
     showModal({
       ...actionMessage,
       onConfirm,
     });
   };
+
 
   const handleUserToHome = () => {
     navigation.navigate("home");
@@ -159,7 +166,7 @@ export function Wishlist() {
                   price={item.daily_value.toFixed(2).replace('.', ',')}
                   imagesPaths={baseURL + item.item_image_path}
                   hasRemoveButton
-                  onRemove={() => handleDeleteUniqueItemFromWishlist(currentUserId, item.item_id)}
+                  onRemove={() => handleOpenModal("deleteUniqueItemFromWishlist", item.item_id)}
                 />
               </VStack>
             )}

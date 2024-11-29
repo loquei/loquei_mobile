@@ -16,7 +16,7 @@ interface ModalContent {
 interface ModalContextData {
   showModal: (content: ModalContent) => void;
   hideModal: () => void;
-  getActionMessage: (action: "logout" | "deleteAccount" | "deleteAllItemsFromWishlist" | 'rating') => Omit<ModalContent, 'onConfirm'>;
+  getActionMessage: (action: "logout" | "deleteAccount" | "deleteAllItemsFromWishlist" | "deleteUniqueItemFromWishlist" | 'rating') => Omit<ModalContent, 'onConfirm'>;
 }
 
 const ModalContext = createContext<ModalContextData | undefined>(undefined);
@@ -42,6 +42,11 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
       description: "Tem certeza que deseja deletar todos os itens da lista de desejos?",
       confirmButtonText: "Deletar",
     },
+    deleteUniqueItemFromWishlist: {
+      title: "Deletar item",
+      description: "Tem certeza que deseja deletar este item da lista de desejos?",
+      confirmButtonText: "Deletar",
+    },
     rating: {
       title: "Avaliar",
       description: "Avalie o produto para ajudar outros usuários.",
@@ -59,7 +64,7 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
     setModalContent(null);
   };
 
-  const getActionMessage = (action: "logout" | "deleteAccount" | "deleteAllItemsFromWishlist" | 'rating') => actionMessages[action];
+  const getActionMessage = (action: "logout" | "deleteAccount" | "deleteAllItemsFromWishlist" | "deleteUniqueItemFromWishlist" | 'rating') => actionMessages[action];
 
   return (
     <ModalContext.Provider value={{ showModal, hideModal, getActionMessage }}>

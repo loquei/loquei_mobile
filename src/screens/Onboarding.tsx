@@ -21,7 +21,7 @@ export function Onboarding() {
       <Center flex={1}>
         <Image source={onBoardingImage} alt="Onboarding" width={300} height={300} />
 
-        <Text fontSize="$2xl" fontFamily="$heading" color="$textDark800" mt={24}>Bem vindo ao Loquei</Text>
+        <Text fontSize="$2xl" fontFamily="$heading" color="$textDark800" mt={24}>Bem vindo a Loquei</Text>
         <Text fontFamily="$body" fontSize="$md" color="$textDark800" mt={12}>A maneira mais simples e rápida de alugar qualquer coisa. Entre com sua conta e descubra um mundo de facilidades.</Text>
       </Center>
 

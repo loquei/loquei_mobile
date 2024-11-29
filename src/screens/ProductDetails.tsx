@@ -126,7 +126,7 @@ export function ProductDetails() {
         lesseeId: currentUserId,
         minDays: productDetails.min_days,
         maxDays: productDetails.max_days,
-        filteredRentals: filteredRentals.filter(rental => rental.status !== 'REFUSED' && rental.status !== 'CANCELED'),
+        filteredRentals: filteredRentals.filter(rental => rental.status !== 'REFUSED' && rental.status !== 'CANCELLED' && rental.status !== 'TERMINATED' && rental.status !== 'PENDING'),
       });
     }
   }

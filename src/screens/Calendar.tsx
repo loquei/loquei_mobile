@@ -38,8 +38,27 @@ export function Calendar() {
       console.log('Data de início:', startDate);
       console.log('Data de fim:', endDate);
 
-      console.log('DADOS DO ALUGUEL', itemId, lessorId, lesseeId, startDate, endDate);
-      await postRental(lessorId, lesseeId, itemId, startDate, endDate);
+      const startDateWithTime = startDate.setHours(9, 0, 0, 0);
+      const endDateWithTime = endDate.setHours(9, 0, 0, 0);
+
+      const newStartDate = new Date(startDateWithTime + 86400000);
+      const newEndDate = new Date(endDateWithTime + 86400000);
+
+      console.log(
+        'DADOS DO ALUGUEL',
+        itemId,
+        lessorId,
+        lesseeId,
+        newStartDate,
+        newEndDate
+      );
+      await postRental(
+        lessorId,
+        lesseeId,
+        itemId,
+        newStartDate,
+        newEndDate
+      );
 
       navigation.navigate('productDetails', { id: itemId });
     } catch (error) {

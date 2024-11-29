@@ -60,7 +60,7 @@ export function CalendarComponent({ minDays, maxDays, rentalDates, onSelectDate,
 
   const isDateDisabled = (dateString: string) => {
     return rentalDates.some(rental => {
-      const rentalDays = getAllDaysInRange(rental.start_date, rental.end_date); // Atualizado para start_date e end_date
+      const rentalDays = getAllDaysInRange(rental.start_date, rental.end_date);
       return rentalDays.includes(dateString);
     });
   };

@@ -134,7 +134,7 @@ export function OrderDetails() {
   function handleLessorToLesseeChat() {
     const phoneNumber = lesseeDetails?.phone;
     if (phoneNumber) {
-      Linking.openURL(`https://wa.me/${phoneNumber}`).catch((err) =>
+      Linking.openURL(`https://wa.me/55${phoneNumber}`).catch((err) =>
         console.error("Erro ao abrir URL:", err)
       );
     } else {
